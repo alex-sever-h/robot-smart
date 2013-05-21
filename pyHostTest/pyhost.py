@@ -54,28 +54,30 @@ def mainloop():
         for event in pygame.event.get():
             if (event.type == KEYDOWN):
                 if (event.key == K_UP):
-                    
-                    print event
+                    # event
                     go_forward()
                 if (event.key == K_DOWN):
-                    print event
+                    #print event
                     go_backward()
-                if (event.key == K_LEFT):
-                    print event
-                    go_rotate_left()
                 if (event.key == K_RIGHT):
-                    print event
+                    #print event
+                    go_rotate_left()
+                if (event.key == K_LEFT):
+                    #print event
                     go_rotate_right()
             if (event.type == KEYUP):
                 if (event.key == K_UP or event.key == K_DOWN or event.key == K_LEFT or event.key == K_RIGHT):
-                    print event
+                    #print event
                     go_stop()
             if (event.type == KEYUP) or (event.type == KEYDOWN):
-                print event
+                #print event
                 if (event.key == K_ESCAPE):
                     done = True
+        data_rec = sock.recv(2048)
+        print data_rec
+        
+        
 
-goString = "M_LR"
 
 def convToString(left, right):
     retstring = ""
@@ -91,17 +93,11 @@ def convToString(left, right):
         retstring = retstring + repr(right).zfill(4)    
         
     return retstring
-    pass
 
 def m_lr_command(left, right):
-    global goString
-    
-    command = goString + convToString(left, right) + "\r"
-    
-    print command 
-    
+    goString = "M_LR"    
+    command = goString + convToString(left, right) + "\r"    
     return command
-    pass
 
 
 
