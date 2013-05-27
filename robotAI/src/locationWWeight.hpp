@@ -8,11 +8,11 @@
 #ifndef LOCATIONWWEIGHT_HPP_
 #define LOCATIONWWEIGHT_HPP_
 
-
 class LocationWWeight{
 public:
 	int x;
 	int y;
+	int z;
 	float weight;
 
 public:
@@ -20,6 +20,7 @@ public:
 	{
 		this->x = x;
 		this->y = y;
+		this->z = 0;
 		this->weight = w;
 	}
 };

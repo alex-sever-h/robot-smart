@@ -12,6 +12,7 @@
 #include "wx/timer.h"
 #include "roboGUI.h"
 #include "sensorManagement.h"
+#include "mapDiscrete.hpp"
 //
 //// include OpenGL
 //#ifdef __WXMAC__
@@ -26,7 +27,7 @@
 #define UPDATE_TIMER_ID 2
 
 extern SensorManager sMan;
-
+extern MapDiscrete   world;
 
 class RoboGuiApp: public wxApp
 {
@@ -86,8 +87,8 @@ void RoboGLMap::keyReleased(wxKeyEvent& event) {}
 
 
 RoboGLMap::RoboGLMap(wxFrame* parent, int* args) :
-											wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE),
-											m_timer(this, UPDATE_TIMER_ID)
+																					wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE),
+																					m_timer(this, UPDATE_TIMER_ID)
 {
 	m_context = new wxGLContext(this);
 
@@ -182,17 +183,28 @@ void RoboGLMap::drawSensors(void)
 		vector<LocationWWeight> *poly = sMan.sensors.at(si).poly;
 		if(poly)
 		{
-			cout << "drawing: " << sMan.sensors.at(si).id << ".........." << endl;
-			glColor4f(1, 0, 0, 0.5);
+			glColor4f(0, 1, 1, 0.5);
 			glBegin(GL_POLYGON);//since the arc is not a closed curve, this is a strip now
 			for(unsigned int i = 0; i < poly->size(); ++i)
 			{
 				glVertex2f(poly->at(i).x + getWidth()/2, getHeight()/2 - poly->at(i).y);
-				cout << "c: " << poly->at(i).x << " x " << poly->at(i).y << endl;
 			}
 			glEnd();
 		}
 	}
+}
+
+void RoboGLMap::drawMap(void)
+{
+	glBegin(GL_POINTS);
+	for(unsigned int ix = 0; ix < world.getSizeX(); ++ix)
+		for(unsigned int iy = 0; iy < world.getSizeY(); ++iy)
+		{
+			glColor4f(1, 0, 0, world.getValueXY(ix, iy));
+			glVertex2f(ix, getHeight() - iy);
+		}
+
+	glEnd();
 }
 
 
@@ -212,6 +224,7 @@ void RoboGLMap::render( wxPaintEvent& evt )
 
 
 	drawSensors();
+	drawMap();
 
 
 

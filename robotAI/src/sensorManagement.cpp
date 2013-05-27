@@ -87,7 +87,7 @@ vector<LocationWWeight>	* SensorManager::calculateSensorPolygon(float angleCente
 	float x = dist * cosf(angleCenter - angleSpan/2);
 	float y = dist * sinf(angleCenter - angleSpan/2);
 
-	poly = new vector<LocationWWeight>;
+	poly = new tyPolygon;
 
 	poly->push_back( LocationWWeight(cx, cy, 0) );
 

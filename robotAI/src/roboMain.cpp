@@ -2,6 +2,7 @@
 #include <string>
 #include "roboGUI.h"
 #include "RoboBT.h"
+#include "geometricPlane.hpp"
 #include "mapDiscrete.hpp"
 #include "sensorManagement.h"
 #include <iostream>
@@ -42,6 +43,27 @@ void gui_task()
 }
 
 
+
+void testPIP()
+{
+	tyPolygon testPoly;
+	testPoly.push_back(LocationWWeight(0, 0, 0));
+	testPoly.push_back(LocationWWeight(0, 100, 0));
+	testPoly.push_back(LocationWWeight(100, 100, 0));
+	testPoly.push_back(LocationWWeight(100, 0, 0));
+
+	LocationWWeight testPointInside(10, 60, 0);
+	bool insideOK = insidePolygon(testPointInside, testPoly);
+	cout << "ShouldBeTrue : " << insideOK << endl;
+
+	LocationWWeight testPointOutside(50, 110, 0);
+	bool insideNOK = insidePolygon(testPointOutside, testPoly);
+	cout << "ShouldBeFalse : " << insideNOK << endl;
+
+}
+
+
+
 int main(int argc, char **argv)
 {
 	thread bt_thread(bluetooth_task);
@@ -59,3 +81,12 @@ int main(int argc, char **argv)
 
 	return 0;
 }
+
+
+
+
+
+
+
+
+

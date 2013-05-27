@@ -50,6 +50,7 @@ public:
 	void timerUpdate(wxTimerEvent & event);
 
 	void drawSensors(void);
+	void drawMap(void);
 
 	//void setSensMan(SensorManager *sensMan){this->sensMan = sensMan;}
 

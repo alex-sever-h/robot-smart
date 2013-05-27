@@ -17,7 +17,7 @@ using namespace boost;
 
 
 
-typedef multi_array<double, 2> tyMapArray;
+typedef multi_array<float, 2> tyMapArray;
 //typedef tyMapArray::index index;
 
 
@@ -29,6 +29,13 @@ class MapDiscrete : MapGeneric{
 public:
 	MapDiscrete(unsigned int mapSizeX, unsigned int mapSizeY);
 	virtual ~MapDiscrete(){}
+
+	unsigned int getSizeX(){ return mapSizeX; }
+	unsigned int getSizeY(){ return mapSizeY; }
+
+	float getValueXY(int x, int y){
+		return (*map)[x][y];
+	}
 };
 
 

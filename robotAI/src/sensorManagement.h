@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include "locationWWeight.hpp"
+#include "geometricPlane.hpp"
 
 using namespace std;
 
