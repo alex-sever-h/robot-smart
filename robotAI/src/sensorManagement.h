@@ -10,36 +10,56 @@
 
 #include <string>
 #include <vector>
+#include <cmath>
 #include "locationWWeight.hpp"
 #include "geometricPlane.hpp"
+#include "robotModel.hpp"
+
+#define DEG_TO_RAD(x)  (M_PI*((float)(x)/180))
+#define RAD_TO_DEG(x)  (((float)(x)*180)/M_PI)
 
 using namespace std;
 
 typedef struct {
 	string id;
 
-	float angleCenter;
+	float angleCenterRad;
 	float angleSpan;
-	int offsetx;
-	int offsety;
-
+	int offsetXmapMM;
+	int offsetYmapMM;
+	int offsetXrobot;
+	int offsetYrobot;
 	int dist;
-	vector<LocationWWeight> *poly;
+
+	tyPolygon *polySafe;
+	tyPolygon *polyWall;
 } tySensor;
 
 void init_sensors();
 
+class RobotModel;
+
 class SensorManager {
-public: // TODO: remove public
 	vector<tySensor> sensors;
 
+	RobotModel      *physicalRobot;
+
 public:
-	SensorManager();
+	SensorManager(RobotModel *pR);
 	virtual ~SensorManager();
 
 	void registerMeasurement(string id, int length);
 
-	vector<LocationWWeight>	* calculateSensorPolygon(float angleCenter, float angleSpan, int cx, int cy, float dist);
+	void calculateSensorPolygons(
+			vector<LocationWWeight>	** safePolygon,
+			vector<LocationWWeight>	** linePolygon,
+			float angleCenter, float angleSpan, int cx, int cy, float dist);
+
+	void setSensorOffset(string sensor_id, int offsetx, int offsety);
+	void updateSensorsOffset(int px, int py, float theta);
+
+	vector<tyPolygon *> *getSensorSafeAreas();
+	vector<tyPolygon *> *getSensorWallAreas();
 };
 
 #endif /* SENSORMANAGEMENT_H_ */

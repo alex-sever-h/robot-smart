@@ -21,13 +21,14 @@
 //#else
 #include <GL/glu.h>
 #include <GL/gl.h>
+#include "robotModel.hpp"
 //#endif
 
 
 #define UPDATE_TIMER_ID 2
 
-extern SensorManager sMan;
-extern MapDiscrete   world;
+extern RobotModel physicalRobot;
+extern MapParticle   world;
 
 class RoboGuiApp: public wxApp
 {
@@ -59,8 +60,6 @@ bool RoboGuiApp::OnInit()
 	return true;
 }
 
-
-
 BEGIN_EVENT_TABLE(RoboGLMap, wxGLCanvas)
 EVT_MOTION(RoboGLMap::mouseMoved)
 EVT_LEFT_DOWN(RoboGLMap::mouseDown)
@@ -87,8 +86,8 @@ void RoboGLMap::keyReleased(wxKeyEvent& event) {}
 
 
 RoboGLMap::RoboGLMap(wxFrame* parent, int* args) :
-																					wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE),
-																					m_timer(this, UPDATE_TIMER_ID)
+																																					wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE),
+																																					m_timer(this, UPDATE_TIMER_ID)
 {
 	m_context = new wxGLContext(this);
 
@@ -98,7 +97,6 @@ RoboGLMap::RoboGLMap(wxFrame* parent, int* args) :
 
 	// To avoid flashing on MSW
 	SetBackgroundStyle(wxBG_STYLE_CUSTOM);
-
 }
 
 RoboGLMap::~RoboGLMap()
@@ -165,45 +163,87 @@ void RoboGLMap::prepare2DViewport(int topleft_x, int topleft_y, int bottomrigth_
 	glLoadIdentity();
 }
 
-int RoboGLMap::getWidth()
+unsigned int RoboGLMap::getWidth()
 {
 	return GetSize().x;
 }
 
-int RoboGLMap::getHeight()
+unsigned int RoboGLMap::getHeight()
 {
 	return GetSize().y;
 }
 
+void RoboGLMap::drawRobot(void) {
+	tyPolygon * robopoly = physicalRobot.getRobotPoly();
+
+	glColor4f(1, 0, 1, 1);
+	glBegin(GL_POLYGON);//since the arc is not a closed curve, this is a strip now
+	for(unsigned int si = 0; si < robopoly->size(); ++si)
+	{
+		glVertex2f(robopoly->at(si).x/10 + getWidth()/2, getHeight()/2 - robopoly->at(si).y/10);
+	}
+	glEnd();
+
+	delete robopoly;
+}
 
 void RoboGLMap::drawSensors(void)
 {
-	for(unsigned int si = 0; si < sMan.sensors.size(); ++si)
+	vector<tyPolygon *> *sSafeAreas = physicalRobot.getSensorSafeAreas();
+	vector<tyPolygon *> *sWallAreas = physicalRobot.getSensorWallAreas();
+	vector<LocationWWeight> *poly;
+
+	for(unsigned int si = 0; si < sSafeAreas->size(); ++si)
 	{
-		vector<LocationWWeight> *poly = sMan.sensors.at(si).poly;
+		poly = sSafeAreas->at(si);
 		if(poly)
 		{
 			glColor4f(0, 1, 1, 0.5);
 			glBegin(GL_POLYGON);//since the arc is not a closed curve, this is a strip now
 			for(unsigned int i = 0; i < poly->size(); ++i)
 			{
-				glVertex2f(poly->at(i).x + getWidth()/2, getHeight()/2 - poly->at(i).y);
+				glVertex2f(poly->at(i).x/10 + getWidth()/2, getHeight()/2 - poly->at(i).y/10);
 			}
 			glEnd();
 		}
 	}
+	for(unsigned int si = 0; si < sWallAreas->size(); ++si)
+	{
+		poly = sWallAreas->at(si);
+		if(poly)
+		{
+			glColor4f(1, 0, 0, 1);
+			glBegin(GL_LINE_LOOP);//since the arc is not a closed curve, this is a strip now
+			for(unsigned int i = 0; i < poly->size(); ++i)
+			{
+				glVertex2f(poly->at(i).x/10 + getWidth()/2, getHeight()/2 - poly->at(i).y/10);
+			}
+			glEnd();
+		}
+	}
+
+	delete sSafeAreas;
+	delete sWallAreas;
 }
 
 void RoboGLMap::drawMap(void)
 {
-	glBegin(GL_POINTS);
-	for(unsigned int ix = 0; ix < world.getSizeX(); ++ix)
-		for(unsigned int iy = 0; iy < world.getSizeY(); ++iy)
-		{
-			glColor4f(1, 0, 0, world.getValueXY(ix, iy));
-			glVertex2f(ix, getHeight() - iy);
-		}
+	vector<LocationWWeight>* mapParticles = world.getParticleList();
+	int screenX;
+	int screenY;
 
+	glBegin(GL_POINTS);
+	for(vector<LocationWWeight>::iterator it = mapParticles->begin(); it < mapParticles->end(); ++it)
+	{
+
+		screenX = it->x/10 - getWidth()/2;
+		screenY = getHeight()/2 - it->y/10;
+
+		cout << screenX << " x " << screenY << endl;
+
+		glColor4f(1, 0, 0, it->weight);
+		glVertex2f(screenX, screenY);
+	}
 	glEnd();
 }
 
@@ -222,10 +262,11 @@ void RoboGLMap::render( wxPaintEvent& evt )
 	glLoadIdentity();
 
 
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Black Background
 
+	drawRobot();
 	drawSensors();
 	drawMap();
-
 
 
 	glFlush();

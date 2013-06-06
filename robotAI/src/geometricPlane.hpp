@@ -47,6 +47,7 @@ public:
 };
 
 
-bool insidePolygon(const LocationWWeight &q, tyPolygon &pPolygon);
+bool insidePolygon3D(const LocationWWeight &q, tyPolygon &pPolygon);
+bool insidePolygon2D(const LocationWWeight &q, tyPolygon &pPolygon);
 
 #endif /* GEOMETRICPLANE_HPP_ */

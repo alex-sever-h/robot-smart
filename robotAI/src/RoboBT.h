@@ -24,6 +24,7 @@
 
 using namespace std;
 
+class SensorManager;
 
 typedef struct {
 	string id;
@@ -49,8 +50,11 @@ public:
 	bool  pollUpdateSensors();
 	void  setSensMan(SensorManager *sMan){this->sensMan = sMan;}
 
+	void  move(int distance);
+	void  rotate(int degrees);
+
 protected:
-	void  send(char *buffer);
+	void  send(string &command);
 	bool  readData();
 };
 

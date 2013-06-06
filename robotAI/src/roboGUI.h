@@ -28,8 +28,8 @@ public:
 
 	void resized(wxSizeEvent& evt);
 
-	int getWidth();
-	int getHeight();
+	unsigned int getWidth();
+	unsigned int getHeight();
 
 	void render(wxPaintEvent& evt);
 	void prepare3DViewport(int topleft_x, int topleft_y, int bottomrigth_x, int bottomrigth_y);
@@ -51,6 +51,7 @@ public:
 
 	void drawSensors(void);
 	void drawMap(void);
+	void drawRobot(void);
 
 	//void setSensMan(SensorManager *sensMan){this->sensMan = sensMan;}
 

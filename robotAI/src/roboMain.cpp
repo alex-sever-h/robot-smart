@@ -7,6 +7,8 @@
 #include "sensorManagement.h"
 #include <iostream>
 #include <boost/thread.hpp>
+#include "MapParticle.hpp"
+#include "robotModel.hpp"
 
 
 #define ENABLE_GUI
@@ -15,19 +17,36 @@
 using namespace std;
 using namespace boost;
 
-SensorManager sMan;
-MapDiscrete   world(1024, 1024);
+MapParticle   		world;
+RoboBT 		  		robotBTinterface(true);
+RobotModel    		physicalRobot(0, 0, 0, &robotBTinterface);
 
-void bluetooth_task()
+int flag;
+
+void smartTask()
 {
-	RoboBT robot(true);
-	robot.setSensMan(&sMan);
 
-	robot.connectRobot();
+	physicalRobot.placeRobotInMap(&world);
+
+	robotBTinterface.connectRobot();
 
 	while(1)
 	{
-		robot.pollUpdateSensors();
+		robotBTinterface.pollUpdateSensors();
+
+
+//		if(flag)
+//		{
+//			if( physicalRobot.move(500) )
+//				flag = !flag;
+//		}
+//		else
+
+
+//		{
+//			if( physicalRobot.rotate(M_PI) )
+//				flag = !flag;
+//		}
 	}
 }
 
@@ -44,30 +63,9 @@ void gui_task()
 
 
 
-void testPIP()
-{
-	tyPolygon testPoly;
-	testPoly.push_back(LocationWWeight(0, 0, 0));
-	testPoly.push_back(LocationWWeight(0, 100, 0));
-	testPoly.push_back(LocationWWeight(100, 100, 0));
-	testPoly.push_back(LocationWWeight(100, 0, 0));
-
-	LocationWWeight testPointInside(10, 60, 0);
-	bool insideOK = insidePolygon(testPointInside, testPoly);
-	cout << "ShouldBeTrue : " << insideOK << endl;
-
-	LocationWWeight testPointOutside(50, 110, 0);
-	bool insideNOK = insidePolygon(testPointOutside, testPoly);
-	cout << "ShouldBeFalse : " << insideNOK << endl;
-
-}
-
-
-
 int main(int argc, char **argv)
 {
-	thread bt_thread(bluetooth_task);
-
+	thread bt_thread(smartTask);
 
 #ifdef ENABLE_GUI
 	thread gui_thread(gui_task);

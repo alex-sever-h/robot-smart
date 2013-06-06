@@ -20,6 +20,8 @@ class MapVectorial : MapGeneric{
 public:
 	MapVectorial();
 	virtual ~MapVectorial();
+
+	virtual void updateMap(tyPolygon * safeArea, tyPolygon * wallArea);
 };
 
 

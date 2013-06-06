@@ -24,7 +24,7 @@ float Vector::dot(const Vector &pV1) const
 
 
 
-bool insidePolygon(const LocationWWeight &q, tyPolygon &pPolygon)
+bool insidePolygon3D(const LocationWWeight &q, tyPolygon &pPolygon)
 {
 	Vector *vP,*vQ;
 	Vector *v0,*vLast,*vI,*vIplus1;
@@ -58,6 +58,34 @@ bool insidePolygon(const LocationWWeight &q, tyPolygon &pPolygon)
 
 		// Finally check if sum < 0 if yes then outside(false), if not then inside(true)
 		if( vP->dot(*vQ) < 0)
+			return false;
+	}
+
+	return true;
+}
+
+bool insidePolygon2D(const LocationWWeight &q, tyPolygon &pPolygon)
+{
+	float vP,vQ;
+	Vector *v0,*vLast,*vI,*vIplus1;
+
+	// First determine cross product vP between test point q and first and last vertex of Polygon
+
+	v0    = new Vector(q, pPolygon.at(0) );
+	vLast = new Vector(q, pPolygon.at(pPolygon.size()-1) );
+	vP    = vLast->x * v0->y - vLast->y * v0->x;
+
+
+	//Next determine dot product of vP with vQ (cross product of v
+	for (unsigned int i = 0 ; i < pPolygon.size() - 1 ; i++)
+	{
+
+		vI      = new Vector(q , pPolygon.at(i) );
+		vIplus1 = new Vector(q , pPolygon.at(i+1));
+		vQ      = vI->x * vIplus1->y - vI->y * vIplus1->x;
+
+		// Finally check if sum < 0 if yes then outside(false), if not then inside(true)
+		if( vP * vQ < 0)
 			return false;
 	}
 

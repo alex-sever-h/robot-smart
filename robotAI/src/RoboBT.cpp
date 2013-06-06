@@ -3,6 +3,7 @@
 #include <boost/algorithm/string.hpp>
 #include <vector>
 #include <string>
+#include <unistd.h>
 
 using namespace std;
 using namespace boost;
@@ -20,6 +21,42 @@ RoboBT::RoboBT(bool predefined)
 RoboBT::~RoboBT()
 {
 	close(sock);
+}
+
+void RoboBT::move(int speed) {
+	string cmd_start;
+
+	if(speed > 0)
+		cmd_start = "M_LR+999+999\r";
+	else if(speed < 0)
+		cmd_start = "M_LR-999-999\r";
+	else
+		cmd_start = "M_LR+000+000\r";
+
+	send(cmd_start);
+}
+
+void RoboBT::rotate(int degrees) {
+	string cmd_start;
+
+	if(degrees > 0)
+		cmd_start = "M_LR-999+999\r";
+	else if(degrees < 0)
+		cmd_start = "M_LR-999+999\r";
+	else
+		cmd_start = "M_LR+000+000\r";
+
+	send(cmd_start);
+}
+
+void RoboBT::send(string &command) {
+	const char *buffer = command.c_str();
+	unsigned int n_write = 0;
+
+	while(n_write != strlen(buffer))
+	{
+		n_write += write(sock, buffer + n_write, strlen(buffer));
+	}
 }
 
 bool RoboBT::readData()
@@ -60,7 +97,7 @@ bool RoboBT::pollUpdateSensors()
 				len = strtol(cmd[1].c_str(), NULL, 10);
 
 				if(sensMan)
-				sensMan->registerMeasurement(cmd[0], len);
+					sensMan->registerMeasurement(cmd[0], len);
 			}
 
 		}
