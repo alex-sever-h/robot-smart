@@ -12,6 +12,8 @@
 #include <boost/thread.hpp>
 #include "RoboBT.h"
 #include "robotModel.hpp"
+#include "AStarPathfinder.hpp"
+#include "Location.hpp"
 
 using namespace boost;
 
@@ -25,26 +27,33 @@ typedef enum {
 
 class RobotModel;
 class RoboBT;
+class PathNode;
 
 class RobotMovementEngine{
 	RobotModel *physicalRobot;
 	RoboBT     *robotInterface;
 
+	Location   movementInitialLocation;
+
 	thread	   *stopThread;
 	thread	   *updaterThread;
 
+	thread		*pathFollowerThread;
+
 	volatile tyRobotState      robotMovementState;
-	posix_time::ptime movementStartTime;
-	posix_time::ptime movementLastUpdateTime;
+	posix_time::ptime 			movementStartTimeStamp;
+	posix_time::ptime 			movementLastUpdateTime;
 
 	int32_t		  movementDuration;
 
-private:
-	int moveToMilisecs(int distance);
+	PathNode *pathRemaining;
+
+	int moveToMilisecs(float distance);
 	int rotateToMilisecs(float theta);
 
-	int msToDistance(int ms);
+	float msToDistance(int ms);
 	float msToRotation(int ms);
+	void updatePhysicalRobot(int passedMs);
 
 public:
 	RobotMovementEngine(RobotModel *pR, RoboBT *btInt);
@@ -55,13 +64,18 @@ public:
 
 	int move(int distance);
 	int rotate(float theta);
-	void stop();
+	void stopMotion();
 
-	void movementEndThread();
-
+	void movementEndThread(int msRemaining);
 	void positionUpdater();
 
-	void updatePhysicalRobot(int distance, float thetaDeviance);
+	void updatePhysicalRobot(float distance, float thetaDeviance);
+	void updatePhysicalRobot(Location oldLocation, float distance, float thetaDeviance);
+
+	void followPath(PathNode *path);
+
+	void pathFollowerMethod();
+	void interruptPathFollowing();
 
 };
 

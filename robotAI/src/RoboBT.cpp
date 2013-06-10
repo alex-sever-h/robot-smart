@@ -14,6 +14,9 @@ RoboBT::RoboBT(bool predefined)
 	sock = 0;
 	connected = false;
 
+	sensorPollerThread = NULL;
+	sensMan = NULL;
+
 	if(predefined)
 		strcpy(address, "00:12:6F:27:EF:A8");
 }
@@ -40,9 +43,9 @@ void RoboBT::rotate(int degrees) {
 	string cmd_start;
 
 	if(degrees > 0)
-		cmd_start = "M_LR-999+999\r";
+		cmd_start = "M_LR-420+420\r";
 	else if(degrees < 0)
-		cmd_start = "M_LR-999+999\r";
+		cmd_start = "M_LR+420-420\r";
 	else
 		cmd_start = "M_LR+000+000\r";
 
@@ -57,6 +60,13 @@ void RoboBT::send(string &command) {
 	{
 		n_write += write(sock, buffer + n_write, strlen(buffer));
 	}
+
+	cout << "****" << command << "****" << endl;
+}
+
+void RoboBT::startSensorPoller()
+{
+	sensorPollerThread = new thread(&RoboBT::pollUpdateSensors, this);
 }
 
 bool RoboBT::readData()
@@ -77,15 +87,17 @@ bool RoboBT::readData()
 		return false;
 }
 
-bool RoboBT::pollUpdateSensors()
+void RoboBT::pollUpdateSensors()
 {
 	BtCmd btcmd;
 	vector <string> fields;
 	vector <string> cmd;
 	size_t i;
 
-	if(readData())
+	while(1)
 	{
+		readData();
+
 		split( fields, recvBuffer, is_any_of( "\n" ), token_compress_on );
 
 		for(i = 0; i < fields.size()-1; ++i)
@@ -102,10 +114,8 @@ bool RoboBT::pollUpdateSensors()
 
 		}
 		recvBuffer = fields[i];
-		return true;
 	}
-	else
-		return false;
+
 }
 
 int RoboBT::searchRobot()

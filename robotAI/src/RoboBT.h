@@ -21,8 +21,10 @@
 #include <sstream>
 #include <iostream>
 #include "sensorManagement.h"
+#include <boost/thread.hpp>
 
 using namespace std;
+using namespace boost;
 
 class SensorManager;
 
@@ -41,14 +43,20 @@ class RoboBT{
 
 	SensorManager *sensMan;
 
+	thread *sensorPollerThread;
+
+	void  pollUpdateSensors();
+
 public:
 	RoboBT(bool predefined);
 	virtual ~RoboBT();
 
 	int   searchRobot();
 	int   connectRobot();
-	bool  pollUpdateSensors();
+
 	void  setSensMan(SensorManager *sMan){this->sensMan = sMan;}
+
+	void startSensorPoller();
 
 	void  move(int distance);
 	void  rotate(int degrees);

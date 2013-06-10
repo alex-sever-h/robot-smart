@@ -8,29 +8,36 @@
 #include "RobotLocalizationParticle.hpp"
 
 
-RobotLocalizationParticle::RobotLocalizationParticle(int x, int y, float theta) {
+RobotLocalizationParticle::RobotLocalizationParticle(int x, int y, float theta)
+{
 	this->x = x;
 	this->y = y;
 	this->theta = theta;
 }
 
-RobotLocalizationParticle::~RobotLocalizationParticle() {
+RobotLocalizationParticle::~RobotLocalizationParticle()
+{
+
 }
 
 
 
 
 
-RobotLocalizationManager::RobotLocalizationManager() {
+RobotLocalizationManager::RobotLocalizationManager()
+{
 	particles = new vector<RobotLocalizationParticle>;
 }
 
 
 
 
-RobotLocalizationManager::~RobotLocalizationManager() {
+RobotLocalizationManager::~RobotLocalizationManager()
+{
+
 }
 
-float RobotLocalizationParticle::senseWorld(MapDiscrete* world,
-		vector<tyPolygon*>* sensorAreas) {
+float RobotLocalizationParticle::senseWorld(MapParticle* world, vector<tyPolygon*>* sensorAreas)
+{
+
 }

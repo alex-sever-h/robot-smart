@@ -10,8 +10,23 @@
 
 class Location{
 public:
-	int x;
-	int y;
+	float x;
+	float y;
+	float theta;
+
+	Location()
+	{
+		this->x = 0;
+		this->y = 0;
+		this->theta = 0;
+	}
+
+	Location(float x, float y, float t)
+	{
+		this->x = x;
+		this->y = y;
+		this->theta = t;
+	}
 };
 
 

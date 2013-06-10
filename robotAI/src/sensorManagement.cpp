@@ -66,6 +66,8 @@ SensorManager::~SensorManager()
 
 void SensorManager::registerMeasurement(string id, int length)
 {
+	if(length > 30000)
+		length = 5000;
 	for(unsigned int i = 0; i < sensors.size(); ++i)
 		if(sensors.at(i).id == id)
 		{
@@ -76,6 +78,8 @@ void SensorManager::registerMeasurement(string id, int length)
 					sensors.at(i).offsetXmapMM,	sensors.at(i).offsetYmapMM, sensors.at(i).dist);
 
 			physicalRobot->updateWorld(sensors.at(i).polySafe, sensors.at(i).polyWall);
+
+			cout << id << "  " << length << endl;
 		}
 }
 
@@ -143,7 +147,7 @@ void SensorManager::updateSensorsOffset(int pxMM, int pyMM, float theta)
 
 			sensors.at(i).offsetXmapMM  = (float)pxMM + (float)sDist * cos(theta - sAtan);
 			sensors.at(i).offsetYmapMM  = (float)pyMM + (float)sDist * sin(theta - sAtan);
-			sensors.at(i).angleCenterRad = +theta - DEG_TO_RAD(10);
+			sensors.at(i).angleCenterRad = +theta - DEG_TO_RAD(7);
 		}
 		else if(sensors.at(i).id == "F_L")
 		{
@@ -153,7 +157,7 @@ void SensorManager::updateSensorsOffset(int pxMM, int pyMM, float theta)
 
 			sensors.at(i).offsetXmapMM = (float)pxMM + (float)sDist * cos(theta - sAtan);
 			sensors.at(i).offsetYmapMM = (float)pyMM + (float)sDist * sin(theta - sAtan);
-			sensors.at(i).angleCenterRad = +theta + DEG_TO_RAD(10);
+			sensors.at(i).angleCenterRad = +theta + DEG_TO_RAD(7);
 		}
 		else if(sensors.at(i).id == "R_R")
 		{
@@ -163,7 +167,7 @@ void SensorManager::updateSensorsOffset(int pxMM, int pyMM, float theta)
 
 			sensors.at(i).offsetXmapMM = (float)pxMM + (float)sDist * cos(theta - sAtan);
 			sensors.at(i).offsetYmapMM = (float)pyMM + (float)sDist * sin(theta - sAtan);
-			sensors.at(i).angleCenterRad = +theta - DEG_TO_RAD(170);
+			sensors.at(i).angleCenterRad = +theta - DEG_TO_RAD(173);
 		}
 		else if(sensors.at(i).id == "R_L")
 		{
@@ -173,7 +177,7 @@ void SensorManager::updateSensorsOffset(int pxMM, int pyMM, float theta)
 
 			sensors.at(i).offsetXmapMM = (float)pxMM + (float)sDist * cos(theta - sAtan);
 			sensors.at(i).offsetYmapMM = (float)pyMM + (float)sDist * sin(theta - sAtan);
-			sensors.at(i).angleCenterRad = +theta + DEG_TO_RAD(170);
+			sensors.at(i).angleCenterRad = +theta + DEG_TO_RAD(173);
 		}
 
 //		cout << sensors.at(i).id << sAtan << endl;

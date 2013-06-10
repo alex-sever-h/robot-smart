@@ -15,6 +15,7 @@
 #include "wx/glcanvas.h"
 #include "wx/timer.h"
 #include "sensorManagement.h"
+#include "AStarPathfinder.hpp"
 
 class RoboGLMap : public wxGLCanvas
 {
@@ -49,9 +50,11 @@ public:
 
 	void timerUpdate(wxTimerEvent & event);
 
+	void drawAllChildren(PathNode * node);
 	void drawSensors(void);
 	void drawMap(void);
 	void drawRobot(void);
+	void drawPath(void);
 
 	//void setSensMan(SensorManager *sensMan){this->sensMan = sensMan;}
 

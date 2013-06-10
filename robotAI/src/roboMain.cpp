@@ -9,6 +9,8 @@
 #include <boost/thread.hpp>
 #include "MapParticle.hpp"
 #include "robotModel.hpp"
+#include "AStarPathfinder.hpp"
+#include "Location.hpp"
 
 
 #define ENABLE_GUI
@@ -29,24 +31,41 @@ void smartTask()
 	physicalRobot.placeRobotInMap(&world);
 
 	robotBTinterface.connectRobot();
+	robotBTinterface.startSensorPoller();
+
+//	sleep(1);
+//
+//	physicalRobot.moveAtLocation(Location(3000, 00, 0));
+
+//	physicalRobot.rotate(DEG_TO_RAD(-360));
+//	sleep(3);
+//	cout << "ROBOT ORIENTATION: " << RAD_TO_DEG(physicalRobot.getOrientationRad()) << endl;
+//
+//	physicalRobot.rotate(DEG_TO_RAD(+63));
+//	sleep(3);
+//	cout << "ROBOT ORIENTATION: " << RAD_TO_DEG(physicalRobot.getOrientationRad()) << endl;
+
 
 	while(1)
 	{
-		robotBTinterface.pollUpdateSensors();
 
-
-//		if(flag)
+//		//		if(flag)
+//		//		{
+//		//			if( physicalRobot.move(500) )
+//		//				flag = !flag;
+//		//		}
+//		//		else
+//
+//
+//
+//		if( !flag )
 //		{
-//			if( physicalRobot.move(500) )
-//				flag = !flag;
+//
+//			flag = 1;
 //		}
-//		else
+//
 
 
-//		{
-//			if( physicalRobot.rotate(M_PI) )
-//				flag = !flag;
-//		}
 	}
 }
 
@@ -65,7 +84,7 @@ void gui_task()
 
 int main(int argc, char **argv)
 {
-	thread bt_thread(smartTask);
+//	thread bt_thread(smartTask);
 
 #ifdef ENABLE_GUI
 	thread gui_thread(gui_task);
@@ -73,7 +92,7 @@ int main(int argc, char **argv)
 	gui_thread.join();
 #else
 
-	bt_thread.join();
+//	bt_thread.join();
 #endif
 
 

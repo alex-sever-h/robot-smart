@@ -15,15 +15,19 @@
 #include "MapGeneric.hpp"
 #include "mapDiscrete.hpp"
 #include "MapParticle.hpp"
+#include "AStarPathfinder.hpp"
+#include "Location.hpp"
 
 class SensorManager;
 class RobotMovementEngine;
 class RoboBT;
+class AStarPathfinder;
+class PathNode;
 
 class RobotModel{
-	volatile int 	positionXmm;
-	volatile int 	positionYmm;
-	volatile float 	orientationRad;
+	volatile float		positionXmm;
+	volatile float		positionYmm;
+	volatile float		orientationRad;
 
 	int widthMM;
 	int lengthMM;
@@ -32,22 +36,29 @@ class RobotModel{
 
 	RoboBT              *roboBTinterface;
 	RobotMovementEngine *rME;
+	AStarPathfinder		*pathFinder;
 
 	tyPolygon           *robotPolygon;
 
 	MapParticle			*worldMap;
 
+	Location			target;
+
+
 public:
+	PathNode *path;
 	RobotModel(RoboBT *btInterface);
-	RobotModel(int x, int y, float theta, RoboBT *btInterface);
+	RobotModel(float x, float y, float theta, RoboBT *btInterface);
 	virtual ~RobotModel();
 
 	void placeRobotInMap(MapParticle *world);
 
-	void setSensorManager(SensorManager *sensorManager);
 
-	void setPosition(int xMM, int yMM, float thetaRad);
-	void getPosition(int *xMM, int *yMM, float *thetaRad);
+	void setPosition(float xMM,  float yMM,  float thetaRad);
+	void getPosition(float *xMM, float *yMM, float *thetaRad);
+
+	Location getPosition(void);
+	void setPosition(Location);
 
 	int  move(int distanceMM);
 	int  rotate(float thetaRad);
@@ -59,6 +70,37 @@ public:
 	vector<tyPolygon *> *getSensorWallAreas();
 
 	void updateWorld(tyPolygon * sensorArea, tyPolygon * wallPoly);
+
+	int getWidthMm() const { return widthMM; }
+	int getLengthMm() const { return lengthMM; }
+
+	void moveAtLocation(Location target);
+
+
+	Location getTarget() const
+	{
+		return target;
+	}
+
+	void setTarget(Location target)
+	{
+		this->target = target;
+	}
+
+	volatile float getOrientationRad() const
+	{
+		return orientationRad;
+	}
+
+	volatile float getPositionXmm() const
+	{
+		return positionXmm;
+	}
+
+	volatile float getPositionYmm() const
+	{
+		return positionYmm;
+	}
 };
 
 

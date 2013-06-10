@@ -18,18 +18,21 @@ RobotModel::RobotModel(RoboBT* btInterface)
 	lengthMM = 300;
 
 	roboBTinterface = btInterface;
-	rME = new RobotMovementEngine(this, btInterface);
+	rME           = new RobotMovementEngine(this, btInterface);
 	sensorManager = new SensorManager(this);
+	pathFinder    = new AStarPathfinder(this);
 
 	btInterface->setSensMan(sensorManager);
 
 	robotPolygon = NULL;
 	updateRobotPolygon();
 
+	path = NULL;
+
 	sensorManager->updateSensorsOffset(positionXmm, positionYmm, orientationRad);
 }
 
-RobotModel::RobotModel(int x, int y, float theta, RoboBT* btInterface){
+RobotModel::RobotModel(float x, float y, float theta, RoboBT* btInterface){
 	positionXmm = x;
 	positionYmm = y;
 	orientationRad = theta;
@@ -38,37 +41,38 @@ RobotModel::RobotModel(int x, int y, float theta, RoboBT* btInterface){
 	lengthMM = 300;
 
 	roboBTinterface = btInterface;
-	rME = new RobotMovementEngine(this, btInterface);
+	rME           = new RobotMovementEngine(this, btInterface);
 	sensorManager = new SensorManager(this);
+	pathFinder    = new AStarPathfinder(this);
 
 	btInterface->setSensMan(sensorManager);
 
 	robotPolygon = NULL;
 	updateRobotPolygon();
 
+	path = NULL;
+
 	sensorManager->updateSensorsOffset(positionXmm, positionYmm, orientationRad);
 }
 
 RobotModel::~RobotModel() {
-	rME->stop();
+	rME->stopMotion();
 	delete rME;
 
 	delete sensorManager;
 }
 
-void RobotModel::setPosition(int x, int y, float theta) {
+void RobotModel::setPosition(float x, float y, float theta) {
 	positionXmm = x;
 	positionYmm = y;
 	orientationRad = theta;
 
-//	cout << "robot pos set to: " << x << y << theta << endl;
-
+	//	cout << "robot pos set to: " << x << y << theta << endl;
 	updateRobotPolygon();
-
 	sensorManager->updateSensorsOffset(positionXmm, positionYmm, orientationRad);
 }
 
-void RobotModel::getPosition(int* x, int* y, float* theta) {
+void RobotModel::getPosition(float* x, float* y, float* theta) {
 	*x = positionXmm;
 	*y = positionYmm;
 	*theta = orientationRad;
@@ -80,10 +84,6 @@ int RobotModel::move(int distanceMM) {
 
 int RobotModel::rotate(float theta) {
 	return rME->rotate(theta);
-}
-
-void RobotModel::setSensorManager(SensorManager* sensorManager)  {
-	this->sensorManager = sensorManager;
 }
 
 
@@ -119,17 +119,33 @@ tyPolygon * RobotModel::getRobotPoly(){
 	return rPoly;
 }
 
-void RobotModel::placeRobotInMap(MapParticle* world) {
+void RobotModel::placeRobotInMap(MapParticle* world)
+{
 	this->worldMap = world;
+	this->pathFinder->setWorld(worldMap);
 }
+
+int countUP = 0;
 
 void RobotModel::updateWorld(tyPolygon * safeArea, tyPolygon * wallPoly)
 {
-//	thread *updateMapThread;
-//	updateMapThread = new thread(&MapDiscrete::updateMap, worldMap,
-//			new tyPolygon(*safeArea), new tyPolygon(*wallPoly));
+	//	thread *updateMapThread;
+	//	updateMapThread = new thread(&MapParticle::updateMap, worldMap,
+	//			new tyPolygon(*safeArea), new tyPolygon(*wallPoly));
 
 	worldMap->updateMap(safeArea, wallPoly);
+
+	if( pathFinder->checkPathForMapUpdates(path) == false )
+	{
+		rME->interruptPathFollowing();
+
+		delete path; path = NULL;
+		path = pathFinder->generateRawPath(LocationWWeight(target.x, target.y, 0));
+
+		rME->followPath(path);
+
+		cout << "detect collition ``````````````````````````\n";
+	}
 }
 
 vector<tyPolygon*>* RobotModel::getSensorSafeAreas() {
@@ -139,3 +155,38 @@ vector<tyPolygon*>* RobotModel::getSensorSafeAreas() {
 vector<tyPolygon*>* RobotModel::getSensorWallAreas() {
 	return sensorManager->getSensorWallAreas();
 }
+
+Location RobotModel::getPosition(void)
+{
+	return Location(positionXmm, positionYmm, orientationRad);
+}
+
+void RobotModel::setPosition(Location location)
+{
+	positionXmm = location.x;
+	positionYmm = location.y;
+	orientationRad = location.theta;
+
+	updateRobotPolygon();
+	sensorManager->updateSensorsOffset(positionXmm, positionYmm, orientationRad);
+}
+
+void RobotModel::moveAtLocation(Location target)
+{
+	rME->interruptPathFollowing();
+
+	this->setTarget(target);
+	path = pathFinder->generateRawPath(LocationWWeight(target.x, target.y, 0));
+
+	rME->followPath(path);
+}
+
+
+
+
+
+
+
+
+
+

@@ -14,6 +14,7 @@
 
 #include "MapGeneric.hpp"
 #include <vector>
+#include <list>
 
 using namespace std;
 using namespace boost;
@@ -25,7 +26,7 @@ typedef variate_generator<REngine,DistNormalFloat>  gaussGenerator;             
 
 
 class MapParticle : MapGeneric{
-	vector<LocationWWeight> *particleList;
+	list<LocationWWeight> *particleList;
 
 	REngine         rEngine;
 	DistNormalFloat *distribution;
@@ -43,7 +44,9 @@ public:
 	void fillWallArea(tyPolygon *wallArea);
 	void clearSafeArea(tyPolygon *wallArea);
 
-	vector<LocationWWeight>* getParticleList() const {
+	float computeCollisionFactor(tyPolygon *area);
+
+	list<LocationWWeight>* getParticleList() const {
 		return particleList;
 	}
 };

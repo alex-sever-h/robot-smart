@@ -6,6 +6,7 @@
  */
 
 #include <iostream>
+#include <list>
 #include "wx/wx.h"
 #include "wx/sizer.h"
 #include "wx/glcanvas.h"
@@ -13,6 +14,8 @@
 #include "roboGUI.h"
 #include "sensorManagement.h"
 #include "mapDiscrete.hpp"
+#include "MapParticle.hpp"
+#include "Location.hpp"
 //
 //// include OpenGL
 //#ifdef __WXMAC__
@@ -76,18 +79,53 @@ END_EVENT_TABLE()
 
 
 // some useful events to use
-void RoboGLMap::mouseMoved(wxMouseEvent& event) {}
-void RoboGLMap::mouseDown(wxMouseEvent& event) {}
-void RoboGLMap::mouseWheelMoved(wxMouseEvent& event) {}
-void RoboGLMap::mouseReleased(wxMouseEvent& event) {}
-void RoboGLMap::rightClick(wxMouseEvent& event) {}
-void RoboGLMap::mouseLeftWindow(wxMouseEvent& event) {}
-void RoboGLMap::keyReleased(wxKeyEvent& event) {}
+void RoboGLMap::mouseMoved(wxMouseEvent& event)
+{
+
+}
+
+void RoboGLMap::mouseDown(wxMouseEvent& event)
+{
+	cout << "clicked at: " << event.m_x << " x " << event.m_y << endl;
+
+	Location newTarget;
+	newTarget.x = ((float)event.m_x - getWidth()/2)*10;
+	newTarget.y = (getHeight()/2 - (float)event.m_y)*10;
+
+	cout << "target at: " << newTarget.x << " x " << newTarget.y << endl;
+
+	physicalRobot.moveAtLocation(newTarget);
+}
+
+void RoboGLMap::mouseWheelMoved(wxMouseEvent& event)
+{
+
+}
+
+void RoboGLMap::mouseReleased(wxMouseEvent& event)
+{
+
+}
+
+void RoboGLMap::rightClick(wxMouseEvent& event)
+{
+
+}
+
+void RoboGLMap::mouseLeftWindow(wxMouseEvent& event)
+{
+
+}
+
+void RoboGLMap::keyReleased(wxKeyEvent& event)
+{
+
+}
 
 
 RoboGLMap::RoboGLMap(wxFrame* parent, int* args) :
-																																					wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE),
-																																					m_timer(this, UPDATE_TIMER_ID)
+	wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE),
+	m_timer(this, UPDATE_TIMER_ID)
 {
 	m_context = new wxGLContext(this);
 
@@ -176,8 +214,8 @@ unsigned int RoboGLMap::getHeight()
 void RoboGLMap::drawRobot(void) {
 	tyPolygon * robopoly = physicalRobot.getRobotPoly();
 
-	glColor4f(1, 0, 1, 1);
-	glBegin(GL_POLYGON);//since the arc is not a closed curve, this is a strip now
+	glColor4f(0, 0.58, 0.60, 1);
+	glBegin(GL_POLYGON);
 	for(unsigned int si = 0; si < robopoly->size(); ++si)
 	{
 		glVertex2f(robopoly->at(si).x/10 + getWidth()/2, getHeight()/2 - robopoly->at(si).y/10);
@@ -213,7 +251,7 @@ void RoboGLMap::drawSensors(void)
 		if(poly)
 		{
 			glColor4f(1, 0, 0, 1);
-			glBegin(GL_LINE_LOOP);//since the arc is not a closed curve, this is a strip now
+			glBegin(GL_LINE);//since the arc is not a closed curve, this is a strip now
 			for(unsigned int i = 0; i < poly->size(); ++i)
 			{
 				glVertex2f(poly->at(i).x/10 + getWidth()/2, getHeight()/2 - poly->at(i).y/10);
@@ -228,22 +266,62 @@ void RoboGLMap::drawSensors(void)
 
 void RoboGLMap::drawMap(void)
 {
-	vector<LocationWWeight>* mapParticles = world.getParticleList();
+	list<LocationWWeight>* mapParticles = world.getParticleList();
 	int screenX;
 	int screenY;
 
 	glBegin(GL_POINTS);
-	for(vector<LocationWWeight>::iterator it = mapParticles->begin(); it < mapParticles->end(); ++it)
+	for(list<LocationWWeight>::iterator it = mapParticles->begin(); it != mapParticles->end(); ++it)
 	{
-
-		screenX = it->x/10 - getWidth()/2;
+		screenX = getWidth()/2 + it->x/10;
 		screenY = getHeight()/2 - it->y/10;
-
-		cout << screenX << " x " << screenY << endl;
 
 		glColor4f(1, 0, 0, it->weight);
 		glVertex2f(screenX, screenY);
 	}
+	glEnd();
+}
+
+void RoboGLMap::drawAllChildren(PathNode * node)
+{
+	glColor4f(1, 1, .0, .5);
+	glBegin(GL_LINES);
+	for(list<PathNode *>::iterator it = node->children.begin(); it != node->children.end(); ++it)
+	{
+		glVertex2f(getWidth()/2 + node->x/10, getHeight()/2 - node->y/10);
+		glVertex2f(getWidth()/2 + (*it)->x/10, getHeight()/2 - (*it)->y/10);
+		//		cout << node->x << " x " << node->y << " --> " << (*it)->x << " x " <<  (*it)->y << " $ " << (*it)->cost << " + " << (*it)->heuristic << endl ;
+	}
+	glEnd();
+
+	//	cout << "......................NEXT...................................................................\n";
+
+	for(list<PathNode *>::iterator it = node->children.begin(); it != node->children.end(); ++it)
+	{
+		drawAllChildren(*it);
+	}
+}
+
+void RoboGLMap::drawPath(void)
+{
+	if(physicalRobot.path)
+	{
+		drawAllChildren(physicalRobot.path);
+	}
+
+	glColor4f(0, 1, 0, 1);
+	glBegin(GL_LINES);
+
+	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/10-5,
+				getHeight()/2 - physicalRobot.getTarget().y/10-5);
+	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/10+5,
+				getHeight()/2 - physicalRobot.getTarget().y/10+5);
+
+	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/10+5,
+				getHeight()/2 - physicalRobot.getTarget().y/10-5);
+	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/10-5,
+				getHeight()/2 - physicalRobot.getTarget().y/10+5);
+
 	glEnd();
 }
 
@@ -267,6 +345,7 @@ void RoboGLMap::render( wxPaintEvent& evt )
 	drawRobot();
 	drawSensors();
 	drawMap();
+	drawPath();
 
 
 	glFlush();

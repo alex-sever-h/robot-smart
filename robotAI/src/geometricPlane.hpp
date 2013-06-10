@@ -50,4 +50,7 @@ public:
 bool insidePolygon3D(const LocationWWeight &q, tyPolygon &pPolygon);
 bool insidePolygon2D(const LocationWWeight &q, tyPolygon &pPolygon);
 
+float euclidDistance(LocationWWeight &a, LocationWWeight &b);
+float euclidDistance(float x0, float y0, float x1, float y1);
+
 #endif /* GEOMETRICPLANE_HPP_ */

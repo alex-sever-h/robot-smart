@@ -9,6 +9,7 @@
 #define ROBOTLOCALIZATIONPARTICLE_HPP_
 
 #include <vector>
+#include "MapParticle.hpp"
 
 using namespace std;
 
@@ -21,7 +22,7 @@ public:
 	RobotLocalizationParticle(int x, int y, float theta);
 	virtual ~RobotLocalizationParticle();
 
-	float senseWorld(MapDiscrete *world, vector<tyPolygon *> *sensorAreas);
+	float senseWorld(MapParticle *world, vector<tyPolygon *> *sensorAreas);
 };
 
 
