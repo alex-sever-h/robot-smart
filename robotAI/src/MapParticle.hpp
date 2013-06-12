@@ -13,6 +13,7 @@
 #include <boost/random/variate_generator.hpp>
 
 #include "MapGeneric.hpp"
+#include "sensorManagement.h"
 #include <vector>
 #include <list>
 
@@ -24,9 +25,11 @@ typedef mt19937                                     REngine;          // Mersenn
 typedef normal_distribution<float>                 DistNormalFloat;  // Normal Distribution
 typedef variate_generator<REngine,DistNormalFloat>  gaussGenerator;              // Variate generator
 
+class tySensor;
 
 class MapParticle : MapGeneric{
-	list<LocationWWeight> *particleList;
+	list<LocationWWeight> *safeParticleList;
+	list<LocationWWeight> *wallParticleList;
 
 	REngine         rEngine;
 	DistNormalFloat *distribution;
@@ -39,15 +42,24 @@ public:
 	MapParticle();
 	virtual ~MapParticle(){}
 
-	virtual void updateMap(tyPolygon * safeArea, tyPolygon * wallArea);
-
+	virtual void updateMap(tyPolygon *safeArea, tyPolygon *wallArea);
 	void fillWallArea(tyPolygon *wallArea);
 	void clearSafeArea(tyPolygon *wallArea);
 
+	virtual void updateMap(tySensor *sensor);
+	void fillWallArea(tySensor *sensor);
+	void fillSafeArea(tySensor *sensor);
+
 	float computeCollisionFactor(tyPolygon *area);
 
-	list<LocationWWeight>* getParticleList() const {
-		return particleList;
+	list<LocationWWeight>* getWallParticleList() const
+	{
+		return wallParticleList;
+	}
+
+	const list<LocationWWeight>* getSafeParticleList() const
+	{
+		return safeParticleList;
 	}
 };
 

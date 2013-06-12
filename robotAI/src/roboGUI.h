@@ -17,11 +17,19 @@
 #include "sensorManagement.h"
 #include "AStarPathfinder.hpp"
 
+
+class RoboControls: public wxPanel
+{
+public:
+	RoboControls(wxWindow *parent, const wxSize &size);
+};
+
+
 class RoboGLMap : public wxGLCanvas
 {
-    wxGLContext*	m_context;
-    wxTimer         m_timer;
-    //SensorManager  *sensMan;
+	wxGLContext*	m_context;
+	wxTimer         m_timer;
+	//SensorManager  *sensMan;
 
 public:
 	RoboGLMap(wxFrame* parent, int* args);

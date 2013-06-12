@@ -18,11 +18,13 @@
 #include "AStarPathfinder.hpp"
 #include "Location.hpp"
 
+class tySensor;
 class SensorManager;
 class RobotMovementEngine;
 class RoboBT;
 class AStarPathfinder;
 class PathNode;
+class MapParticle;
 
 class RobotModel{
 	volatile float		positionXmm;
@@ -70,6 +72,7 @@ public:
 	vector<tyPolygon *> *getSensorWallAreas();
 
 	void updateWorld(tyPolygon * sensorArea, tyPolygon * wallPoly);
+	void updateWorld(tySensor *sensor);
 
 	int getWidthMm() const { return widthMM; }
 	int getLengthMm() const { return lengthMM; }

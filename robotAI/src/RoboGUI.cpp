@@ -11,6 +11,7 @@
 #include "wx/sizer.h"
 #include "wx/glcanvas.h"
 #include "wx/timer.h"
+#include "wx/spinctrl.h"
 #include "roboGUI.h"
 #include "sensorManagement.h"
 #include "mapDiscrete.hpp"
@@ -30,15 +31,21 @@
 
 #define UPDATE_TIMER_ID 2
 
+#define MAP_FACTOR 5
+
 extern RobotModel physicalRobot;
 extern MapParticle   world;
+
 
 class RoboGuiApp: public wxApp
 {
 	virtual bool OnInit();
 
-	wxFrame *frame;
-	RoboGLMap * glPane;
+	wxFrame *frameAbsolute;
+
+	RoboGLMap    *glRoboMap;
+	RoboControls *panelControls;
+
 public:
 };
 
@@ -46,20 +53,21 @@ public:
 bool RoboGuiApp::OnInit()
 {
 	wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
-	frame = new wxFrame((wxFrame *)NULL, -1,  wxT("RoboInterface"), wxPoint(50,50), wxSize(1700,1000));
+
+	frameAbsolute = new wxFrame((wxFrame *)NULL, -1,  wxT("RoboInterface"), wxPoint(0,0), wxSize(1124,768));
 
 	int args[] = {WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, 0};
+	glRoboMap = new RoboGLMap( (wxFrame*) frameAbsolute, args);
+	sizer->Add(glRoboMap, 10, wxEXPAND);
 
-	glPane = new RoboGLMap( (wxFrame*) frame, args);
-	sizer->Add(glPane, 1, wxEXPAND);
+	panelControls = new RoboControls(frameAbsolute, wxSize(0, 768));
+	sizer->Add(panelControls, 1, wxEXPAND | wxDOWN);
 
-	frame->SetSizer(sizer);
-	frame->SetAutoLayout(true);
+	frameAbsolute->SetSizer(sizer);
+	frameAbsolute->SetAutoLayout(true);
+	frameAbsolute->Show();
 
-	frame->Show();
-
-	printf("guiinit\n");
-
+	cout <<"GUI initialized" << endl;
 	return true;
 }
 
@@ -89,8 +97,8 @@ void RoboGLMap::mouseDown(wxMouseEvent& event)
 	cout << "clicked at: " << event.m_x << " x " << event.m_y << endl;
 
 	Location newTarget;
-	newTarget.x = ((float)event.m_x - getWidth()/2)*10;
-	newTarget.y = (getHeight()/2 - (float)event.m_y)*10;
+	newTarget.x = ((float)event.m_x - getWidth()/2)*MAP_FACTOR;
+	newTarget.y = (getHeight()/2 - (float)event.m_y)*MAP_FACTOR;
 
 	cout << "target at: " << newTarget.x << " x " << newTarget.y << endl;
 
@@ -124,8 +132,8 @@ void RoboGLMap::keyReleased(wxKeyEvent& event)
 
 
 RoboGLMap::RoboGLMap(wxFrame* parent, int* args) :
-	wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE),
-	m_timer(this, UPDATE_TIMER_ID)
+											wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE),
+											m_timer(this, UPDATE_TIMER_ID)
 {
 	m_context = new wxGLContext(this);
 
@@ -214,11 +222,11 @@ unsigned int RoboGLMap::getHeight()
 void RoboGLMap::drawRobot(void) {
 	tyPolygon * robopoly = physicalRobot.getRobotPoly();
 
-	glColor4f(0, 0.58, 0.60, 1);
+	glColor4f(1, 0., 0.5, .5);
 	glBegin(GL_POLYGON);
 	for(unsigned int si = 0; si < robopoly->size(); ++si)
 	{
-		glVertex2f(robopoly->at(si).x/10 + getWidth()/2, getHeight()/2 - robopoly->at(si).y/10);
+		glVertex2f(robopoly->at(si).x/MAP_FACTOR + getWidth()/2, getHeight()/2 - robopoly->at(si).y/MAP_FACTOR);
 	}
 	glEnd();
 
@@ -240,7 +248,7 @@ void RoboGLMap::drawSensors(void)
 			glBegin(GL_POLYGON);//since the arc is not a closed curve, this is a strip now
 			for(unsigned int i = 0; i < poly->size(); ++i)
 			{
-				glVertex2f(poly->at(i).x/10 + getWidth()/2, getHeight()/2 - poly->at(i).y/10);
+				glVertex2f(poly->at(i).x/MAP_FACTOR + getWidth()/2, getHeight()/2 - poly->at(i).y/MAP_FACTOR);
 			}
 			glEnd();
 		}
@@ -254,7 +262,7 @@ void RoboGLMap::drawSensors(void)
 			glBegin(GL_LINE);//since the arc is not a closed curve, this is a strip now
 			for(unsigned int i = 0; i < poly->size(); ++i)
 			{
-				glVertex2f(poly->at(i).x/10 + getWidth()/2, getHeight()/2 - poly->at(i).y/10);
+				glVertex2f(poly->at(i).x/MAP_FACTOR + getWidth()/2, getHeight()/2 - poly->at(i).y/MAP_FACTOR);
 			}
 			glEnd();
 		}
@@ -266,17 +274,28 @@ void RoboGLMap::drawSensors(void)
 
 void RoboGLMap::drawMap(void)
 {
-	list<LocationWWeight>* mapParticles = world.getParticleList();
-	int screenX;
-	int screenY;
+	const list<LocationWWeight>* mapParticles;
 
+	mapParticles = world.getSafeParticleList();
 	glBegin(GL_POINTS);
-	for(list<LocationWWeight>::iterator it = mapParticles->begin(); it != mapParticles->end(); ++it)
+	for(list<LocationWWeight>::const_iterator it = mapParticles->begin(); it != mapParticles->end(); ++it)
 	{
-		screenX = getWidth()/2 + it->x/10;
-		screenY = getHeight()/2 - it->y/10;
+		int screenX = getWidth()/2 + it->x/MAP_FACTOR;
+		int screenY = getHeight()/2 - it->y/MAP_FACTOR;
 
-		glColor4f(1, 0, 0, it->weight);
+		glColor4f(0, 1, 0, it->weight/40.0);
+		glVertex2f(screenX, screenY);
+	}
+	glEnd();
+
+	mapParticles = world.getWallParticleList();
+	glBegin(GL_POINTS);
+	for(list<LocationWWeight>::const_iterator it = mapParticles->begin(); it != mapParticles->end(); ++it)
+	{
+		int screenX = getWidth()/2 + it->x/MAP_FACTOR;
+		int screenY = getHeight()/2 - it->y/MAP_FACTOR;
+
+		glColor4f(1, 0, 0, it->weight/40.0);
 		glVertex2f(screenX, screenY);
 	}
 	glEnd();
@@ -288,8 +307,8 @@ void RoboGLMap::drawAllChildren(PathNode * node)
 	glBegin(GL_LINES);
 	for(list<PathNode *>::iterator it = node->children.begin(); it != node->children.end(); ++it)
 	{
-		glVertex2f(getWidth()/2 + node->x/10, getHeight()/2 - node->y/10);
-		glVertex2f(getWidth()/2 + (*it)->x/10, getHeight()/2 - (*it)->y/10);
+		glVertex2f(getWidth()/2 + node->x/MAP_FACTOR, getHeight()/2 - node->y/MAP_FACTOR);
+		glVertex2f(getWidth()/2 + (*it)->x/MAP_FACTOR, getHeight()/2 - (*it)->y/MAP_FACTOR);
 		//		cout << node->x << " x " << node->y << " --> " << (*it)->x << " x " <<  (*it)->y << " $ " << (*it)->cost << " + " << (*it)->heuristic << endl ;
 	}
 	glEnd();
@@ -312,15 +331,15 @@ void RoboGLMap::drawPath(void)
 	glColor4f(0, 1, 0, 1);
 	glBegin(GL_LINES);
 
-	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/10-5,
-				getHeight()/2 - physicalRobot.getTarget().y/10-5);
-	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/10+5,
-				getHeight()/2 - physicalRobot.getTarget().y/10+5);
+	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/MAP_FACTOR-5,
+			getHeight()/2 - physicalRobot.getTarget().y/MAP_FACTOR-5);
+	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/MAP_FACTOR+5,
+			getHeight()/2 - physicalRobot.getTarget().y/MAP_FACTOR+5);
 
-	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/10+5,
-				getHeight()/2 - physicalRobot.getTarget().y/10-5);
-	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/10-5,
-				getHeight()/2 - physicalRobot.getTarget().y/10+5);
+	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/MAP_FACTOR+5,
+			getHeight()/2 - physicalRobot.getTarget().y/MAP_FACTOR-5);
+	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/MAP_FACTOR-5,
+			getHeight()/2 - physicalRobot.getTarget().y/MAP_FACTOR+5);
 
 	glEnd();
 }
@@ -342,9 +361,10 @@ void RoboGLMap::render( wxPaintEvent& evt )
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Black Background
 
-	drawRobot();
-	drawSensors();
+
 	drawMap();
+	drawSensors();
+	drawRobot();
 	drawPath();
 
 
@@ -371,7 +391,23 @@ wxAppConsole *wxCreateApp()
 wxAppInitializer
 wxTheAppInitializer((wxAppInitializerFunction) wxCreateApp);
 
-RoboGuiApp& wxGetApp() { return *static_cast<RoboGuiApp*>(wxApp::GetInstance()); }
+RoboGuiApp& wxGetApp()
+{
+	return *static_cast<RoboGuiApp*>(wxApp::GetInstance());
+}
+
+
+
+RoboControls::RoboControls(wxWindow* parent, const wxSize& size) : wxPanel( parent , wxID_ANY, wxPoint(0, 0), size)
+{
+	this->SetBackgroundColour( wxColour(0x00FF00FF) );
+	wxButton *helloButton = new wxButton(this, wxID_ANY, wxT("Hello"), wxPoint(0,0), wxSize(60,60));
+	wxButton *quitButton = new wxButton(this, wxID_ANY, wxT("Quit"), wxPoint(0,50), wxSize(60,60));
+
+	//wxSpinCtrl *moveCalibrationCtrl = new wxSpinCtrl(this, wxID_ANY, );
+}
+
+
 
 #endif
 

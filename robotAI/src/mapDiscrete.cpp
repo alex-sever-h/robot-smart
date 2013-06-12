@@ -71,14 +71,14 @@ void MapDiscrete::fillMapPolygon(tyPolygon * poly, float factor)
 	convertRealToMap(poly->at(0).x, poly->at(0).y, &minX, &minY);
 	convertRealToMap(poly->at(0).x, poly->at(0).y, &maxX, &maxY);
 
-	cout < "poly: \n";
+//	cout < "poly: \n";
 	for (tyPolygon::iterator it=poly->begin(); it!=poly->end(); ++it)
 	{
 		int mapX, mapY;
 		convertRealToMap((int)(it->x), (int)(it->y), &mapX, &mapY);
 		mapPoly->push_back(LocationWWeight(mapX, mapY, 0));
 
-		cout << (int)(it->x) << " x " << (int)(it->y) << "  ------>  " << mapX << " x " << mapY << endl;
+//		cout << (int)(it->x) << " x " << (int)(it->y) << "  ------>  " << mapX << " x " << mapY << endl;
 
 		if(mapX < minX) minX = mapX;
 		if(mapX > maxX) maxX = mapX;
@@ -86,7 +86,7 @@ void MapDiscrete::fillMapPolygon(tyPolygon * poly, float factor)
 		if(mapY < minY) minY = mapY;
 		if(mapY > maxY) maxY = mapY;
 	}
-	cout << "endpoly: \n";
+//	cout << "endpoly: \n";
 
 	if(maxY >= (int)mapSizeY) maxY = mapSizeY-1;
 	if(maxX >= (int)mapSizeX) maxX = mapSizeX-1;

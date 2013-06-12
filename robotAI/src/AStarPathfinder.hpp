@@ -16,6 +16,7 @@
 using namespace std;
 
 class RobotModel;
+class MapParticle;
 
 class PathNode {
 public:
@@ -49,7 +50,7 @@ class AStarPathfinder{
 
 private:
 	tyPolygon	*generatePathArea(LocationWWeight start, LocationWWeight end, float theta);
-	tyPolygon	*generatePathArea(float xStart, float yStart, float xEnd, float yEnd, float theta);
+
 	PathNode	*getMinCostLeafNode(PathNode *origin);
 	void 		expandPathNode(const LocationWWeight& target, PathNode* current);
 	bool 		arrivedAtGoal(const LocationWWeight& target, PathNode* currentNode);
@@ -61,6 +62,8 @@ private:
 public:
 	AStarPathfinder(RobotModel *physicalRobot);
 	virtual ~AStarPathfinder();
+
+	tyPolygon	*generatePathArea(float xStart, float yStart, float xEnd, float yEnd, float theta);
 
 	PathNode *generateRawPath(LocationWWeight target);
 	bool     checkPathForMapUpdates(PathNode * path);

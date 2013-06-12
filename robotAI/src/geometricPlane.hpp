@@ -12,6 +12,9 @@
 #include "locationWWeight.hpp"
 #include <vector>
 
+#define DEG_TO_RAD(x)  (M_PI*((float)(x)/180))
+#define RAD_TO_DEG(x)  (((float)(x)*180)/M_PI)
+
 using namespace std;
 
 typedef vector<LocationWWeight> tyPolygon;

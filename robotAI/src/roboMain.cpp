@@ -33,38 +33,20 @@ void smartTask()
 	robotBTinterface.connectRobot();
 	robotBTinterface.startSensorPoller();
 
-//	sleep(1);
-//
-//	physicalRobot.moveAtLocation(Location(3000, 00, 0));
 
-//	physicalRobot.rotate(DEG_TO_RAD(-360));
-//	sleep(3);
-//	cout << "ROBOT ORIENTATION: " << RAD_TO_DEG(physicalRobot.getOrientationRad()) << endl;
+//	sleep(1);
+//	physicalRobot.move(1000);
+//	sleep(1);
+//	physicalRobot.rotate(DEG_TO_RAD(360));
 //
-//	physicalRobot.rotate(DEG_TO_RAD(+63));
-//	sleep(3);
-//	cout << "ROBOT ORIENTATION: " << RAD_TO_DEG(physicalRobot.getOrientationRad()) << endl;
+//	sleep(1);
+//	physicalRobot.move(1050);
+//	sleep(5);
+//	physicalRobot.rotate(DEG_TO_RAD(180));
 
 
 	while(1)
 	{
-
-//		//		if(flag)
-//		//		{
-//		//			if( physicalRobot.move(500) )
-//		//				flag = !flag;
-//		//		}
-//		//		else
-//
-//
-//
-//		if( !flag )
-//		{
-//
-//			flag = 1;
-//		}
-//
-
 
 	}
 }
@@ -84,7 +66,7 @@ void gui_task()
 
 int main(int argc, char **argv)
 {
-//	thread bt_thread(smartTask);
+	thread bt_thread(smartTask);
 
 #ifdef ENABLE_GUI
 	thread gui_thread(gui_task);
@@ -92,7 +74,7 @@ int main(int argc, char **argv)
 	gui_thread.join();
 #else
 
-//	bt_thread.join();
+	bt_thread.join();
 #endif
 
 

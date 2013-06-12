@@ -15,48 +15,70 @@
 #include "geometricPlane.hpp"
 #include "robotModel.hpp"
 
-#define DEG_TO_RAD(x)  (M_PI*((float)(x)/180))
-#define RAD_TO_DEG(x)  (((float)(x)*180)/M_PI)
+#define SENSOR_MAX_DISTANCE_MM 4000
 
 using namespace std;
 
-typedef struct {
+class tySensor {
+public:
 	string id;
 
-	float angleCenterRad;
 	float angleSpan;
-	int offsetXmapMM;
-	int offsetYmapMM;
-	int offsetXrobot;
-	int offsetYrobot;
-	int dist;
 
+	float angleCenterOffset;
+	int   offsetXrobot;
+	int   offsetYrobot;
+
+	float angleCenterRadMap;
+	float   offsetXmapMM;
+	float   offsetYmapMM;
+
+	unsigned int distanceMM;
 	tyPolygon *polySafe;
 	tyPolygon *polyWall;
-} tySensor;
+
+	tySensor(string id, int offsetRobotXmm, int offsetRobotYmm, int angleCenter)
+	{
+		this->id = id;
+		this->angleCenterRadMap = DEG_TO_RAD( angleCenter );
+		this->angleCenterOffset = DEG_TO_RAD( angleCenter );
+		this->angleSpan         = DEG_TO_RAD(15);
+		this->offsetXrobot = offsetRobotXmm;
+		this->offsetYrobot = offsetRobotYmm;
+		this->offsetXmapMM = (float)offsetRobotXmm;
+		this->offsetYmapMM = (float)offsetRobotXmm;
+		this->distanceMM = 0;
+		this->polySafe = NULL;
+		this->polyWall = NULL;
+	}
+
+};
 
 void init_sensors();
 
 class RobotModel;
 
 class SensorManager {
-	vector<tySensor> sensors;
+	vector<tySensor*> sensors;
 
 	RobotModel      *physicalRobot;
+
+	void initSensors();
 
 public:
 	SensorManager(RobotModel *pR);
 	virtual ~SensorManager();
 
-	void registerMeasurement(string id, int length);
+	void registerMeasurement(string id, unsigned int length);
 
 	void calculateSensorPolygons(
+			bool sensorAtMax,
 			vector<LocationWWeight>	** safePolygon,
 			vector<LocationWWeight>	** linePolygon,
 			float angleCenter, float angleSpan, int cx, int cy, float dist);
 
 	void setSensorOffset(string sensor_id, int offsetx, int offsety);
-	void updateSensorsOffset(int px, int py, float theta);
+	void updateSensorsOffset(float px, float py, float theta);
 
 	vector<tyPolygon *> *getSensorSafeAreas();
 	vector<tyPolygon *> *getSensorWallAreas();

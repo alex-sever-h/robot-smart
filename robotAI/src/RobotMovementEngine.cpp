@@ -9,12 +9,12 @@
 #include "RobotMovementEngine.hpp"
 #include <iostream>
 
+#define DEFAULT_ROT_TIMING 1250.0
+#define DEFAULT_MOV_TIMING 1950.0
+
 using namespace std;
 
-#define MOVEMENT_RESOLUTION_MS 50
-
-#define TIMING_ROTATION   2200.0
-#define TIMING_MOVEMENT   1800.0
+#define MOVEMENT_RESOLUTION_MS 5
 
 RobotMovementEngine::RobotMovementEngine(RobotModel* pR, RoboBT* btInt)
 {
@@ -28,6 +28,9 @@ RobotMovementEngine::RobotMovementEngine(RobotModel* pR, RoboBT* btInt)
 
 	this->pathFollowerThread = NULL;
 	this->pathRemaining = NULL;
+
+	this->rotationTiming = DEFAULT_ROT_TIMING;
+	this->movementTiming = DEFAULT_MOV_TIMING;
 
 	this->robotMovementState = STANDBY;
 }
@@ -44,7 +47,7 @@ void RobotMovementEngine::setRobotInterface(RoboBT* robotInterface)
 
 int RobotMovementEngine::move(int distanceMM)
 {
-	cout << " BTMOVE: " << distanceMM << endl;
+	//	cout << " BTMOVE: " << distanceMM << endl;
 	if (robotMovementState == STANDBY)
 	{
 		if (updaterThread)
@@ -58,7 +61,7 @@ int RobotMovementEngine::move(int distanceMM)
 			robotMovementState = MOVING_FORWARD;
 			stopThread = new thread(&RobotMovementEngine::movementEndThread,
 					this, movementDuration);
-			cout << "startUpdater  ==== " << updaterThread << endl;
+			//			cout << "startUpdater  ==== " << updaterThread << endl;
 		}
 		else if (distanceMM < 0)
 		{
@@ -66,7 +69,7 @@ int RobotMovementEngine::move(int distanceMM)
 			robotMovementState = MOVING_BACKWARD;
 			stopThread = new thread(&RobotMovementEngine::movementEndThread,
 					this, movementDuration);
-			cout << "startUpdater  ==== " << updaterThread << endl;
+			//			cout << "startUpdater  ==== " << updaterThread << endl;
 		}
 		else
 		{
@@ -95,7 +98,7 @@ int RobotMovementEngine::rotate(float theta)
 			robotMovementState = ROTATING_LEFT;
 			stopThread = new thread(&RobotMovementEngine::movementEndThread,
 					this, movementDuration);
-			cout << "startUpdater rl  ==== " << updaterThread << endl;
+			//			cout << "startUpdater rl  ==== " << updaterThread << endl;
 		}
 		else if (theta < 0)
 		{
@@ -103,7 +106,7 @@ int RobotMovementEngine::rotate(float theta)
 			robotMovementState = ROTATING_RIGHT;
 			stopThread = new thread(&RobotMovementEngine::movementEndThread,
 					this, movementDuration);
-			cout << "startUpdater rr  ==== " << updaterThread << endl;
+			//			cout << "startUpdater rr  ==== " << updaterThread << endl;
 		}
 		else
 		{
@@ -122,7 +125,6 @@ int RobotMovementEngine::rotate(float theta)
 
 void RobotMovementEngine::stopMotion()
 {
-	cout << " BTSTOP !" << endl;
 	if(updaterThread)
 		updaterThread->interrupt();
 	if(stopThread)
@@ -162,7 +164,7 @@ void RobotMovementEngine::positionUpdater()
 		posix_time::time_duration msdiff =
 				posix_time::microsec_clock::universal_time() - movementStartTimeStamp;
 
-		cout << "------------ PERIODICAL UPDATE ---------------\n";
+		//		cout << "------------ PERIODICAL UPDATE ---------------\n";
 
 		updatePhysicalRobot(msdiff.total_milliseconds());
 	}
@@ -183,7 +185,7 @@ void RobotMovementEngine::movementEndThread(int totalMovementDuration)
 	//stop updater thread
 	updaterThread->interrupt();
 
-	cout << "------------ final UPDATE ---------------\n";
+	//	cout << "------------ final UPDATE ---------------\n";
 
 	//update with final precise position
 	updatePhysicalRobot(totalMovementDuration);
@@ -205,6 +207,8 @@ void RobotMovementEngine::updatePhysicalRobot(float distance, float thetaDevianc
 	y += sin(theta) * distance;
 	theta += thetaDeviance;
 
+	reduceRotation(&theta);
+
 	physicalRobot->setPosition(x, y, theta);
 }
 
@@ -214,28 +218,29 @@ void RobotMovementEngine::updatePhysicalRobot(Location loc, float distance, floa
 	loc.y     += sin(loc.theta) * distance;
 	loc.theta += thetaDeviance;
 
-	cout << loc.x << "x" << loc.y << "@" << loc.theta << endl;
+	reduceRotation(&loc.theta);
+	//	cout << loc.x << "x" << loc.y << "@" << loc.theta << endl;
 	physicalRobot->setPosition(loc);
 }
 
 int RobotMovementEngine::moveToMilisecs(float distanceCm)
 {
-	return fabs((float) distanceCm) * TIMING_MOVEMENT / 1000;
+	return fabs((float) distanceCm) * movementTiming / 1000;
 }
 
 int RobotMovementEngine::rotateToMilisecs(float theta)
 {
-	return fabs(theta) * TIMING_ROTATION / M_PI;
+	return fabs(theta) * rotationTiming / M_PI;
 }
 
 float RobotMovementEngine::msToDistance(int ms)
 {
-	return ms * 1000 / TIMING_MOVEMENT;
+	return ms * 1000 / movementTiming;
 }
 
 float RobotMovementEngine::msToRotation(int ms)
 {
-	return (float) ms * M_PI / TIMING_ROTATION;
+	return (float) ms * M_PI / rotationTiming;
 }
 
 
@@ -248,32 +253,42 @@ void RobotMovementEngine::pathFollowerMethod()
 			;
 
 		//get next robot movement if available
-		if (pathRemaining->children.size() != 0)
+		if (pathRemaining && pathRemaining->children.size() != 0)
 		{
 			PathNode *nextNode = *pathRemaining->children.begin();
 
-			cout << "rotate alpha =========== "
-					<< RAD_TO_DEG(nextNode->theta - physicalRobot->getOrientationRad())
-					<< endl;
-			rotate(nextNode->theta - physicalRobot->getOrientationRad());
+			float rotation;
+			float movement;
+
+			decideRotationMovement( pathRemaining, nextNode, &rotation, &movement);
+
+			cout << physicalRobot->getPositionXmm() << " x " << physicalRobot->getPositionYmm()
+									<< " @ " << RAD_TO_DEG(physicalRobot->getOrientationRad()) << endl;
+
+			//			cout << "rotate alpha =========== " << rotation	<< endl;
+			rotate(rotation);
 			if (stopThread)
 			{
-				cout << "waitUpdater  vvvv " << updaterThread << endl;
+				//				cout << "waitUpdater  vvvv " << updaterThread << endl;
 				stopThread->join();
-				cout << "waitUpdater  ^^^^ " << updaterThread << endl;
+				//				cout << "waitUpdater  ^^^^ " << updaterThread << endl;
 				stopThread = NULL;
 			}
 
-			move(
-					euclidDistance(nextNode->x, nextNode->y, pathRemaining->x,
-							pathRemaining->y));
+			cout << physicalRobot->getPositionXmm() << " x " << physicalRobot->getPositionYmm()
+												<< " @ " << RAD_TO_DEG(physicalRobot->getOrientationRad()) << endl;
+
+			move(movement);
 			if (stopThread)
 			{
-				cout << "waitUpdater  vvvv " << updaterThread << endl;
+				//				cout << "waitUpdater  vvvv " << updaterThread << endl;
 				stopThread->join();
-				cout << "waitUpdater  ^^^^ " << updaterThread << endl;
+				//				cout << "waitUpdater  ^^^^ " << updaterThread << endl;
 				stopThread = NULL;
 			}
+
+			cout << physicalRobot->getPositionXmm() << " x " << physicalRobot->getPositionYmm()
+												<< " @ " << RAD_TO_DEG(physicalRobot->getOrientationRad()) << endl;
 
 			//advance to next step
 			pathRemaining = nextNode;
@@ -298,6 +313,48 @@ void RobotMovementEngine::followPath(PathNode* path)
 	this->pathFollowerThread = new thread( &RobotMovementEngine::pathFollowerMethod, this);
 }
 
+void RobotMovementEngine::reduceRotation(float* rotation)
+{
+	//reduce rotations to max a full circle around
+	while (*rotation > 2*M_PI)
+		*rotation -= 2 * M_PI;
+	while (*rotation < -2*M_PI)
+		*rotation += 2 * M_PI;
+}
+
+void RobotMovementEngine::decideRotationMovement(PathNode *origin,
+		PathNode *target, float *rotation, float *movement)
+{
+	//calculate raw commands
+	*rotation = target->theta - origin->theta;
+	*movement = euclidDistance(target->x, target->y, origin->x, origin->y);
+
+	cout << "FROM: " << RAD_TO_DEG(*rotation) << endl;
+
+	//reduce rotations to max a full circle around
+	reduceRotation(rotation);
+
+	//decide clockwise or counter-clockwise
+	if(*rotation > M_PI)
+		*rotation = -(2*M_PI - *rotation);
+	if(*rotation < -M_PI)
+		*rotation = 2*M_PI + *rotation;
+
+	cout << "to: " << RAD_TO_DEG(*rotation) << endl;
+	//
+	//	if(*rotation > M_PI/2)
+	//	{
+	//		*rotation = -(M_PI - *rotation);
+	//		*movement = -*movement;
+	//	}
+	//	if(*rotation < -M_PI/2)
+	//	{
+	//		*rotation = -(M_PI - *rotation);
+	//		*movement = -*movement;
+	//	}
+
+	cout << "TOOO: " << RAD_TO_DEG(*rotation) << endl;
+}
 
 void RobotMovementEngine::interruptPathFollowing()
 {

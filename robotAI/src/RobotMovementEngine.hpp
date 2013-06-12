@@ -33,6 +33,9 @@ class RobotMovementEngine{
 	RobotModel *physicalRobot;
 	RoboBT     *robotInterface;
 
+	float rotationTiming;
+	float movementTiming;
+
 	Location   movementInitialLocation;
 
 	thread	   *stopThread;
@@ -51,9 +54,12 @@ class RobotMovementEngine{
 	int moveToMilisecs(float distance);
 	int rotateToMilisecs(float theta);
 
+	void decideRotationMovement(PathNode *origin, PathNode *target, float *rotation, float *movement);
+
 	float msToDistance(int ms);
 	float msToRotation(int ms);
 	void updatePhysicalRobot(int passedMs);
+	void reduceRotation(float* rotation);
 
 public:
 	RobotMovementEngine(RobotModel *pR, RoboBT *btInt);
@@ -77,6 +83,25 @@ public:
 	void pathFollowerMethod();
 	void interruptPathFollowing();
 
+	float getMovementTiming() const
+	{
+		return movementTiming;
+	}
+
+	void setMovementTiming(float movementTiming)
+	{
+		this->movementTiming = movementTiming;
+	}
+
+	float getRotationTiming() const
+	{
+		return rotationTiming;
+	}
+
+	void setRotationTiming(float rotationTiming)
+	{
+		this->rotationTiming = rotationTiming;
+	}
 };
 
 

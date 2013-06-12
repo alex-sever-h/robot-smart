@@ -30,9 +30,9 @@ void RoboBT::move(int speed) {
 	string cmd_start;
 
 	if(speed > 0)
-		cmd_start = "M_LR+999+999\r";
+		cmd_start = "M_LR+450+450\r";
 	else if(speed < 0)
-		cmd_start = "M_LR-999-999\r";
+		cmd_start = "M_LR-450-450\r";
 	else
 		cmd_start = "M_LR+000+000\r";
 
@@ -43,9 +43,9 @@ void RoboBT::rotate(int degrees) {
 	string cmd_start;
 
 	if(degrees > 0)
-		cmd_start = "M_LR-420+420\r";
+		cmd_start = "M_LR-450+450\r";
 	else if(degrees < 0)
-		cmd_start = "M_LR+420-420\r";
+		cmd_start = "M_LR+450-450\r";
 	else
 		cmd_start = "M_LR+000+000\r";
 
@@ -61,7 +61,7 @@ void RoboBT::send(string &command) {
 		n_write += write(sock, buffer + n_write, strlen(buffer));
 	}
 
-	cout << "****" << command << "****" << endl;
+//	cout << "****" << command << "****" << endl;
 }
 
 void RoboBT::startSensorPoller()
@@ -105,9 +105,9 @@ void RoboBT::pollUpdateSensors()
 			split( cmd, fields[i], is_any_of( " :" ), token_compress_on );
 			if(cmd.size() == 2)
 			{
-				int len;
-				len = strtol(cmd[1].c_str(), NULL, 10);
-
+				unsigned int len;
+				istringstream(cmd[1]) >> len;
+//				cout << cmd[0] << "-->" << cmd[1] << " === " << len << endl;
 				if(sensMan)
 					sensMan->registerMeasurement(cmd[0], len);
 			}

@@ -106,8 +106,8 @@ void RobotModel::updateRobotPolygon() {
 	{
 		int x, y;
 
-		x = points[i][0] * cos(orientationRad) - points[i][1] * sin(orientationRad) + positionXmm;
-		y = points[i][0] * sin(orientationRad) + points[i][1] * cos(orientationRad) + positionYmm;
+		x = positionXmm + points[i][0] * cos(orientationRad) - points[i][1] * sin(orientationRad);
+		y = positionYmm + points[i][0] * sin(orientationRad) + points[i][1] * cos(orientationRad);
 
 		robotPolygon->push_back( LocationWWeight (x, y, 0) );
 	}
@@ -129,9 +129,9 @@ int countUP = 0;
 
 void RobotModel::updateWorld(tyPolygon * safeArea, tyPolygon * wallPoly)
 {
-	//	thread *updateMapThread;
-	//	updateMapThread = new thread(&MapParticle::updateMap, worldMap,
-	//			new tyPolygon(*safeArea), new tyPolygon(*wallPoly));
+	//		thread *updateMapThread;
+	//		updateMapThread = new thread(&MapParticle::updateMap, worldMap,
+	//				new tyPolygon(*safeArea), new tyPolygon(*wallPoly));
 
 	worldMap->updateMap(safeArea, wallPoly);
 
@@ -170,6 +170,25 @@ void RobotModel::setPosition(Location location)
 	updateRobotPolygon();
 	sensorManager->updateSensorsOffset(positionXmm, positionYmm, orientationRad);
 }
+
+
+void RobotModel::updateWorld(tySensor* sensor)
+{
+	worldMap->updateMap(sensor);
+
+	if( pathFinder->checkPathForMapUpdates(path) == false )
+	{
+		rME->interruptPathFollowing();
+
+		delete path; path = NULL;
+		path = pathFinder->generateRawPath(LocationWWeight(target.x, target.y, 0));
+
+		rME->followPath(path);
+
+		cout << "detect collition ``````````````````````````\n";
+	}
+}
+
 
 void RobotModel::moveAtLocation(Location target)
 {

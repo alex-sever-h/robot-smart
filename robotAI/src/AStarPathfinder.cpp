@@ -15,9 +15,9 @@
 #define COST_ROTATION	(1.0)
 
 #define GOAL_PRECISION (30)
-#define COLLISION_FACTOR (50)
+#define COLLISION_FACTOR (100)
 
-#define MAX_ASTAR_STEPS (50)
+#define MAX_ASTAR_STEPS (10)
 
 AStarPathfinder::AStarPathfinder(RobotModel* physicalRobot)
 {
@@ -55,28 +55,27 @@ tyPolygon* AStarPathfinder::generatePathArea(LocationWWeight start,	LocationWWei
 	return pathArea;
 }
 
-
 tyPolygon* AStarPathfinder::generatePathArea(float xStart, float yStart, float xEnd, float yEnd, float theta)
 {
 	tyPolygon *pathArea = new tyPolygon;
 	LocationWWeight helper;
 
 	//compute start points
-	helper.x = xStart + (pRobot->getWidthMm()/2) * cos(theta + M_PI/2);
-	helper.y = yStart + (pRobot->getWidthMm()/2) * sin(theta + M_PI/2);
+	helper.x = xStart + (-pRobot->getLengthMm()/2) * cos(theta) - (+pRobot->getWidthMm()/2) * sin(theta);
+	helper.y = yStart + (-pRobot->getLengthMm()/2) * sin(theta) + (+pRobot->getWidthMm()/2) * cos(theta);
 	pathArea->push_back(helper);
 
-	helper.x = xStart + (pRobot->getWidthMm()/2) * cos(theta - M_PI/2);
-	helper.y = yStart + (pRobot->getWidthMm()/2) * sin(theta - M_PI/2);
+	helper.x = xStart + (-pRobot->getLengthMm()/2) * cos(theta) - (-pRobot->getWidthMm()/2) * sin(theta);
+	helper.y = yStart + (-pRobot->getLengthMm()/2) * sin(theta) + (-pRobot->getWidthMm()/2) * cos(theta);
 	pathArea->push_back(helper);
 
 	//compute end points
-	helper.x = xEnd + (pRobot->getWidthMm()/2) * cos(theta - M_PI/2);
-	helper.y = yEnd + (pRobot->getWidthMm()/2) * sin(theta - M_PI/2);
+	helper.x = xEnd   + (+pRobot->getLengthMm()/2) * cos(theta) - (-pRobot->getWidthMm()/2) * sin(theta);
+	helper.y = yEnd   + (+pRobot->getLengthMm()/2) * sin(theta) + (-pRobot->getWidthMm()/2) * cos(theta);
 	pathArea->push_back(helper);
 
-	helper.x = xEnd + (pRobot->getWidthMm()/2) * cos(theta + M_PI/2);
-	helper.y = yEnd + (pRobot->getWidthMm()/2) * sin(theta + M_PI/2);
+	helper.x = xEnd   + (+pRobot->getLengthMm()/2) * cos(theta) - (+pRobot->getWidthMm()/2) * sin(theta);
+	helper.y = yEnd   + (+pRobot->getLengthMm()/2) * sin(theta) + (+pRobot->getWidthMm()/2) * cos(theta);
 	pathArea->push_back(helper);
 
 	return pathArea;
@@ -134,8 +133,11 @@ void AStarPathfinder::expandPathNode(const LocationWWeight& target, PathNode* cu
 		//positive rotation
 		expandOnDirection(posToTargetAngle + rotation, target, current);
 
-		//positive rotation
-		expandOnDirection(posToTargetAngle - rotation, target, current);
+		if(rotation != 0)
+		{
+			//positive rotation
+			expandOnDirection(posToTargetAngle - rotation, target, current);
+		}
 	}
 	current->expanded = true;
 }
@@ -221,24 +223,20 @@ PathNode* AStarPathfinder::generateRawPath(LocationWWeight target)
 	{
 		PathNode * currentNode = getMinCostLeafNode(origin);
 
-		//		cout << "minCostLeaf:" << currentNode->x << " x " << currentNode->y
-		//				<< " % " << currentNode->cost << " + " << currentNode->heuristic << " c: " << currentNode->children.size() << endl;
-
 		if(arrivedAtGoal(target, currentNode))
 		{
-			cout << "AT GOAL !!!!!!!!!\n";
+			//cout << "AT GOAL !!!!!!!!!\n";
 			purgePathTree(origin, currentNode);
 			return origin;
 		}
 		else
 		{
-			//			cout << "expand node:\n";
 			expandPathNode(target, currentNode);
 
 		}
 	}
 
-	cout << "no path found !!!!!\n";
+	//cout << "no path found !!!!!\n";
 	//purgePathTree(origin, NULL);
 	//delete origin;
 	return origin;
