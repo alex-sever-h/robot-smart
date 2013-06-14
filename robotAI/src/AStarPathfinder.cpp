@@ -9,15 +9,16 @@
 #include "AStarPathfinder.hpp"
 #include <math.h>
 
-#define STEP_ROTATION  (M_PI/36.0)
-#define STEP_MOVEMENT  (700)
+#define STEP_ROTATION  (DEG_TO_RAD(10))
+#define STEP_MOVEMENT  (400)
 #define COST_MOVEMENT	(1.0)
 #define COST_ROTATION	(1.0)
 
-#define GOAL_PRECISION (30)
-#define COLLISION_FACTOR (100)
+#define GOAL_PRECISION (10)
+#define COLLISION_FACTOR (200)
+#define PATH_COLLISION_LIMIT (80)
 
-#define MAX_ASTAR_STEPS (10)
+#define MAX_ASTAR_STEPS (100)
 
 AStarPathfinder::AStarPathfinder(RobotModel* physicalRobot)
 {
@@ -81,7 +82,37 @@ tyPolygon* AStarPathfinder::generatePathArea(float xStart, float yStart, float x
 	return pathArea;
 }
 
-void AStarPathfinder::expandOnDirection(float rotation, const LocationWWeight& target, PathNode* current)
+bool AStarPathfinder::checkForAlreadyThere(PathNode *origin, PathNode *current, float xnew, float ynew)
+{
+	//just to make sure
+	if(origin == NULL)
+		return false;
+	if(current == NULL)
+		return false;
+
+	//if first expansion
+	if(origin == current)
+		return false;
+
+	//search all children for collision
+	for(list<PathNode *>::iterator it = origin->children.begin(); it != origin->children.end();++it)
+	{
+		if((*it != current) && euclidDistance((*it)->x, (*it)->y, xnew, ynew) < PATH_COLLISION_LIMIT)
+			return true;
+	}
+
+//	//propagate through the tree
+	for(list<PathNode *>::iterator it = origin->children.begin(); it != origin->children.end();++it)
+	{
+		if((*it != current) && checkForAlreadyThere((*it), current, xnew, ynew) == true )
+			return true;
+	}
+
+	//if no children have collisions
+	return false;
+}
+
+void AStarPathfinder::expandOnDirection(PathNode* origin, float rotation, const LocationWWeight& target, PathNode* current)
 {
 	float x, y;
 	float theta;
@@ -112,56 +143,66 @@ void AStarPathfinder::expandOnDirection(float rotation, const LocationWWeight& t
 	{
 		if(world->computeCollisionFactor(pathArea) < COLLISION_FACTOR)
 		{
-			current->children.push_back(new PathNode(current, x, y, theta, cost, heuristic));
+			if(checkForAlreadyThere(origin, current, x, y) == false)
+				current->children.push_back(new PathNode(current, x, y, theta, cost, heuristic));
 		}
 	}
 	else
 	{
-		current->children.push_back(new PathNode(current, x, y, theta, cost, heuristic));
+		if(checkForAlreadyThere(origin, current, x, y) == false)
+			current->children.push_back(new PathNode(current, x, y, theta, cost, heuristic));
 	}
 
 	delete pathArea;
 }
 
 
-void AStarPathfinder::expandPathNode(const LocationWWeight& target, PathNode* current)
+void AStarPathfinder::expandPathNode(PathNode* origin, const LocationWWeight& target, PathNode* current)
 {
+	//cout << "expanding " << current << " chld: " << current->children.size() <<  endl;
 	//optimize to make sure we get straight path
 	float posToTargetAngle = atan2((target.y - current->y), (target.x - current->x));
 	for (float rotation = 0; rotation < M_PI; rotation += STEP_ROTATION)
 	{
 		//positive rotation
-		expandOnDirection(posToTargetAngle + rotation, target, current);
+		expandOnDirection(origin, posToTargetAngle + rotation, target, current);
 
 		if(rotation != 0)
 		{
 			//positive rotation
-			expandOnDirection(posToTargetAngle - rotation, target, current);
+			expandOnDirection(origin, posToTargetAngle - rotation, target, current);
 		}
 	}
-	current->expanded = true;
+	current->closed = true;
 }
 
 
 PathNode* AStarPathfinder::getMinCostLeafNode(PathNode* origin)
 {
-	if(origin->children.size() > 0)
+	if(origin->closed == true)
 	{
+		if(origin->children.empty())
+			return NULL;
 		//		cout << "scan children of:" << origin->x << " x " << origin->y
 		//				<< " % " << origin->cost << " + " << origin->heuristic
 		//				<< " = " << origin->cost  + origin->heuristic << endl;
 
-		PathNode *leastCostlyNode = getMinCostLeafNode(*origin->children.begin());
-		PathNode *testNode;
+		PathNode *leastCostlyNode = NULL;
+
 		for(list<PathNode *>::iterator it = origin->children.begin(); it != origin->children.end(); ++it)
 		{
+			PathNode *testNode;
+
 			testNode = getMinCostLeafNode(*it);
+
+			if(testNode == NULL)
+				continue;
 
 			//			cout << "scan:" << testNode->x << " x " << testNode->y
 			//				<< " % " << testNode->cost << " + " << testNode->heuristic
 			//				<< " = " << testNode->cost  + testNode->heuristic << endl;
 
-			if( (testNode->cost + testNode->heuristic < leastCostlyNode->cost + leastCostlyNode->heuristic))
+			if( !leastCostlyNode || (testNode->cost + testNode->heuristic < leastCostlyNode->cost + leastCostlyNode->heuristic))
 				leastCostlyNode = testNode;
 		}
 		//		cout << "leastchildren::" << leastCostlyNode->x << " x " << leastCostlyNode->y
@@ -227,19 +268,25 @@ PathNode* AStarPathfinder::generateRawPath(LocationWWeight target)
 		{
 			//cout << "AT GOAL !!!!!!!!!\n";
 			purgePathTree(origin, currentNode);
+			cout << "astar iterations: " << iterations << endl;
 			return origin;
 		}
 		else
 		{
-			expandPathNode(target, currentNode);
-
+			expandPathNode(origin, target, currentNode);
 		}
 	}
 
-	//cout << "no path found !!!!!\n";
-	//purgePathTree(origin, NULL);
-	//delete origin;
+	//world->clearMap();
+
+	cout << "no path found !!!!!\n";
+#if 1
+	purgePathTree(origin, NULL);
+	delete origin;
+	return NULL;
+#else
 	return origin;
+#endif
 }
 
 bool AStarPathfinder::checkPathForMapUpdates(PathNode* path)
@@ -256,7 +303,7 @@ bool AStarPathfinder::checkPathForMapUpdates(PathNode* path)
 		tyPolygon * area = generatePathArea(path->x, path->y,
 				(*path->children.begin())->x, (*path->children.begin())->y, path->theta);
 
-		if(world->computeCollisionFactor(area) < COLLISION_FACTOR)
+		if(world->computeCollisionFactor(area) < COLLISION_FACTOR*2)
 		{
 			delete area;
 			return checkPathForMapUpdates(*path->children.begin());

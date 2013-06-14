@@ -46,6 +46,7 @@ class RobotModel{
 
 	Location			target;
 
+	void pathfinderThread(const Location& target);
 
 public:
 	PathNode *path;
@@ -65,7 +66,7 @@ public:
 	int  move(int distanceMM);
 	int  rotate(float thetaRad);
 
-	void updateRobotPolygon();
+	void sendRobotInfo();
 	tyPolygon * getRobotPoly();
 
 	vector<tyPolygon *> *getSensorSafeAreas();

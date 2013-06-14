@@ -1,0 +1,38 @@
+package robotdata;
+
+message RobotInfo {
+	required int32 length = 1;
+	required int32 width  = 2;
+	required float posx   = 3;
+	required float posy   = 4;
+	required float theta  = 5;
+}
+
+message SensorInfo {
+	required float angleSpan    = 1;
+	required float angleCenter  = 2;
+	required float offsetXmapMM = 3;
+	required float offsetYmapMM = 4;
+	required int32 distance     = 5;
+}
+
+message MapParticle {
+	required float posx   = 1;
+	required float posy   = 2;
+	required float weight = 3;
+}
+
+message FullMap {
+	repeated MapParticle   wallParticles = 1;
+	repeated MapParticle   safeParticles = 2;
+}
+
+message PathDot {
+	required float x = 1;
+	required float y = 2;
+}
+
+message FullPath {	
+	repeated PathDot       path = 4; 
+}
+

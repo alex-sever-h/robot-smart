@@ -132,8 +132,8 @@ void RoboGLMap::keyReleased(wxKeyEvent& event)
 
 
 RoboGLMap::RoboGLMap(wxFrame* parent, int* args) :
-											wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE),
-											m_timer(this, UPDATE_TIMER_ID)
+													wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE),
+													m_timer(this, UPDATE_TIMER_ID)
 {
 	m_context = new wxGLContext(this);
 
@@ -220,17 +220,32 @@ unsigned int RoboGLMap::getHeight()
 }
 
 void RoboGLMap::drawRobot(void) {
-	tyPolygon * robopoly = physicalRobot.getRobotPoly();
+	int points[6][2] = {
+			{+physicalRobot.getLengthMm()/2 + 20, 0 },
+			{+physicalRobot.getLengthMm()/2,      -physicalRobot.getWidthMm()/2},
+			{-physicalRobot.getLengthMm()/2,      -physicalRobot.getWidthMm()/2},
+			{-physicalRobot.getLengthMm()/2 + 20, 0},
+			{-physicalRobot.getLengthMm()/2,      +physicalRobot.getWidthMm()/2},
+			{+physicalRobot.getLengthMm()/2,      +physicalRobot.getWidthMm()/2}
+	};
+
 
 	glColor4f(1, 0., 0.5, .5);
-	glBegin(GL_POLYGON);
-	for(unsigned int si = 0; si < robopoly->size(); ++si)
+		glBegin(GL_POLYGON);
+	for(unsigned int i = 0; i < 6; ++i)
 	{
-		glVertex2f(robopoly->at(si).x/MAP_FACTOR + getWidth()/2, getHeight()/2 - robopoly->at(si).y/MAP_FACTOR);
+		int x, y;
+
+		x = physicalRobot.getPositionXmm()
+				+ points[i][0] * cos(physicalRobot.getOrientationRad())
+				- points[i][1] * sin(physicalRobot.getOrientationRad());
+		y = physicalRobot.getPositionYmm()
+				+ points[i][0] * sin(physicalRobot.getOrientationRad())
+				+ points[i][1] * cos(physicalRobot.getOrientationRad());
+
+		glVertex2f(x/MAP_FACTOR + getWidth()/2, getHeight()/2 - y/MAP_FACTOR);
 	}
 	glEnd();
-
-	delete robopoly;
 }
 
 void RoboGLMap::drawSensors(void)

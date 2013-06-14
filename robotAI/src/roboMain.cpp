@@ -12,6 +12,10 @@
 #include "AStarPathfinder.hpp"
 #include "Location.hpp"
 
+#include <boost/asio.hpp>
+#include <iostream>
+#include "RobotClient.hpp"
+#include "RobotServer.hpp"
 
 #define ENABLE_GUI
 
@@ -25,8 +29,10 @@ RobotModel    		physicalRobot(0, 0, 0, &robotBTinterface);
 
 int flag;
 
+
 void smartTask()
 {
+	//RobotServer rs;
 
 	physicalRobot.placeRobotInMap(&world);
 
@@ -34,25 +40,27 @@ void smartTask()
 	robotBTinterface.startSensorPoller();
 
 
-//	sleep(1);
-//	physicalRobot.move(1000);
-//	sleep(1);
-//	physicalRobot.rotate(DEG_TO_RAD(360));
-//
-//	sleep(1);
-//	physicalRobot.move(1050);
-//	sleep(5);
-//	physicalRobot.rotate(DEG_TO_RAD(180));
+	//	sleep(1);
+	//	physicalRobot.move(1000);
+	//	sleep(1);
+	//	physicalRobot.rotate(DEG_TO_RAD(360));
+	//
+	//	sleep(1);
+	//	physicalRobot.move(1050);
+	//	sleep(5);
+	//	physicalRobot.rotate(DEG_TO_RAD(180));
 
 
 	while(1)
 	{
-
+		//rs.addString("blabla\n");
 	}
 }
 
 void gui_task()
 {
+	//RobotClient rc;
+
 	int argc = 1;
 	char appname[] = "roboAI";
 	char *argv[1];
@@ -63,10 +71,10 @@ void gui_task()
 }
 
 
-
 int main(int argc, char **argv)
 {
-	thread bt_thread(smartTask);
+
+	thread smartThread(smartTask);
 
 #ifdef ENABLE_GUI
 	thread gui_thread(gui_task);
@@ -74,7 +82,7 @@ int main(int argc, char **argv)
 	gui_thread.join();
 #else
 
-	bt_thread.join();
+	smartThread.join();
 #endif
 
 

@@ -15,7 +15,7 @@
 #include "geometricPlane.hpp"
 #include "robotModel.hpp"
 
-#define SENSOR_MAX_DISTANCE_MM 4000
+#define SENSOR_MAX_DISTANCE_MM 2000
 
 using namespace std;
 
@@ -42,7 +42,7 @@ public:
 		this->id = id;
 		this->angleCenterRadMap = DEG_TO_RAD( angleCenter );
 		this->angleCenterOffset = DEG_TO_RAD( angleCenter );
-		this->angleSpan         = DEG_TO_RAD(15);
+		this->angleSpan         = DEG_TO_RAD(25);
 		this->offsetXrobot = offsetRobotXmm;
 		this->offsetYrobot = offsetRobotYmm;
 		this->offsetXmapMM = (float)offsetRobotXmm;

@@ -58,7 +58,7 @@ void SensorManager::registerMeasurement(string id, unsigned int length)
 			{
 				sensors.at(i)->distanceMM = length < SENSOR_MAX_DISTANCE_MM ? length : SENSOR_MAX_DISTANCE_MM;
 
-				calculateSensorPolygons(sensors.at(i)->distanceMM == SENSOR_MAX_DISTANCE_MM,
+				calculateSensorPolygons(sensors.at(i)->distanceMM > SENSOR_MAX_DISTANCE_MM ,
 						&sensors.at(i)->polySafe,
 						&sensors.at(i)->polyWall,
 						sensors.at(i)->angleCenterRadMap, sensors.at(i)->angleSpan,

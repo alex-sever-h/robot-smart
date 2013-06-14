@@ -12,6 +12,8 @@
 #include <boost/random/normal_distribution.hpp>
 #include <boost/random/variate_generator.hpp>
 
+#include <boost/thread.hpp>
+
 #include "MapGeneric.hpp"
 #include "sensorManagement.h"
 #include <vector>
@@ -30,6 +32,9 @@ class tySensor;
 class MapParticle : MapGeneric{
 	list<LocationWWeight> *safeParticleList;
 	list<LocationWWeight> *wallParticleList;
+
+	mutex safeParticleGuard;
+	mutex wallParticleGuard;
 
 	REngine         rEngine;
 	DistNormalFloat *distribution;
@@ -51,6 +56,8 @@ public:
 	void fillSafeArea(tySensor *sensor);
 
 	float computeCollisionFactor(tyPolygon *area);
+
+	void clearMap(void);
 
 	list<LocationWWeight>* getWallParticleList() const
 	{

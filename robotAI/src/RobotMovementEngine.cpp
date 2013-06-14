@@ -9,7 +9,7 @@
 #include "RobotMovementEngine.hpp"
 #include <iostream>
 
-#define DEFAULT_ROT_TIMING 1250.0
+#define DEFAULT_ROT_TIMING 1400.0
 #define DEFAULT_MOV_TIMING 1950.0
 
 using namespace std;
@@ -263,7 +263,7 @@ void RobotMovementEngine::pathFollowerMethod()
 			decideRotationMovement( pathRemaining, nextNode, &rotation, &movement);
 
 			cout << physicalRobot->getPositionXmm() << " x " << physicalRobot->getPositionYmm()
-									<< " @ " << RAD_TO_DEG(physicalRobot->getOrientationRad()) << endl;
+													<< " @ " << RAD_TO_DEG(physicalRobot->getOrientationRad()) << endl;
 
 			//			cout << "rotate alpha =========== " << rotation	<< endl;
 			rotate(rotation);
@@ -276,7 +276,7 @@ void RobotMovementEngine::pathFollowerMethod()
 			}
 
 			cout << physicalRobot->getPositionXmm() << " x " << physicalRobot->getPositionYmm()
-												<< " @ " << RAD_TO_DEG(physicalRobot->getOrientationRad()) << endl;
+																<< " @ " << RAD_TO_DEG(physicalRobot->getOrientationRad()) << endl;
 
 			move(movement);
 			if (stopThread)
@@ -288,7 +288,7 @@ void RobotMovementEngine::pathFollowerMethod()
 			}
 
 			cout << physicalRobot->getPositionXmm() << " x " << physicalRobot->getPositionYmm()
-												<< " @ " << RAD_TO_DEG(physicalRobot->getOrientationRad()) << endl;
+																<< " @ " << RAD_TO_DEG(physicalRobot->getOrientationRad()) << endl;
 
 			//advance to next step
 			pathRemaining = nextNode;
@@ -309,8 +309,10 @@ void RobotMovementEngine::followPath(PathNode* path)
 {
 	if(pathFollowerThread)
 		interruptPathFollowing();
+
 	this->pathRemaining = path;
-	this->pathFollowerThread = new thread( &RobotMovementEngine::pathFollowerMethod, this);
+	if(this->pathRemaining)
+		this->pathFollowerThread = new thread( &RobotMovementEngine::pathFollowerMethod, this);
 }
 
 void RobotMovementEngine::reduceRotation(float* rotation)
@@ -326,8 +328,8 @@ void RobotMovementEngine::decideRotationMovement(PathNode *origin,
 		PathNode *target, float *rotation, float *movement)
 {
 	//calculate raw commands
-	*rotation = target->theta - origin->theta;
-	*movement = euclidDistance(target->x, target->y, origin->x, origin->y);
+	*rotation = target->theta - physicalRobot->getOrientationRad();
+	*movement = euclidDistance(target->x, target->y, physicalRobot->getPositionXmm(), physicalRobot->getPositionYmm());
 
 	cout << "FROM: " << RAD_TO_DEG(*rotation) << endl;
 
@@ -341,17 +343,17 @@ void RobotMovementEngine::decideRotationMovement(PathNode *origin,
 		*rotation = 2*M_PI + *rotation;
 
 	cout << "to: " << RAD_TO_DEG(*rotation) << endl;
-	//
-	//	if(*rotation > M_PI/2)
-	//	{
-	//		*rotation = -(M_PI - *rotation);
-	//		*movement = -*movement;
-	//	}
-	//	if(*rotation < -M_PI/2)
-	//	{
-	//		*rotation = -(M_PI - *rotation);
-	//		*movement = -*movement;
-	//	}
+
+	if(*rotation > M_PI/2)
+	{
+		*rotation = -(M_PI - *rotation);
+		*movement = -*movement;
+	}
+	if(*rotation < -M_PI/2)
+	{
+		*rotation = -(-M_PI - *rotation);
+		*movement = -*movement;
+	}
 
 	cout << "TOOO: " << RAD_TO_DEG(*rotation) << endl;
 }
@@ -363,13 +365,14 @@ void RobotMovementEngine::interruptPathFollowing()
 	if(stopThread)
 		stopThread->interrupt();
 	if (pathFollowerThread)
+	{
 		pathFollowerThread->interrupt();
 
-	this_thread::sleep(posix_time::milliseconds(MOVEMENT_RESOLUTION_MS));
-	posix_time::time_duration msdiff =
-			posix_time::microsec_clock::universal_time() - movementStartTimeStamp;
-	updatePhysicalRobot(msdiff.total_milliseconds());
-
+		this_thread::sleep(posix_time::milliseconds(MOVEMENT_RESOLUTION_MS));
+		posix_time::time_duration msdiff =
+				posix_time::microsec_clock::universal_time() - movementStartTimeStamp;
+		updatePhysicalRobot(msdiff.total_milliseconds());
+	}
 	stopMotion();
 
 	pathRemaining = NULL;

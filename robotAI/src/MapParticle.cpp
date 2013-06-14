@@ -97,6 +97,7 @@ void MapParticle::fillSafeArea(tySensor* sensor)
 	DistNormalFloat *distributionTheta = new DistNormalFloat(0, sensor->angleSpan/3);
 	gaussGenerator *gaussGeneratorTheta = new gaussGenerator(rEngine, *distributionTheta);
 
+	safeParticleGuard.lock();
 	for(int i = 0; i < (int)sensor->distanceMM*sensor->angleSpan/2; i++)
 	{
 		float theta;
@@ -115,10 +116,12 @@ void MapParticle::fillSafeArea(tySensor* sensor)
 
 		safeParticleList->push_back(LocationWWeight(x, y, (float)(4000 - sensor->distanceMM) / 100));
 	}
+	safeParticleGuard.unlock();
 
+	wallParticleGuard.lock();
 	clearSafeArea(sensor->polySafe);
 
-	for(int i = 0; i < (int)sensor->distanceMM*sensor->angleSpan/5; i++)
+	for(int i = 0; i < (int)sensor->distanceMM*sensor->angleSpan/10; i++)
 	{
 		float theta;
 		float length;
@@ -136,19 +139,27 @@ void MapParticle::fillSafeArea(tySensor* sensor)
 
 		wallParticleList->push_back(LocationWWeight(x, y, (float)(4000 - sensor->distanceMM) / 100));
 	}
+	wallParticleGuard.unlock();
 }
 
 float MapParticle::computeCollisionFactor(tyPolygon* area)
 {
 	float colFactor = 0;
 
+	wallParticleGuard.lock();
 	for (list<LocationWWeight>::iterator it = wallParticleList->begin();
 			it != wallParticleList->end(); it++)
 		if (insidePolygon2D(*it, *area))
 		{
 			colFactor += it->weight;
 		}
+	wallParticleGuard.unlock();
 
 	return colFactor;
 }
 
+void MapParticle::clearMap(void)
+{
+	safeParticleList->clear();
+	wallParticleList->clear();
+}

@@ -27,7 +27,7 @@ public:
 		this->parent = p;
 		this->cost = c;
 		this->heuristic = h;
-		this->expanded = false;
+		this->closed = false;
 	}
 
 	float x;
@@ -37,7 +37,7 @@ public:
 	float cost;
 	float heuristic;
 
-	bool expanded;
+	bool closed;
 
 	PathNode *parent;
 	list<PathNode *> children;
@@ -52,11 +52,11 @@ private:
 	tyPolygon	*generatePathArea(LocationWWeight start, LocationWWeight end, float theta);
 
 	PathNode	*getMinCostLeafNode(PathNode *origin);
-	void 		expandPathNode(const LocationWWeight& target, PathNode* current);
+	void 		expandPathNode(PathNode* origin, const LocationWWeight& target, PathNode* current);
 	bool 		arrivedAtGoal(const LocationWWeight& target, PathNode* currentNode);
-	void expandOnDirection(float rotation, const LocationWWeight& target,
+	void expandOnDirection(PathNode* origin, float rotation, const LocationWWeight& target,
 			PathNode* current);
-
+	bool checkForAlreadyThere(PathNode *origin, PathNode *current, float xnew, float ynew);
 	bool purgePathTree(PathNode *origin, PathNode *preserved);
 
 public:
