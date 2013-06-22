@@ -39,6 +39,7 @@ class FullMap;
 class FullMap_MapParticle;
 class FullPath;
 class FullPath_PathDot;
+class Target;
 
 // ===================================================================
 
@@ -704,6 +705,108 @@ class FullPath : public ::google::protobuf::Message {
   void InitAsDefaultInstance();
   static FullPath* default_instance_;
 };
+// -------------------------------------------------------------------
+
+class Target : public ::google::protobuf::Message {
+ public:
+  Target();
+  virtual ~Target();
+
+  Target(const Target& from);
+
+  inline Target& operator=(const Target& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Target& default_instance();
+
+  void Swap(Target* other);
+
+  // implements Message ----------------------------------------------
+
+  Target* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const Target& from);
+  void MergeFrom(const Target& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required float posx = 3;
+  inline bool has_posx() const;
+  inline void clear_posx();
+  static const int kPosxFieldNumber = 3;
+  inline float posx() const;
+  inline void set_posx(float value);
+
+  // required float posy = 4;
+  inline bool has_posy() const;
+  inline void clear_posy();
+  static const int kPosyFieldNumber = 4;
+  inline float posy() const;
+  inline void set_posy(float value);
+
+  // required float theta = 5;
+  inline bool has_theta() const;
+  inline void clear_theta();
+  static const int kThetaFieldNumber = 5;
+  inline float theta() const;
+  inline void set_theta(float value);
+
+  // @@protoc_insertion_point(class_scope:robotdata.Target)
+ private:
+  inline void set_has_posx();
+  inline void clear_has_posx();
+  inline void set_has_posy();
+  inline void clear_has_posy();
+  inline void set_has_theta();
+  inline void clear_has_theta();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  float posx_;
+  float posy_;
+  float theta_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+
+  friend void  protobuf_AddDesc_robotdata_2eproto();
+  friend void protobuf_AssignDesc_robotdata_2eproto();
+  friend void protobuf_ShutdownFile_robotdata_2eproto();
+
+  void InitAsDefaultInstance();
+  static Target* default_instance_;
+};
 // ===================================================================
 
 
@@ -1280,6 +1383,76 @@ inline void FullPath::set_allocated_firstdot(::robotdata::FullPath_PathDot* firs
   } else {
     clear_has_firstdot();
   }
+}
+
+// -------------------------------------------------------------------
+
+// Target
+
+// required float posx = 3;
+inline bool Target::has_posx() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void Target::set_has_posx() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void Target::clear_has_posx() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void Target::clear_posx() {
+  posx_ = 0;
+  clear_has_posx();
+}
+inline float Target::posx() const {
+  return posx_;
+}
+inline void Target::set_posx(float value) {
+  set_has_posx();
+  posx_ = value;
+}
+
+// required float posy = 4;
+inline bool Target::has_posy() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void Target::set_has_posy() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void Target::clear_has_posy() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void Target::clear_posy() {
+  posy_ = 0;
+  clear_has_posy();
+}
+inline float Target::posy() const {
+  return posy_;
+}
+inline void Target::set_posy(float value) {
+  set_has_posy();
+  posy_ = value;
+}
+
+// required float theta = 5;
+inline bool Target::has_theta() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void Target::set_has_theta() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void Target::clear_has_theta() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void Target::clear_theta() {
+  theta_ = 0;
+  clear_has_theta();
+}
+inline float Target::theta() const {
+  return theta_;
+}
+inline void Target::set_theta(float value) {
+  set_has_theta();
+  theta_ = value;
 }
 
 
