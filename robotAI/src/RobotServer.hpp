@@ -13,17 +13,9 @@
 #include <boost/thread.hpp>
 #include <string>
 #include <list>
-
-#define ROBOSERVERPORT 50000
+#include "CommunicationShared.hpp"
 
 using namespace std;
-
-enum dataType{
-	ROBOT_POSITION = 0x01,
-	FULL_PATH = 0x02,
-	FULL_MAP  = 0x03,
-	SENSOR_READING = 0x04,
-};
 
 
 class RobotServer{

@@ -23,35 +23,35 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.39537696" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug">
 								<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.1305676557" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.523329364" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.other.other.83086014" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 `wx-config --cxxflags`" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.other.other.83086014" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.include.paths.983189364" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/usr/include/wx-2.8"/>
 									<listOptionValue builtIn="false" value="/usr/lib64/wx/include/gtk2-unicode-release-2.8"/>
+									<listOptionValue builtIn="false" value="/home/alseh/workspace/robot-smart/robotSHARED"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1762117171" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.153012684" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.1417025745" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" valueType="enumerated"/>
 								<option id="gnu.c.compiler.exe.debug.option.debugging.level.265713824" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
-								<option id="gnu.c.compiler.option.misc.other.690708094" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 `wx-config --cflags`" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.690708094" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0" valueType="string"/>
 								<option id="gnu.c.compiler.option.include.paths.44772132" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/usr/include/wx-2.8"/>
 									<listOptionValue builtIn="false" value="/usr/lib64/wx/include/gtk2-unicode-release-2.8"/>
+									<listOptionValue builtIn="false" value="/home/alseh/workspace/robot-smart/robotSHARED"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1254299901" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1484367905" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug"/>
 							<tool commandLinePattern="${COMMAND} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS} ${FLAGS} " id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.90430451" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
-								<option id="gnu.cpp.link.option.flags.2137067571" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="`wx-config --libs core,base,gl`" valueType="string"/>
+								<option id="gnu.cpp.link.option.flags.2137067571" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="" valueType="string"/>
 								<option id="gnu.cpp.link.option.libs.231529657" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" value="glut"/>
 									<listOptionValue builtIn="false" value="protobuf"/>
 									<listOptionValue builtIn="false" value="boost_system"/>
 									<listOptionValue builtIn="false" value="boost_thread"/>
 									<listOptionValue builtIn="false" value="bluetooth"/>
-									<listOptionValue builtIn="false" value="GL"/>
-									<listOptionValue builtIn="false" value="GLU"/>
 								</option>
+								<option id="gnu.cpp.link.option.paths.1951766141" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.700078634" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -61,11 +61,16 @@
 								<option id="gnu.both.asm.option.include.paths.1797359460" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/usr/include/wx-2.8"/>
 									<listOptionValue builtIn="false" value="/usr/lib64/wx/include/gtk2-unicode-release-2.8"/>
+									<listOptionValue builtIn="false" value="/home/alseh/workspace/robot-smart/robotSHARED"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.793773617" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<sourceEntries>
+						<entry excluding="robotSHARED" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="robotSHARED"/>
+					</sourceEntries>
 				</configuration>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
@@ -95,6 +100,7 @@
 								<option id="gnu.cpp.compiler.option.include.paths.32865182" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/usr/include/wx-2.8"/>
 									<listOptionValue builtIn="false" value="/usr/lib64/wx/include/gtk2-unicode-release-2.8"/>
+									<listOptionValue builtIn="false" value="/home/alseh/workspace/robot-smart/robotSHARED"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.648626703" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -104,11 +110,15 @@
 								<option id="gnu.c.compiler.option.include.paths.1376859730" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/usr/include/wx-2.8"/>
 									<listOptionValue builtIn="false" value="/usr/lib64/wx/include/gtk2-unicode-release-2.8"/>
+									<listOptionValue builtIn="false" value="/home/alseh/workspace/robot-smart/robotSHARED"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1225114330" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.release.52445500" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.release"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.327572335" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release">
+								<option id="gnu.cpp.link.option.paths.962252923" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
+									<listOptionValue builtIn="false" value="/home/alseh/workspace/robot-smart/robotSHARED/protobuf"/>
+								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.211193786" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -118,6 +128,7 @@
 								<option id="gnu.both.asm.option.include.paths.906429298" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/usr/include/wx-2.8"/>
 									<listOptionValue builtIn="false" value="/usr/lib64/wx/include/gtk2-unicode-release-2.8"/>
+									<listOptionValue builtIn="false" value="/home/alseh/workspace/robot-smart/robotSHARED"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1459706612" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -131,21 +142,32 @@
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="robotAI.cdt.managedbuild.target.gnu.exe.3913531" name="Executable" projectType="cdt.managedbuild.target.gnu.exe"/>
 	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/robotAI"/>
+		</configuration>
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/robotAI"/>
+		</configuration>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.1026929131;cdt.managedbuild.config.gnu.exe.release.1026929131.;cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.786801660;cdt.managedbuild.tool.gnu.cpp.compiler.input.648626703">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.403407846;cdt.managedbuild.config.gnu.exe.release.403407846.;cdt.managedbuild.tool.gnu.c.compiler.exe.release.961954288;cdt.managedbuild.tool.gnu.c.compiler.input.1765008759">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.1607954449;cdt.managedbuild.config.gnu.exe.debug.1607954449.;cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.371716201;cdt.managedbuild.tool.gnu.cpp.compiler.input.1985756276">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.1026929131;cdt.managedbuild.config.gnu.exe.release.1026929131.;cdt.managedbuild.tool.gnu.c.compiler.exe.release.1527726926;cdt.managedbuild.tool.gnu.c.compiler.input.1225114330">
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.403407846;cdt.managedbuild.config.gnu.exe.release.403407846.;cdt.managedbuild.tool.gnu.c.compiler.exe.release.961954288;cdt.managedbuild.tool.gnu.c.compiler.input.1765008759">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.404958262;cdt.managedbuild.config.gnu.exe.debug.404958262.;cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.39537696;cdt.managedbuild.tool.gnu.cpp.compiler.input.1762117171">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.1026929131;cdt.managedbuild.config.gnu.exe.release.1026929131.;cdt.managedbuild.tool.gnu.c.compiler.exe.release.1527726926;cdt.managedbuild.tool.gnu.c.compiler.input.1225114330">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.404958262;cdt.managedbuild.config.gnu.exe.debug.404958262.;cdt.managedbuild.tool.gnu.c.compiler.exe.debug.153012684;cdt.managedbuild.tool.gnu.c.compiler.input.1254299901">
@@ -158,14 +180,4 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 	</storageModule>
-	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
-	<storageModule moduleId="refreshScope" versionNumber="2">
-		<configuration configurationName="Release">
-			<resource resourceType="PROJECT" workspacePath="/robotAI"/>
-		</configuration>
-		<configuration configurationName="Debug">
-			<resource resourceType="PROJECT" workspacePath="/robotAI"/>
-		</configuration>
-	</storageModule>
-	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>

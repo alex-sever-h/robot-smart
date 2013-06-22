@@ -30,7 +30,6 @@ message FullMap {
 }
 
 
-
 message FullPath {	
 	message PathDot {
 		required float x = 1;
@@ -42,3 +41,9 @@ message FullPath {
 	required PathDot firstDot = 1; 
 }
 
+
+message Target {
+	required float posx   = 3;
+	required float posy   = 4;
+	required float theta  = 5;
+}

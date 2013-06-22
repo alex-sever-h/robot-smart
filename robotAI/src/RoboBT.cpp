@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <unistd.h>
+#include "stdio.h"
 
 using namespace std;
 using namespace boost;
@@ -40,6 +41,25 @@ void RoboBT::move(int speed)
 		send(cmd_start);
 }
 
+void RoboBT::move_by_time(int timeMs)
+{
+	string cmd_start;
+	char intBuffer[10];
+	sprintf(intBuffer+1, "%4d", abs(timeMs));
+
+	if(timeMs > 0)
+		intBuffer[0] = '+';
+	else if(timeMs < 0)
+		intBuffer[0] = '-';
+
+	cmd_start = "M_FT" + string(intBuffer) + "\r";
+
+	cout << cmd_start << endl;
+
+	if (connected)
+		send(cmd_start);
+}
+
 void RoboBT::rotate(int degrees)
 {
 	string cmd_start;
@@ -50,6 +70,26 @@ void RoboBT::rotate(int degrees)
 		cmd_start = "M_LR+450-450\r";
 	else
 		cmd_start = "M_LR+000+000\r";
+
+	if (connected)
+		send(cmd_start);
+}
+
+void RoboBT::rotate_by_time(int timeMs)
+{
+	string cmd_start;
+
+	char intBuffer[10];
+	sprintf(intBuffer+1, "%4d", abs(timeMs));
+
+	if(timeMs > 0)
+		intBuffer[0] = '+';
+	else if(timeMs < 0)
+		intBuffer[0] = '-';
+
+	cmd_start = "M_RT" + string(intBuffer) + "\r";
+
+	cout << cmd_start << endl;
 
 	if (connected)
 		send(cmd_start);
@@ -114,6 +154,7 @@ void RoboBT::pollUpdateSensors()
 				if (sensMan)
 					sensMan->registerMeasurement(cmd[0], len);
 			}
+
 
 		}
 		recvBuffer = fields[i];

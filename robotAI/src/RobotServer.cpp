@@ -40,9 +40,7 @@ void RobotServer::accept_handler(const boost::system::error_code& ec)
 	}
 }
 
-RobotServer::RobotServer() :
-					endpoint(boost::asio::ip::tcp::v4(), ROBOSERVERPORT), acceptor(
-							ioService, endpoint), sock(ioService)
+RobotServer::RobotServer() : endpoint(boost::asio::ip::tcp::v4(), CommSettings::getPortInt()), acceptor(ioService, endpoint), sock(ioService)
 {
 	acceptor.listen();
 	acceptor.async_accept(sock,

@@ -9,8 +9,8 @@
 #include "RobotMovementEngine.hpp"
 #include <iostream>
 
-#define DEFAULT_ROT_TIMING 1400.0
-#define DEFAULT_MOV_TIMING 1950.0
+#define DEFAULT_ROT_TIMING 1200.0
+#define DEFAULT_MOV_TIMING 1930.0
 
 using namespace std;
 
@@ -57,7 +57,7 @@ int RobotMovementEngine::move(int distanceMM)
 
 		if (distanceMM > 0)
 		{
-			robotInterface->move(999);
+			robotInterface->move_by_time(+movementDuration);
 			robotMovementState = MOVING_FORWARD;
 			stopThread = new thread(&RobotMovementEngine::movementEndThread,
 					this, movementDuration);
@@ -65,7 +65,7 @@ int RobotMovementEngine::move(int distanceMM)
 		}
 		else if (distanceMM < 0)
 		{
-			robotInterface->move(-999);
+			robotInterface->move_by_time(-movementDuration);
 			robotMovementState = MOVING_BACKWARD;
 			stopThread = new thread(&RobotMovementEngine::movementEndThread,
 					this, movementDuration);
@@ -94,7 +94,7 @@ int RobotMovementEngine::rotate(float theta)
 
 		if (theta > 0)
 		{
-			robotInterface->rotate(RAD_TO_DEG(theta));
+			robotInterface->rotate_by_time(+movementDuration);
 			robotMovementState = ROTATING_LEFT;
 			stopThread = new thread(&RobotMovementEngine::movementEndThread,
 					this, movementDuration);
@@ -102,7 +102,7 @@ int RobotMovementEngine::rotate(float theta)
 		}
 		else if (theta < 0)
 		{
-			robotInterface->rotate(RAD_TO_DEG(theta));
+			robotInterface->rotate_by_time(-movementDuration);
 			robotMovementState = ROTATING_RIGHT;
 			stopThread = new thread(&RobotMovementEngine::movementEndThread,
 					this, movementDuration);

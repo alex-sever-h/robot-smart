@@ -13,24 +13,13 @@
 #include "wx/timer.h"
 #include "wx/spinctrl.h"
 #include "roboGUI.h"
-#include "sensorManagement.h"
-#include "mapDiscrete.hpp"
-#include "MapParticle.hpp"
-#include "Location.hpp"
-//
-//// include OpenGL
-//#ifdef __WXMAC__
-//#include "OpenGL/glu.h"
-//#include "OpenGL/gl.h"
-//#else
+
 #include <GL/glu.h>
 #include <GL/gl.h>
-#include "robotModel.hpp"
-//#endif
 
+#include "protobuf/robotdata.pb.h"
 
 #define UPDATE_TIMER_ID 2
-
 #define MAP_FACTOR (5)
 
 class RoboGuiApp: public wxApp
@@ -40,7 +29,7 @@ class RoboGuiApp: public wxApp
 	wxFrame *frameAbsolute;
 
 	RoboGLMap    *glRoboMap;
-	RoboControls *panelControls;
+//	RoboControls *panelControls;
 
 public:
 };
@@ -56,8 +45,8 @@ bool RoboGuiApp::OnInit()
 	glRoboMap = new RoboGLMap( (wxFrame*) frameAbsolute, args);
 	sizer->Add(glRoboMap, 10, wxEXPAND);
 
-	panelControls = new RoboControls(frameAbsolute, wxSize(0, 768));
-	sizer->Add(panelControls, 1, wxEXPAND | wxDOWN);
+//	panelControls = new RoboControls(frameAbsolute, wxSize(0, 768));
+//	sizer->Add(panelControls, 1, wxEXPAND | wxDOWN);
 
 	frameAbsolute->SetSizer(sizer);
 	frameAbsolute->SetAutoLayout(true);
@@ -92,13 +81,10 @@ void RoboGLMap::mouseDown(wxMouseEvent& event)
 {
 	cout << "clicked at: " << event.m_x << " x " << event.m_y << endl;
 
-	Location newTarget;
-	newTarget.x = ((float)event.m_x - getWidth()/2)*MAP_FACTOR;
-	newTarget.y = (getHeight()/2 - (float)event.m_y)*MAP_FACTOR;
+	int x = ((float)event.m_x - getWidth()/2)*MAP_FACTOR;
+	int y = (getHeight()/2 - (float)event.m_y)*MAP_FACTOR;
 
-	cout << "target at: " << newTarget.x << " x " << newTarget.y << endl;
-
-	//physicalRobot.moveAtLocation(newTarget);
+	cout << "target at: " << x << " x " << y << endl;
 }
 
 void RoboGLMap::mouseWheelMoved(wxMouseEvent& event)
@@ -397,7 +383,7 @@ void RoboGLMap::render( wxPaintEvent& evt )
 
 
 
-#if 0
+#if 1
 IMPLEMENT_APP(RoboGuiApp)
 #else
 wxAppConsole *wxCreateApp()

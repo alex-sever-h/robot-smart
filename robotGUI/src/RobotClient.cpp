@@ -10,6 +10,7 @@
 #include <boost/lexical_cast.hpp>
 #include <iostream>
 #include "protobuf/robotdata.pb.h"
+#include "CommunicationShared.hpp"
 
 int enumDataType;
 size_t nData;
@@ -29,7 +30,7 @@ void RobotClient::readHeader(const boost::system::error_code& ec,
 		if(bytes_transferred == 8)
 		{
 			//read the payload
-			boost::asio::async_read(sock, boost::asio::buffer(readBuffer, packHeader[1]),
+			boost::asio::async_read(*sock, boost::asio::buffer(readBuffer, packHeader[1]),
 					boost::bind(&RobotClient::readPayload, this,
 							boost::asio::placeholders::error,
 							boost::asio::placeholders::bytes_transferred));
@@ -38,8 +39,16 @@ void RobotClient::readHeader(const boost::system::error_code& ec,
 			cout << "r: " << bytes_transferred << " oof: " << 8 << endl;
 
 		// do some more reading
+	}
+	else
+	{
+		cout << "read err: " << ec << endl;
 
-
+		boost::asio::ip::tcp::resolver::query query(CommSettings::getHostname(), CommSettings::getPortString());
+		resolver.async_resolve(query,
+				boost::bind(&RobotClient::addrResolvedConnectHandler, this,
+						boost::asio::placeholders::error(),
+						boost::asio::placeholders::iterator()));
 	}
 }
 
@@ -57,16 +66,23 @@ void RobotClient::readPayload(const boost::system::error_code& ec,
 				rcd->updateFromBuffer(readBuffer.c_array(), packHeader[1], packHeader[0]);
 
 			//read next packet
-			boost::asio::async_read(sock, boost::asio::buffer(packHeader, 8),
+			boost::asio::async_read(*sock, boost::asio::buffer(packHeader, 8),
 					boost::bind(&RobotClient::readHeader, this,
 							boost::asio::placeholders::error,
 							boost::asio::placeholders::bytes_transferred));
 		}
 		else
 			cout << "r: " << bytes_transferred << " oof: " << packHeader[1] << endl;
+	}
+	else
+	{
+		cout << "read err: " << ec << endl;
 
-
-
+		boost::asio::ip::tcp::resolver::query query(CommSettings::getHostname(), CommSettings::getPortString());
+		resolver.async_resolve(query,
+				boost::bind(&RobotClient::addrResolvedConnectHandler, this,
+						boost::asio::placeholders::error(),
+						boost::asio::placeholders::iterator()));
 	}
 }
 
@@ -74,22 +90,45 @@ void RobotClient::connectHandler(const boost::system::error_code& ec)
 {
 	if (!ec)
 	{
+		cout << "clientConnected ......" << endl;
 		//start listening
-		boost::asio::async_read(sock, boost::asio::buffer(packHeader, 8),
+		boost::asio::async_read(*sock, boost::asio::buffer(packHeader, 8),
 				boost::bind(&RobotClient::readHeader, this,
 						boost::asio::placeholders::error(),
 						boost::asio::placeholders::bytes_transferred()));
 	}
+	else
+	{
+		cout << "connect failed ...." << endl;
+		cout << "read err: " << ec << endl;
+
+		boost::asio::ip::tcp::resolver::query query(CommSettings::getHostname(), CommSettings::getPortString());
+		resolver.async_resolve(query,
+				boost::bind(&RobotClient::addrResolvedConnectHandler, this,
+						boost::asio::placeholders::error(),
+						boost::asio::placeholders::iterator()));
+	}
 }
 
-void RobotClient::resolve_handler(const boost::system::error_code& ec,
+void RobotClient::addrResolvedConnectHandler(const boost::system::error_code& ec,
 		boost::asio::ip::tcp::resolver::iterator it)
 {
 	if (!ec)
 	{
-		sock.async_connect(*it,
-				boost::bind(&RobotClient::connectHandler, this,
-						boost::asio::placeholders::error()));
+		// Create new socket (old one is destroyed automatically)
+		if(sock)
+			delete sock;
+		sock = new boost::asio::ip::tcp::socket(ioService);
+
+		sleep(1);
+
+		sock->async_connect(*it, boost::bind(&RobotClient::connectHandler,
+				this, boost::asio::placeholders::error()));
+	}
+	else
+	{
+		cout << "resolve failed ...." << endl;
+		cout << "read err: " << ec << endl;
 	}
 }
 
@@ -107,12 +146,13 @@ void RobotClient::write_handler(const boost::system::error_code& ec,
 	//	i++;
 }
 
-RobotClient::RobotClient() :
-																		resolver(ioService), sock(ioService)
+RobotClient::RobotClient() : resolver(ioService)
 {
-	boost::asio::ip::tcp::resolver::query query("localhost", "50000");
+	sock = NULL;
+
+	boost::asio::ip::tcp::resolver::query query(CommSettings::getHostname(), CommSettings::getPortString());
 	resolver.async_resolve(query,
-			boost::bind(&RobotClient::resolve_handler, this,
+			boost::bind(&RobotClient::addrResolvedConnectHandler, this,
 					boost::asio::placeholders::error(),
 					boost::asio::placeholders::iterator()));
 
@@ -132,7 +172,7 @@ void RobotClient::stop(void)
 
 void RobotClient::sendString(string buffer)
 {
-	boost::asio::async_write(sock, boost::asio::buffer(buffer),
+	boost::asio::async_write(*sock, boost::asio::buffer(buffer),
 			boost::bind(&RobotClient::write_handler, this,
 					boost::asio::placeholders::error(),
 					boost::asio::placeholders::bytes_transferred()));

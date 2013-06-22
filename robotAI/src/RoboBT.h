@@ -28,15 +28,17 @@ using namespace boost;
 
 class SensorManager;
 
-typedef struct {
+typedef struct
+{
 	string id;
-	int    length;
+	int length;
 } BtCmd;
 
-class RoboBT{
+class RoboBT
+{
 	char name[100];
 	char address[20];
-	int  sock;
+	int sock;
 	struct sockaddr_rc btSocket;
 	bool connected;
 	string recvBuffer;
@@ -45,26 +47,31 @@ class RoboBT{
 
 	thread *sensorPollerThread;
 
-	void  pollUpdateSensors();
+	void pollUpdateSensors();
 
 public:
 	RoboBT(bool predefined);
 	virtual ~RoboBT();
 
-	int   searchRobot();
-	int   connectRobot();
+	int searchRobot();
+	int connectRobot();
 
-	void  setSensMan(SensorManager *sMan){this->sensMan = sMan;}
+	void setSensMan(SensorManager *sMan)
+	{
+		this->sensMan = sMan;
+	}
 
 	void startSensorPoller();
 
-	void  move(int distance);
-	void  rotate(int degrees);
+	void move(int distance);
+	void rotate(int degrees);
+
+	void move_by_time(int timeMs);
+	void rotate_by_time(int timeMs);
 
 protected:
-	void  send(string &command);
-	bool  readData();
+	void send(string &command);
+	bool readData();
 };
-
 
 #endif /* ROBOBT_H_ */

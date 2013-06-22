@@ -8,7 +8,7 @@
 #include <iostream>
 #include "boost/array.hpp"
 #include "RobotClientData.hpp"
-#include "RobotServer.hpp"
+#include "CommunicationShared.hpp"
 
 using namespace std;
 

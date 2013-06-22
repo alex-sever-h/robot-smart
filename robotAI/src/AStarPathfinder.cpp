@@ -344,7 +344,6 @@ google::protobuf::Message * AStarPathfinder::sendPath(PathNode * originReal)
 {
 	robotdata::FullPath * fullPath = new robotdata::FullPath;
 
-
 	robotdata::FullPath_PathDot *originProto = new robotdata::FullPath_PathDot();
 	originProto->set_x(originReal->x);
 	originProto->set_y(originReal->y);

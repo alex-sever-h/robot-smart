@@ -14,18 +14,16 @@
 #include "wx/wx.h"
 #include "wx/glcanvas.h"
 #include "wx/timer.h"
-#include "sensorManagement.h"
-#include "AStarPathfinder.hpp"
 #include "protobuf/robotdata.pb.h"
 #include "RobotClient.hpp"
 #include "RobotClientData.hpp"
 
 
-class RoboControls: public wxPanel
-{
-public:
-	RoboControls(wxWindow *parent, const wxSize &size);
-};
+//class RoboControls: public wxPanel
+//{
+//public:
+//	RoboControls(wxWindow *parent, const wxSize &size);
+//};
 
 
 class RoboGLMap : public wxGLCanvas
