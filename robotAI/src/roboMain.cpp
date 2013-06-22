@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string>
-#include "RoboBT.h"
 #include "geometricPlane.hpp"
 #include "mapDiscrete.hpp"
 #include "sensorManagement.h"
@@ -17,18 +16,20 @@
 #include <iostream>
 #include "RobotServer.hpp"
 
-#define ENABLE_GUI
+#include "RoboInterface.hpp"
+#include "RoboBT.hpp"
+#include "RoboUART.hpp"
 
+#define ENABLE_GUI
 
 using namespace std;
 using namespace boost;
 
-MapParticle   		world;
-RoboBT 		  		robotBTinterface(true);
-RobotModel    		physicalRobot(0, 0, 0, &robotBTinterface);
+MapParticle world;
+RoboInterface *robotInterface = new RoboBT(true);
+RobotModel physicalRobot(0, 0, 0, robotInterface);
 
 int flag;
-
 
 void smartTask()
 {
@@ -38,8 +39,7 @@ void smartTask()
 	physicalRobot.setSrv(&rs);
 	physicalRobot.placeRobotInMap(&world);
 
-	robotBTinterface.connectRobot();
-	robotBTinterface.startSensorPoller();
+	robotInterface->startSensorPoller();
 
 #if 0
 	sleep(1);
@@ -51,7 +51,8 @@ void smartTask()
 	physicalRobot.rotate(DEG_TO_RAD(360));
 #endif
 
-	while(1);
+	while (1)
+		;
 }
 
 int main(int argc, char **argv)
@@ -61,12 +62,4 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-
-
-
-
-
-
-
-
 

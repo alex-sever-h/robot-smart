@@ -11,6 +11,8 @@ target_name = "roboBT"
 target_address = None
 sock = 0
 
+
+
 def search_roboBT():
     #nearby_devices = bluetooth.discover_devices()
     #for bdaddr in nearby_devices:
@@ -48,8 +50,10 @@ def init_keyloop():
     pygame.mouse.set_visible(0)
     pass
 
+
 def mainloop():
     done = False
+    recv_buffer = ""
     while not done:
         for event in pygame.event.get():
             if (event.type == KEYDOWN):
@@ -61,10 +65,10 @@ def mainloop():
                     go_backward()
                 if (event.key == K_RIGHT):
                     #print event
-                    go_rotate_left()
+                    go_rotate_right()
                 if (event.key == K_LEFT):
                     #print event
-                    go_rotate_right()
+                    go_rotate_left()
             if (event.type == KEYUP):
                 if (event.key == K_UP or event.key == K_DOWN or event.key == K_LEFT or event.key == K_RIGHT):
                     #print event
@@ -73,10 +77,16 @@ def mainloop():
                 #print event
                 if (event.key == K_ESCAPE):
                     done = True
-        data_rec = sock.recv(2048)
-        print data_rec
         
-        
+        recv_buffer = recv_buffer + sock.recv(5)
+        splitcmd = recv_buffer.split("\n", 1)
+         
+        if len(splitcmd) >= 2:
+            if(splitcmd[0] == "RDY"):
+                print splitcmd[0]
+            if(splitcmd[0] == "ACK"):
+                print splitcmd[0]
+            recv_buffer = splitcmd[1]
 
 
 def convToString(left, right):
@@ -99,27 +109,55 @@ def m_lr_command(left, right):
     command = goString + convToString(left, right) + "\r"    
     return command
 
+def m_fb_command(distance):
+    goString="M_FT"
+
+    if(distance>=0):
+    	command = goString + "+" + repr(distance).zfill(4)
+    else:
+    	command = goString + repr(distance).zfill(5)
+    
+    print command + "\n"
+    
+    return command + "\r"
+
+def m_rot_command(distance):
+    goString="M_RT"
+
+    if(distance>=0):
+        command = goString + "+" + repr(distance).zfill(4)
+    else:
+        command = goString + repr(distance).zfill(5)
+    
+    print command + "\n"
+    
+    return command + "\r"
 
 
 def go_forward():
     global sock
-    sock.send(m_lr_command(+999, +999))
-    pass
-
-def go_rotate_left():
-    global sock
-    sock.send(m_lr_command(-999, +999))
-    pass
-
-def go_rotate_right():
-    global sock
-    sock.send(m_lr_command(+999, -999))
+    sock.send(m_fb_command(9)) 
+    print "forward"
     pass
 
 def go_backward():
     global sock
-    sock.send(m_lr_command(-999, -999))
+    sock.send(m_fb_command(-9))
+    print "backward"
     pass
+
+def go_rotate_left():
+    global sock
+    sock.send(m_rot_command(+9))
+    print "leftward"
+    pass
+
+def go_rotate_right():
+    global sock
+    sock.send(m_rot_command(-9))
+    print "rightward"
+    pass
+
 
 def go_backward_left():
     global sock
@@ -133,7 +171,8 @@ def go_backward_right():
 
 def go_stop():
     global sock
-    sock.send(m_lr_command(0, 0))
+    #sock.send(m_lr_command(0, 0))
+    print "stop"
     pass
 
 

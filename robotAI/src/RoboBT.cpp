@@ -1,4 +1,4 @@
-#include "RoboBT.h"
+#include "RoboBT.hpp"
 #include <boost/algorithm/string.hpp>
 #include <vector>
 #include <string>
@@ -8,17 +8,14 @@
 using namespace std;
 using namespace boost;
 
-RoboBT::RoboBT(bool predefined)
+RoboBT::RoboBT(bool predefined) : RoboInterface()
 {
 	strcpy(name, "roboBT");
 	sock = 0;
-	connected = false;
-
-	sensorPollerThread = NULL;
-	sensMan = NULL;
-
 	if (predefined)
 		strcpy(address, "00:12:6F:27:EF:A8");
+
+	connectRobot();
 }
 
 RoboBT::~RoboBT()
@@ -26,154 +23,6 @@ RoboBT::~RoboBT()
 	close(sock);
 }
 
-void RoboBT::move(int speed)
-{
-	string cmd_start;
-
-	if (speed > 0)
-		cmd_start = "M_LR+450+450\r";
-	else if (speed < 0)
-		cmd_start = "M_LR-450-450\r";
-	else
-		cmd_start = "M_LR+000+000\r";
-
-	if (connected)
-		send(cmd_start);
-}
-
-void RoboBT::move_by_time(int timeMs)
-{
-	string cmd_start;
-	char intBuffer[10];
-	sprintf(intBuffer+1, "%04d", abs(timeMs));
-
-	if(timeMs > 0)
-		intBuffer[0] = '+';
-	else if(timeMs < 0)
-		intBuffer[0] = '-';
-
-	cmd_start = "M_FT" + string(intBuffer) + "\r";
-
-	cout << cmd_start << endl;
-
-	if (connected)
-		send(cmd_start);
-}
-
-void RoboBT::rotate(int degrees)
-{
-	string cmd_start;
-
-	if (degrees > 0)
-		cmd_start = "M_LR-450+450\r";
-	else if (degrees < 0)
-		cmd_start = "M_LR+450-450\r";
-	else
-		cmd_start = "M_LR+000+000\r";
-
-	if (connected)
-		send(cmd_start);
-}
-
-void RoboBT::rotate_by_time(int timeMs)
-{
-	string cmd_start;
-
-	char intBuffer[10];
-	sprintf(intBuffer+1, "%04d", abs(timeMs));
-
-	if(timeMs > 0)
-		intBuffer[0] = '+';
-	else if(timeMs < 0)
-		intBuffer[0] = '-';
-
-	cmd_start = "M_RT" + string(intBuffer) + "\r";
-
-	cout << cmd_start << endl;
-
-	if (connected)
-		send(cmd_start);
-}
-
-void RoboBT::send(string &command)
-{
-	const char *buffer = command.c_str();
-	unsigned int n_write = 0;
-
-	while (n_write != strlen(buffer))
-	{
-		n_write += write(sock, buffer + n_write, strlen(buffer));
-	}
-
-	//	cout << "****" << command << "****" << endl;
-}
-
-void RoboBT::startSensorPoller()
-{
-	sensorPollerThread = new thread(&RoboBT::pollUpdateSensors, this);
-}
-
-bool RoboBT::readData()
-{
-	char buffer[128];
-	int n_read;
-
-	n_read = read(sock, buffer, 127);
-
-	if (n_read > 0)
-	{
-		buffer[n_read] = '\0';
-		recvBuffer = recvBuffer.append(buffer);
-		return true;
-	}
-	else
-		return false;
-}
-
-void RoboBT::pollUpdateSensors()
-{
-	BtCmd btcmd;
-	vector<string> fields;
-	vector<string> cmd;
-	size_t i;
-
-	while (1)
-	{
-		readData();
-
-		split(fields, recvBuffer, is_any_of("\n"), token_compress_on);
-
-		for (i = 0; i < fields.size() - 1; ++i)
-		{
-			split(cmd, fields[i], is_any_of(" :"), token_compress_on);
-			if (cmd.size() == 2)
-			{
-				unsigned int len;
-				istringstream(cmd[1]) >> len;
-				//				cout << cmd[0] << "-->" << cmd[1] << " === " << len << endl;
-				if (sensMan)
-					sensMan->registerMeasurement(cmd[0], len);
-			}
-			else
-			{
-				if(fields[i] == "ACK")
-				{
-					cout << "ACKNOWLEDGEDACKNOWLEDGEDACKNOWLEDGEDACKNOWLEDGEDACKNOWLEDGED\n";
-					if(rme)
-						rme->acknowledgeCommand();
-				}
-				if(fields[i] == "RDY")
-				{
-					cout << "READYREADYREADYREADYREADYREADYREADYREADYREADYREADYREADYREADY\n";
-					if(rme)
-						rme->finalizeCommand();
-				}
-			}
-		}
-		recvBuffer = fields[i];
-	}
-
-}
 
 int RoboBT::searchRobot()
 {
@@ -261,5 +110,35 @@ int RoboBT::connectRobot()
 		connected = true;
 		return 1;
 	}
+}
+
+void RoboBT::writeData(string &command)
+{
+	const char *buffer = command.c_str();
+	unsigned int n_write = 0;
+
+	while (n_write != strlen(buffer))
+	{
+		n_write += write(sock, buffer + n_write, strlen(buffer));
+	}
+
+	//	cout << "****" << command << "****" << endl;
+}
+
+bool RoboBT::readData()
+{
+	char buffer[128];
+	int n_read;
+
+	n_read = read(sock, buffer, 127);
+
+	if (n_read > 0)
+	{
+		buffer[n_read] = '\0';
+		recvBuffer = recvBuffer.append(buffer);
+		return true;
+	}
+	else
+		return false;
 }
 

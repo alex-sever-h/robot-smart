@@ -10,62 +10,67 @@
 #include "geometricPlane.hpp"
 #include "protobuf/robotdata.pb.h"
 
-#define NEW_PARTICLE_FACTOR 1
+#define NEW_PARTICLE_FACTOR 0.1f
 #define CLEAR_SAFE_FACTOR   1
 #define REMOVE_FACTOR		 0.4
+
+#define MINIMUM_OBSTACLE_SIZE 20
+#define WALL_PARTICLE_GENERATION_NUMBER 20
+#define SAFE_PARTICLE_GENERATION_NUMBER 30
 
 MapParticle::MapParticle()
 {
 	safeParticleList = new list<LocationWWeight>;
 	wallParticleList = new list<LocationWWeight>;
 
-	distribution = new DistNormalFloat(0, 20);
-	gGenWall = new gaussGenerator(rEngine, *distribution);
+	distribution = new DistNormalFloat(0, 0.5);
+	gaussianGenerator = new gaussGenerator(rEngine, *distribution);
 }
-
-void MapParticle::updateMap(tyPolygon* safeArea, tyPolygon* wallArea)
-{
-	if (wallArea)
-		fillWallArea(wallArea);
-	if (safeArea)
-		clearSafeArea(safeArea);
-}
+//
+//void MapParticle::updateMap(tyPolygon* safeArea, tyPolygon* wallArea)
+//{
+//	if (wallArea)
+//		fillWallArea(wallArea);
+//	if (safeArea)
+//		clearSafeArea(safeArea);
+//}
 
 void MapParticle::updateMap(tySensor* sensor)
 {
 	if(sensor)
 	{
-		fillWallArea(sensor);
 		fillSafeArea(sensor);
+		fillWallArea(sensor);
 	}
 }
 
-void MapParticle::fillWallArea(tyPolygon* wallArea)
-{
-	for (tyPolygon::iterator it = wallArea->begin() + 1;
-			it != wallArea->end() - 1; ++it)
-	{
-		int n_proximity = 0;
+//void MapParticle::fillWallArea(tyPolygon* wallArea)
+//{
+//	for (tyPolygon::iterator it = wallArea->begin() + 1;
+//			it != wallArea->end() - 1; ++it)
+//	{
+//		int n_proximity = 0;
+//
+//		for (list<LocationWWeight>::iterator it_particle =
+//				safeParticleList->begin(); it_particle != safeParticleList->end();
+//				++it_particle)
+//		{
+//			if (euclidDistance(*it_particle, *it) < 20)
+//				n_proximity++;
+//		}
+//		if (n_proximity > 10)
+//			continue;
+//
+//		// create particles gaussian distributed
+//		for (int i = 0; i < 10; ++i)
+//		{
+//			int x = it->x + (*gaussianGenerator)();
+//			int y = it->y + (*gaussianGenerator)();
+//			safeParticleList->push_back(LocationWWeight(x, y, NEW_PARTICLE_FACTOR));
+//		}
+//	}
+//}
 
-		for (list<LocationWWeight>::iterator it_particle =
-				safeParticleList->begin(); it_particle != safeParticleList->end();
-				++it_particle)
-		{
-			if (euclidDistance(*it_particle, *it) < 20)
-				n_proximity++;
-		}
-		if (n_proximity > 10)
-			continue;
-
-		// create particles gaussian distributed
-		for (int i = 0; i < 10; ++i)
-		{
-			int x = it->x + (*gGenWall)();
-			int y = it->y + (*gGenWall)();
-			safeParticleList->push_back(LocationWWeight(x, y, NEW_PARTICLE_FACTOR));
-		}
-	}
-}
 
 void MapParticle::clearSafeArea(tyPolygon* wallArea)
 {
@@ -79,68 +84,87 @@ void MapParticle::clearSafeArea(tyPolygon* wallArea)
 	}
 }
 
-void MapParticle::fillWallArea(tySensor* sensor)
+void MapParticle::generateVariations(float& length, float& theta)
 {
-	DistNormalFloat *distributionDistance = new DistNormalFloat(0, sensor->distanceMM);
-	gaussGenerator *gaussGeneratorDistance = new gaussGenerator(rEngine, *distributionDistance);
-
-	DistNormalFloat *distributionTheta = new DistNormalFloat(0, sensor->angleSpan);
-	gaussGenerator *gaussGeneratorTheta = new gaussGenerator(rEngine, *distributionTheta);
-
-	//	for(int i = 0; )
+	do
+	{
+		length = fabs((*gaussianGenerator)());
+	} while (length > 1);
+	do
+	{
+		theta = (*gaussianGenerator)();
+	} while (theta > 1 || theta < -1);
 }
 
-void MapParticle::fillSafeArea(tySensor* sensor)
+
+bool cmpX(const LocationWWeight &a, const LocationWWeight &b)
 {
-	DistNormalFloat *distributionDistance = new DistNormalFloat(0, sensor->distanceMM/2);
-	gaussGenerator *gaussGeneratorDistance = new gaussGenerator(rEngine, *distributionDistance);
+	return a.x < b.x;
+}
 
-	DistNormalFloat *distributionTheta = new DistNormalFloat(0, sensor->angleSpan/3);
-	gaussGenerator *gaussGeneratorTheta = new gaussGenerator(rEngine, *distributionTheta);
 
-	safeParticleGuard.lock();
-	for(int i = 0; i < (int)sensor->distanceMM*sensor->angleSpan/20; i++)
-	{
-		float theta;
-		float length;
+bool cmpY(const LocationWWeight& a, const LocationWWeight& b)
+{
+	return a.y < b.y;
+}
 
-		do{
-			length = fabs((*gaussGeneratorDistance)());
-		}while(length > sensor->distanceMM);
 
-		do{
-			theta = (*gaussGeneratorTheta)();
-		}while(theta > sensor->angleSpan/2 || theta < - sensor->angleSpan/2);
-
-		float x = sensor->offsetXmapMM + length * cos(sensor->angleCenterRadMap + theta);
-		float y = sensor->offsetYmapMM + length * sin(sensor->angleCenterRadMap + theta);
-
-		safeParticleList->push_back(LocationWWeight(x, y, (float)(4000 - sensor->distanceMM) / 100));
-	}
-	safeParticleGuard.unlock();
+void MapParticle::fillWallArea(tySensor* sensor)
+{
 
 	wallParticleGuard.lock();
 	clearSafeArea(sensor->polySafe);
 
-	for(int i = 0; i < (int)sensor->distanceMM*sensor->angleSpan/100; i++)
+	for(int i = 0; i < WALL_PARTICLE_GENERATION_NUMBER; i++)
 	{
 		float theta;
 		float length;
 
-		do{
-			length = fabs((*gaussGeneratorDistance)());
-		}while(length < sensor->distanceMM || length > sensor->distanceMM + 50);
+		generateVariations(length, theta);
 
-		do{
-			theta = (*gaussGeneratorTheta)();
-		}while(theta > sensor->angleSpan/2 || theta < - sensor->angleSpan/2);
+		//apply variation
+		length = sensor->distanceMM + length * MINIMUM_OBSTACLE_SIZE;
+		theta = theta * sensor->angleSpan/2;
 
 		float x = sensor->offsetXmapMM + length * cos(sensor->angleCenterRadMap + theta);
 		float y = sensor->offsetYmapMM + length * sin(sensor->angleCenterRadMap + theta);
 
-		wallParticleList->push_back(LocationWWeight(x, y, (float)(4000 - sensor->distanceMM) / 100));
+		wallParticleList->push_back(LocationWWeight(x, y, NEW_PARTICLE_FACTOR));
 	}
+
+	wallParticleList->sort(cmpX);
+	minimizeSortedList(wallParticleList);
+	wallParticleList->sort(cmpX);
+
 	wallParticleGuard.unlock();
+}
+
+void MapParticle::fillSafeArea(tySensor* sensor)
+{
+	safeParticleGuard.lock();
+	for(int i = 0; i < SAFE_PARTICLE_GENERATION_NUMBER; i++)
+	{
+		float theta;
+		float length;
+
+		//generate gaussian between 0 and 1
+		generateVariations(length, theta);
+
+		//apply variation
+		length = length * sensor->distanceMM;
+		theta = theta * sensor->angleSpan/2;
+
+		float x = sensor->offsetXmapMM + length * cos(sensor->angleCenterRadMap + theta);
+		float y = sensor->offsetYmapMM + length * sin(sensor->angleCenterRadMap + theta);
+
+		safeParticleList->push_back(LocationWWeight(x, y, NEW_PARTICLE_FACTOR));
+	}
+
+	safeParticleList->sort(cmpX);
+	minimizeSortedList(safeParticleList);
+	safeParticleList->sort(cmpX);
+
+	safeParticleGuard.unlock();
 }
 
 float MapParticle::computeCollisionFactor(tyPolygon* area)
@@ -163,6 +187,43 @@ void MapParticle::clearMap(void)
 {
 	safeParticleList->clear();
 	wallParticleList->clear();
+}
+
+
+bool MapParticle::compareByX(const LocationWWeight &a, const LocationWWeight &b)
+{
+	return a.x < b.x;
+}
+
+bool MapParticle::compareByY(const LocationWWeight& a, const LocationWWeight& b)
+{
+	return a.y < b.y;
+}
+
+#define MINIMIZATION_DISTANCE 5
+
+void MapParticle::minimizeSortedList(list<LocationWWeight>* particleList)
+{
+	for (list<LocationWWeight>::iterator it1 = particleList->begin();
+			it1 != particleList->end();it1++)
+	{
+		for (list<LocationWWeight>::iterator it2 = it1;
+				it2 != particleList->end() && it1->x - it2->x < MINIMIZATION_DISTANCE;)
+		{
+			if (it1 != it2 && euclidDistance(*it1, *it2) < MINIMIZATION_DISTANCE)
+			{
+				it1->x = (it1->x + it2->x) / 2;
+				it1->y = (it1->y + it2->y) / 2;
+				it1->weight = (it1->weight + it2->weight);
+				it2 = particleList->erase(it2);
+				break;
+			}
+			else
+				++it2;
+		}
+
+
+	}
 }
 
 google::protobuf::Message* MapParticle::sendFullMap()

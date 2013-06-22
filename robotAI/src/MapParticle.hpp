@@ -40,17 +40,22 @@ class MapParticle : MapGeneric{
 
 	REngine         rEngine;
 	DistNormalFloat *distribution;
-	gaussGenerator  *gGenWall;
+	gaussGenerator  *gaussianGenerator;
+
+	void generateVariations(float& length, float& theta);
+	void minimizeSortedList(list<LocationWWeight> *particleList);
 
 public:
 
+	bool compareByX(const LocationWWeight &a, const LocationWWeight &b);
+	bool compareByY(const LocationWWeight &a, const LocationWWeight &b);
 
 public:
 	MapParticle();
 	virtual ~MapParticle(){}
 
-	virtual void updateMap(tyPolygon *safeArea, tyPolygon *wallArea);
-	void fillWallArea(tyPolygon *wallArea);
+//	virtual void updateMap(tyPolygon *safeArea, tyPolygon *wallArea);
+//	void fillWallArea(tyPolygon *wallArea);
 	void clearSafeArea(tyPolygon *wallArea);
 
 	virtual void updateMap(tySensor *sensor);

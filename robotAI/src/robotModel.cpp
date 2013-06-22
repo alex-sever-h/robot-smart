@@ -10,7 +10,7 @@
 #include "protobuf/robotdata.pb.h"
 #include <pthread.h>
 
-RobotModel::RobotModel(RoboBT* btInterface)
+RobotModel::RobotModel(RoboInterface* btInterface)
 {
 	positionXmm = 0;
 	positionYmm = 0;
@@ -19,9 +19,9 @@ RobotModel::RobotModel(RoboBT* btInterface)
 	widthMM = 200;
 	lengthMM = 250;
 
-	roboBTinterface = btInterface;
+	roboInterface = btInterface;
 	rME = new RobotMovementEngine(this, btInterface);
-	roboBTinterface->setRme(rME);
+	roboInterface->setRme(rME);
 	sensorManager = new SensorManager(this);
 	pathFinder = new AStarPathfinder(this);
 
@@ -38,7 +38,7 @@ RobotModel::RobotModel(RoboBT* btInterface)
 			orientationRad);
 }
 
-RobotModel::RobotModel(float x, float y, float theta, RoboBT* btInterface)
+RobotModel::RobotModel(float x, float y, float theta, RoboInterface* btInterface)
 {
 	positionXmm = x;
 	positionYmm = y;
@@ -47,9 +47,9 @@ RobotModel::RobotModel(float x, float y, float theta, RoboBT* btInterface)
 	widthMM = 200;
 	lengthMM = 300;
 
-	roboBTinterface = btInterface;
+	roboInterface = btInterface;
 	rME = new RobotMovementEngine(this, btInterface);
-	roboBTinterface->setRme(rME);
+	roboInterface->setRme(rME);
 	sensorManager = new SensorManager(this);
 	pathFinder = new AStarPathfinder(this);
 
@@ -133,29 +133,6 @@ void RobotModel::placeRobotInMap(MapParticle* world)
 }
 
 int countUP = 0;
-
-void RobotModel::updateWorld(tyPolygon * safeArea, tyPolygon * wallPoly)
-{
-	//		thread *updateMapThread;
-	//		updateMapThread = new thread(&MapParticle::updateMap, worldMap,
-	//				new tyPolygon(*safeArea), new tyPolygon(*wallPoly));
-
-	worldMap->updateMap(safeArea, wallPoly);
-
-	if (pathFinder->checkPathForMapUpdates(path) == false)
-	{
-		rME->interruptPathFollowing();
-
-		delete path;
-		path = NULL;
-		path = pathFinder->generateRawPath(
-				LocationWWeight(target.x, target.y, 0));
-
-		rME->followPath(path);
-
-		cout << "detect collition ``````````````````````````\n";
-	}
-}
 
 vector<tyPolygon*>* RobotModel::getSensorSafeAreas()
 {

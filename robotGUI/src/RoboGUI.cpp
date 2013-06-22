@@ -292,7 +292,7 @@ void RoboGLMap::drawMap(void)
 		int screenX = getWidth()/2 + it->posx()/MAP_FACTOR;
 		int screenY = getHeight()/2 - it->posy()/MAP_FACTOR;
 
-		glColor4f(0, 1, 0, it->weight()/40.0);
+		glColor4f(0, 1, 0, it->weight());
 		glVertex2f(screenX, screenY);
 	}
 	glEnd();
@@ -304,7 +304,7 @@ void RoboGLMap::drawMap(void)
 		int screenX = getWidth()/2 + it->posx()/MAP_FACTOR;
 		int screenY = getHeight()/2 - it->posy()/MAP_FACTOR;
 
-		glColor4f(1, 0, 0, it->weight()/40.0);
+		glColor4f(1, 0, 0, it->weight());
 		glVertex2f(screenX, screenY);
 	}
 	glEnd();

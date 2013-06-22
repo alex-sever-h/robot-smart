@@ -16,7 +16,7 @@ using namespace std;
 
 #define MOVEMENT_RESOLUTION_MS 5
 
-RobotMovementEngine::RobotMovementEngine(RobotModel* pR, RoboBT* btInt)
+RobotMovementEngine::RobotMovementEngine(RobotModel* pR, RoboInterface* btInt)
 {
 	this->physicalRobot = pR;
 	this->robotInterface = btInt;
@@ -40,7 +40,7 @@ void RobotMovementEngine::setPhysicalRobot(RobotModel* physicalRobot)
 	this->physicalRobot = physicalRobot;
 }
 
-void RobotMovementEngine::setRobotInterface(RoboBT* robotInterface)
+void RobotMovementEngine::setRobotInterface(RoboInterface* robotInterface)
 {
 	this->robotInterface = robotInterface;
 }

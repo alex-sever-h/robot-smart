@@ -15,8 +15,6 @@ class MapGeneric{
 public:
 	MapGeneric(){}
 	virtual ~MapGeneric(){}
-
-	virtual void updateMap(tyPolygon * safeArea, tyPolygon * wallArea) = 0;
 };
 
 

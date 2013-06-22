@@ -10,7 +10,7 @@
 
 #include <boost/date_time.hpp>
 #include <boost/thread.hpp>
-#include "RoboBT.h"
+#include "RoboInterface.hpp"
 #include "robotModel.hpp"
 #include "AStarPathfinder.hpp"
 #include "Location.hpp"
@@ -26,12 +26,12 @@ typedef enum {
 } tyRobotState;
 
 class RobotModel;
-class RoboBT;
+class RoboInterface;
 class PathNode;
 
 class RobotMovementEngine{
-	RobotModel *physicalRobot;
-	RoboBT     *robotInterface;
+	RobotModel    *physicalRobot;
+	RoboInterface *robotInterface;
 
 	float rotationTiming;
 	float movementTiming;
@@ -66,11 +66,11 @@ class RobotMovementEngine{
 	void reduceRotation(float* rotation);
 
 public:
-	RobotMovementEngine(RobotModel *pR, RoboBT *btInt);
+	RobotMovementEngine(RobotModel *pR, RoboInterface *btInt);
 
 	void setPhysicalRobot(RobotModel* physicalRobot);
 
-	void setRobotInterface(RoboBT* robotInterface);
+	void setRobotInterface(RoboInterface* robotInterface);
 
 	int move(int distance);
 	int rotate(float theta);

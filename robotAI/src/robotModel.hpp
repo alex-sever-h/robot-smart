@@ -9,7 +9,7 @@
 #define ROBOTMODEL_HPP_
 
 #include <cmath>
-#include "RoboBT.h"
+#include "RoboInterface.hpp"
 #include "RobotMovementEngine.hpp"
 #include "sensorManagement.h"
 #include "MapGeneric.hpp"
@@ -22,7 +22,7 @@
 class tySensor;
 class SensorManager;
 class RobotMovementEngine;
-class RoboBT;
+class RoboInterface;
 class AStarPathfinder;
 class PathNode;
 class MapParticle;
@@ -39,7 +39,7 @@ class RobotModel
 
 	SensorManager *sensorManager;
 
-	RoboBT *roboBTinterface;
+	RoboInterface *roboInterface;
 	RobotMovementEngine *rME;
 	AStarPathfinder *pathFinder;
 
@@ -55,8 +55,8 @@ class RobotModel
 
 public:
 	PathNode *path;
-	RobotModel(RoboBT *btInterface);
-	RobotModel(float x, float y, float theta, RoboBT *btInterface);
+	RobotModel(RoboInterface *btInterface);
+	RobotModel(float x, float y, float theta, RoboInterface *btInterface);
 	virtual ~RobotModel();
 
 	void placeRobotInMap(MapParticle *world);
@@ -76,7 +76,6 @@ public:
 	vector<tyPolygon *> *getSensorSafeAreas();
 	vector<tyPolygon *> *getSensorWallAreas();
 
-	void updateWorld(tyPolygon * sensorArea, tyPolygon * wallPoly);
 	void updateWorld(tySensor *sensor);
 
 	void sendMessage(google::protobuf::Message *message, enum dataType enumDataType);
