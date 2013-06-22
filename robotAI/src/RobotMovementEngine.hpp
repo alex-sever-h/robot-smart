@@ -44,8 +44,12 @@ class RobotMovementEngine{
 	thread		*pathFollowerThread;
 
 	volatile tyRobotState      robotMovementState;
+	volatile tyRobotState      robotMovementStateNext;
+
 	posix_time::ptime 			movementStartTimeStamp;
 	posix_time::ptime 			movementLastUpdateTime;
+
+	mutex robotStateMutex;
 
 	int32_t		  movementDuration;
 
@@ -71,6 +75,9 @@ public:
 	int move(int distance);
 	int rotate(float theta);
 	void stopMotion();
+
+	void acknowledgeCommand(void);
+	void finalizeCommand(void);
 
 	void movementEndThread(int msRemaining);
 	void positionUpdater();

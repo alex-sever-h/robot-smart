@@ -26,6 +26,7 @@ class RoboBT;
 class AStarPathfinder;
 class PathNode;
 class MapParticle;
+class RobotServer;
 
 class RobotModel
 {

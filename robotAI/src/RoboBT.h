@@ -22,6 +22,7 @@
 #include <iostream>
 #include "sensorManagement.h"
 #include <boost/thread.hpp>
+#include "RobotMovementEngine.hpp"
 
 using namespace std;
 using namespace boost;
@@ -44,6 +45,7 @@ class RoboBT
 	string recvBuffer;
 
 	SensorManager *sensMan;
+	RobotMovementEngine *rme;
 
 	thread *sensorPollerThread;
 
@@ -68,6 +70,11 @@ public:
 
 	void move_by_time(int timeMs);
 	void rotate_by_time(int timeMs);
+
+	void setRme(RobotMovementEngine* rme)
+	{
+		this->rme = rme;
+	}
 
 protected:
 	void send(string &command);

@@ -17,10 +17,11 @@ RobotModel::RobotModel(RoboBT* btInterface)
 	orientationRad = 0;
 
 	widthMM = 200;
-	lengthMM = 300;
+	lengthMM = 250;
 
 	roboBTinterface = btInterface;
 	rME = new RobotMovementEngine(this, btInterface);
+	roboBTinterface->setRme(rME);
 	sensorManager = new SensorManager(this);
 	pathFinder = new AStarPathfinder(this);
 
@@ -48,6 +49,7 @@ RobotModel::RobotModel(float x, float y, float theta, RoboBT* btInterface)
 
 	roboBTinterface = btInterface;
 	rME = new RobotMovementEngine(this, btInterface);
+	roboBTinterface->setRme(rME);
 	sensorManager = new SensorManager(this);
 	pathFinder = new AStarPathfinder(this);
 
@@ -210,6 +212,7 @@ void RobotModel::pathfinderThread(const Location& target)
 	{
 		sendMessage(pathFinder->sendPath(path), FULL_PATH);
 		rME->followPath(path);
+		cout << "path found ... start movement" << endl;
 	}
 }
 
@@ -222,6 +225,8 @@ void RobotModel::sendMessage(google::protobuf::Message* message, enum dataType e
 void RobotModel::moveAtLocation(Location target)
 {
 	rME->interruptPathFollowing();
+
+	cout << "start pathfinder " << target.x << "x" << target.y << endl;
 
 	thread pathfinder(&RobotModel::pathfinderThread, this, target);
 

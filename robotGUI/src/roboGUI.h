@@ -67,6 +67,8 @@ public:
 
 	//void setSensMan(SensorManager *sensMan){this->sensMan = sensMan;}
 
+	void drawTarget();
+
 	DECLARE_EVENT_TABLE()
 };
 #endif

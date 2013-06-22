@@ -57,16 +57,18 @@ int RobotMovementEngine::move(int distanceMM)
 
 		if (distanceMM > 0)
 		{
+			robotMovementStateNext = MOVING_FORWARD;
 			robotInterface->move_by_time(+movementDuration);
-			robotMovementState = MOVING_FORWARD;
+
 			stopThread = new thread(&RobotMovementEngine::movementEndThread,
 					this, movementDuration);
 			//			cout << "startUpdater  ==== " << updaterThread << endl;
 		}
 		else if (distanceMM < 0)
 		{
+			robotMovementStateNext = MOVING_BACKWARD;
 			robotInterface->move_by_time(-movementDuration);
-			robotMovementState = MOVING_BACKWARD;
+
 			stopThread = new thread(&RobotMovementEngine::movementEndThread,
 					this, movementDuration);
 			//			cout << "startUpdater  ==== " << updaterThread << endl;
@@ -94,16 +96,18 @@ int RobotMovementEngine::rotate(float theta)
 
 		if (theta > 0)
 		{
+			robotMovementStateNext = ROTATING_LEFT;
 			robotInterface->rotate_by_time(+movementDuration);
-			robotMovementState = ROTATING_LEFT;
+
 			stopThread = new thread(&RobotMovementEngine::movementEndThread,
 					this, movementDuration);
 			//			cout << "startUpdater rl  ==== " << updaterThread << endl;
 		}
 		else if (theta < 0)
 		{
+			robotMovementStateNext = ROTATING_RIGHT;
 			robotInterface->rotate_by_time(-movementDuration);
-			robotMovementState = ROTATING_RIGHT;
+
 			stopThread = new thread(&RobotMovementEngine::movementEndThread,
 					this, movementDuration);
 			//			cout << "startUpdater rr  ==== " << updaterThread << endl;
@@ -129,6 +133,8 @@ void RobotMovementEngine::stopMotion()
 		updaterThread->interrupt();
 	if(stopThread)
 		stopThread->interrupt();
+
+	robotStateMutex.unlock();
 	robotInterface->move(0);
 	robotMovementState = STANDBY;
 }
@@ -179,8 +185,17 @@ void RobotMovementEngine::movementEndThread(int totalMovementDuration)
 	//start updater thread
 	updaterThread = new thread(&RobotMovementEngine::positionUpdater, this);
 
+	//wait movement to begin
+	while(robotMovementState == STANDBY)
+		this_thread::sleep(posix_time::milliseconds(MOVEMENT_RESOLUTION_MS));
+
 	//sleep thread while moving
-	this_thread::sleep(posix_time::milliseconds(totalMovementDuration));
+	while(robotMovementState != STANDBY)
+	{
+		//sleep thread while moving
+		this_thread::sleep(posix_time::milliseconds(MOVEMENT_RESOLUTION_MS));
+	}
+	robotStateMutex.unlock();
 
 	//stop updater thread
 	updaterThread->interrupt();
@@ -263,7 +278,7 @@ void RobotMovementEngine::pathFollowerMethod()
 			decideRotationMovement( pathRemaining, nextNode, &rotation, &movement);
 
 			cout << physicalRobot->getPositionXmm() << " x " << physicalRobot->getPositionYmm()
-													<< " @ " << RAD_TO_DEG(physicalRobot->getOrientationRad()) << endl;
+																			<< " @ " << RAD_TO_DEG(physicalRobot->getOrientationRad()) << endl;
 
 			//			cout << "rotate alpha =========== " << rotation	<< endl;
 			rotate(rotation);
@@ -276,7 +291,7 @@ void RobotMovementEngine::pathFollowerMethod()
 			}
 
 			cout << physicalRobot->getPositionXmm() << " x " << physicalRobot->getPositionYmm()
-																<< " @ " << RAD_TO_DEG(physicalRobot->getOrientationRad()) << endl;
+																						<< " @ " << RAD_TO_DEG(physicalRobot->getOrientationRad()) << endl;
 
 			move(movement);
 			if (stopThread)
@@ -288,7 +303,7 @@ void RobotMovementEngine::pathFollowerMethod()
 			}
 
 			cout << physicalRobot->getPositionXmm() << " x " << physicalRobot->getPositionYmm()
-																<< " @ " << RAD_TO_DEG(physicalRobot->getOrientationRad()) << endl;
+																						<< " @ " << RAD_TO_DEG(physicalRobot->getOrientationRad()) << endl;
 
 			//advance to next step
 			pathRemaining = nextNode;
@@ -356,6 +371,22 @@ void RobotMovementEngine::decideRotationMovement(PathNode *origin,
 	}
 
 	cout << "TOOO: " << RAD_TO_DEG(*rotation) << endl;
+}
+
+void RobotMovementEngine::acknowledgeCommand(void)
+{
+	robotStateMutex.lock();
+	robotMovementState = robotMovementStateNext;
+	robotStateMutex.unlock();
+	cout << "..... rme acknowledged \n";
+}
+
+void RobotMovementEngine::finalizeCommand(void)
+{
+	robotStateMutex.lock();
+	robotMovementState = STANDBY;
+	robotStateMutex.unlock();
+	cout << "..... rme finalized \n";
 }
 
 void RobotMovementEngine::interruptPathFollowing()

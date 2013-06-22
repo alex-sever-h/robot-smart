@@ -10,15 +10,6 @@
 #include <boost/lexical_cast.hpp>
 #include <iostream>
 #include "protobuf/robotdata.pb.h"
-#include "CommunicationShared.hpp"
-
-int enumDataType;
-size_t nData;
-
-uint32_t packHeader[2];
-
-std::vector<boost::asio::mutable_buffer> headerBuffer;
-
 
 void RobotClient::readHeader(const boost::system::error_code& ec,
 		std::size_t bytes_transferred)
@@ -132,18 +123,34 @@ void RobotClient::addrResolvedConnectHandler(const boost::system::error_code& ec
 	}
 }
 
-void RobotClient::write_handler(const boost::system::error_code& ec,
+void RobotClient::writeMessageHandler(void *data,
+		const boost::system::error_code& ec,
 		std::size_t bytes_transferred)
 {
-	//	std::cout << "***client write handler called***\n";
+	//writing completed .... deleting loose ends
+	if(data != NULL)
+		delete data;
 
-	//	string packet = "client->server packet ";
-	//	packet.append(boost::lexical_cast<string>(i));
-	//	boost::asio::async_write(sock, boost::asio::buffer(packet),
-	//			boost::bind(&RobotClient::write_handler, this,
-	//					boost::asio::placeholders::error(),
-	//					boost::asio::placeholders::bytes_transferred()));
-	//	i++;
+	if(!sendQueue.empty())
+	{
+		sendQueueLock.lock();
+		void * dataBuffer = sendQueue.front();
+		size_t  dataSize  = sendQueueSize.front();
+		sendQueue.pop_front();
+		sendQueueSize.pop_front();
+		sendQueueLock.unlock();
+
+
+		boost::asio::async_write(*sock, boost::asio::buffer(dataBuffer, dataSize),
+				boost::bind(&RobotClient::writeMessageHandler, this,
+						dataBuffer,
+						boost::asio::placeholders::error,
+						boost::asio::placeholders::bytes_transferred));
+	}
+	else
+	{
+		sendingInProgress.unlock();
+	}
 }
 
 RobotClient::RobotClient() : resolver(ioService)
@@ -172,8 +179,35 @@ void RobotClient::stop(void)
 
 void RobotClient::sendString(string buffer)
 {
-	boost::asio::async_write(*sock, boost::asio::buffer(buffer),
-			boost::bind(&RobotClient::write_handler, this,
-					boost::asio::placeholders::error(),
-					boost::asio::placeholders::bytes_transferred()));
+//	boost::asio::async_write(*sock, boost::asio::buffer(buffer),
+//			boost::bind(&RobotClient::write_handler, this,
+//					boost::asio::placeholders::error(),
+//					boost::asio::placeholders::bytes_transferred()));
+}
+
+
+void RobotClient::sendSerializedData(google::protobuf::Message *data,
+		enum dataType enumDataType)
+{
+	size_t sizeHeader = sizeof(enumDataType) + sizeof(uint32_t);
+	uint32_t sizePayload = data->ByteSize();
+	uint8_t *byteData = new uint8_t[sizeHeader + sizePayload];
+
+
+	((uint32_t *)byteData)[0] = enumDataType;
+	((uint32_t *)byteData)[1] = sizePayload;
+
+	data->SerializeToArray(byteData + sizeHeader, sizePayload);
+
+	sendQueueLock.lock();
+	sendQueue.push_back(byteData);
+	sendQueueSize.push_back(sizeHeader + sizePayload);
+	sendQueueLock.unlock();
+
+	if(sendingInProgress.try_lock())
+	{
+		boost::system::error_code ec;
+		writeMessageHandler(NULL, ec, 0);
+	}
+
 }

@@ -29,7 +29,7 @@ class RoboGuiApp: public wxApp
 	wxFrame *frameAbsolute;
 
 	RoboGLMap    *glRoboMap;
-//	RoboControls *panelControls;
+	//	RoboControls *panelControls;
 
 public:
 };
@@ -45,8 +45,8 @@ bool RoboGuiApp::OnInit()
 	glRoboMap = new RoboGLMap( (wxFrame*) frameAbsolute, args);
 	sizer->Add(glRoboMap, 10, wxEXPAND);
 
-//	panelControls = new RoboControls(frameAbsolute, wxSize(0, 768));
-//	sizer->Add(panelControls, 1, wxEXPAND | wxDOWN);
+	//	panelControls = new RoboControls(frameAbsolute, wxSize(0, 768));
+	//	sizer->Add(panelControls, 1, wxEXPAND | wxDOWN);
 
 	frameAbsolute->SetSizer(sizer);
 	frameAbsolute->SetAutoLayout(true);
@@ -85,6 +85,13 @@ void RoboGLMap::mouseDown(wxMouseEvent& event)
 	int y = (getHeight()/2 - (float)event.m_y)*MAP_FACTOR;
 
 	cout << "target at: " << x << " x " << y << endl;
+
+	robotClientData.target.set_posx(x);
+	robotClientData.target.set_posy(y);
+	robotClientData.target.set_theta(0);
+
+	robotClient.sendSerializedData(&robotClientData.target, TARGET_POSITIONING);
+
 }
 
 void RoboGLMap::mouseWheelMoved(wxMouseEvent& event)
@@ -114,8 +121,8 @@ void RoboGLMap::keyReleased(wxKeyEvent& event)
 
 
 RoboGLMap::RoboGLMap(wxFrame* parent, int* args) :
-									wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE),
-									m_timer(this, UPDATE_TIMER_ID)
+											wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE),
+											m_timer(this, UPDATE_TIMER_ID)
 {
 	robotClient.setRcd(&robotClientData);
 
@@ -222,11 +229,11 @@ void RoboGLMap::drawRobot(void) {
 		int x, y;
 
 		x = robotClientData.robotInfo.posx()
-														+ points[i][0] * cos(robotClientData.robotInfo.theta())
-														- points[i][1] * sin(robotClientData.robotInfo.theta());
+																+ points[i][0] * cos(robotClientData.robotInfo.theta())
+																- points[i][1] * sin(robotClientData.robotInfo.theta());
 		y = robotClientData.robotInfo.posy()
-														+ points[i][0] * sin(robotClientData.robotInfo.theta())
-														+ points[i][1] * cos(robotClientData.robotInfo.theta());
+																+ points[i][0] * sin(robotClientData.robotInfo.theta())
+																+ points[i][1] * cos(robotClientData.robotInfo.theta());
 
 		glVertex2f(x/MAP_FACTOR + getWidth()/2, getHeight()/2 - y/MAP_FACTOR);
 	}
@@ -328,6 +335,21 @@ void RoboGLMap::drawAllChildren(robotdata::FullPath_PathDot * pathNode)
 	}
 }
 
+void RoboGLMap::drawTarget()
+{
+	glColor4f(0, 1, 0, 1);
+	glBegin(GL_LINES);
+	glVertex2f(getWidth() / 2 + robotClientData.target.posx() / MAP_FACTOR - 5,
+			getHeight() / 2 - robotClientData.target.posy() / MAP_FACTOR - 5);
+	glVertex2f(getWidth() / 2 + robotClientData.target.posx() / MAP_FACTOR + 5,
+			getHeight() / 2 - robotClientData.target.posy() / MAP_FACTOR + 5);
+	glVertex2f(getWidth() / 2 + robotClientData.target.posx() / MAP_FACTOR + 5,
+			getHeight() / 2 - robotClientData.target.posy() / MAP_FACTOR - 5);
+	glVertex2f(getWidth() / 2 + robotClientData.target.posx() / MAP_FACTOR - 5,
+			getHeight() / 2 - robotClientData.target.posy() / MAP_FACTOR + 5);
+	glEnd();
+}
+
 void RoboGLMap::drawPath(void)
 {
 	robotClientData.pInfoMutex.lock();
@@ -336,21 +358,6 @@ void RoboGLMap::drawPath(void)
 		drawAllChildren(robotClientData.pathInfo.mutable_firstdot());
 	}
 	robotClientData.pInfoMutex.unlock();
-
-	//	glColor4f(0, 1, 0, 1);
-	//	glBegin(GL_LINES);
-	//
-	//	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/MAP_FACTOR-5,
-	//			getHeight()/2 - physicalRobot.getTarget().y/MAP_FACTOR-5);
-	//	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/MAP_FACTOR+5,
-	//			getHeight()/2 - physicalRobot.getTarget().y/MAP_FACTOR+5);
-	//
-	//	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/MAP_FACTOR+5,
-	//			getHeight()/2 - physicalRobot.getTarget().y/MAP_FACTOR-5);
-	//	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/MAP_FACTOR-5,
-	//			getHeight()/2 - physicalRobot.getTarget().y/MAP_FACTOR+5);
-	//
-	//	glEnd();
 }
 
 
@@ -375,6 +382,7 @@ void RoboGLMap::render( wxPaintEvent& evt )
 	drawSensors();
 	drawRobot();
 	drawPath();
+	drawTarget();
 
 
 	glFlush();

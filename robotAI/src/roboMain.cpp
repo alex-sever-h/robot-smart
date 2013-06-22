@@ -32,7 +32,7 @@ int flag;
 
 void smartTask()
 {
-	RobotServer rs;
+	RobotServer rs(&physicalRobot);
 	cout << "-----------server initialized-----------\n";
 
 	physicalRobot.setSrv(&rs);
@@ -40,10 +40,6 @@ void smartTask()
 
 	robotBTinterface.connectRobot();
 	robotBTinterface.startSensorPoller();
-
-	sleep(1);
-
-	physicalRobot.moveAtLocation(Location(1000, 0, 30));
 
 #if 0
 	sleep(1);

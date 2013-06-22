@@ -40,6 +40,7 @@ enum dataType{
 	FULL_PATH = 0x02,
 	FULL_MAP  = 0x03,
 	SENSOR_READING = 0x04,
+	TARGET_POSITIONING = 0x05,
 };
 
 

@@ -18,11 +18,13 @@ class RobotClientData{
 
 public:
 
+	boost::mutex tInfoMutex;
 	boost::mutex rInfoMutex;
 	boost::mutex mInfoMutex;
 	boost::mutex pInfoMutex;
 	boost::mutex sInfoMutex;
 
+	robotdata::Target      target;
 	robotdata::RobotInfo   robotInfo;
 	robotdata::FullMap     mapInfo;
 	robotdata::FullPath    pathInfo;

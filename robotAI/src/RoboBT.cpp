@@ -45,7 +45,7 @@ void RoboBT::move_by_time(int timeMs)
 {
 	string cmd_start;
 	char intBuffer[10];
-	sprintf(intBuffer+1, "%4d", abs(timeMs));
+	sprintf(intBuffer+1, "%04d", abs(timeMs));
 
 	if(timeMs > 0)
 		intBuffer[0] = '+';
@@ -80,7 +80,7 @@ void RoboBT::rotate_by_time(int timeMs)
 	string cmd_start;
 
 	char intBuffer[10];
-	sprintf(intBuffer+1, "%4d", abs(timeMs));
+	sprintf(intBuffer+1, "%04d", abs(timeMs));
 
 	if(timeMs > 0)
 		intBuffer[0] = '+';
@@ -154,8 +154,21 @@ void RoboBT::pollUpdateSensors()
 				if (sensMan)
 					sensMan->registerMeasurement(cmd[0], len);
 			}
-
-
+			else
+			{
+				if(fields[i] == "ACK")
+				{
+					cout << "ACKNOWLEDGEDACKNOWLEDGEDACKNOWLEDGEDACKNOWLEDGEDACKNOWLEDGED\n";
+					if(rme)
+						rme->acknowledgeCommand();
+				}
+				if(fields[i] == "RDY")
+				{
+					cout << "READYREADYREADYREADYREADYREADYREADYREADYREADYREADYREADYREADY\n";
+					if(rme)
+						rme->finalizeCommand();
+				}
+			}
 		}
 		recvBuffer = fields[i];
 	}

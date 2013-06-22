@@ -14,11 +14,15 @@
 #include <string>
 #include <list>
 #include "CommunicationShared.hpp"
+#include "robotModel.hpp"
 
 using namespace std;
 
+class RobotModel;
 
 class RobotServer{
+	RobotModel *physicalRobot;
+
 	boost::asio::io_service ioService;
 	boost::asio::ip::tcp::endpoint endpoint;
 	boost::asio::ip::tcp::acceptor acceptor;
@@ -32,12 +36,26 @@ class RobotServer{
 
 	boost::mutex sendingInProgress;
 
+
+	int enumDataType;
+	size_t nData;
+
+	uint32_t packHeader[2];
+
+	std::vector<boost::asio::mutable_buffer> headerBuffer;
+
 	void read_handler(const boost::system::error_code &ec, std::size_t bytes_transferred);
 	void writeMessageHandler(void *data, const boost::system::error_code &ec, std::size_t bytes_transferred);
 	void accept_handler(const boost::system::error_code &ec);
 
+	void readHeader(const boost::system::error_code& ec,
+			std::size_t bytes_transferred);
+	void readPayload(const boost::system::error_code& ec,
+			std::size_t bytes_transferred);
+
+
 public:
-	RobotServer();
+	RobotServer(RobotModel *physicalRobot);
 
 	void sendString(string blabla);
 	void sendSerializedData(void * data, int nData, enum dataType);

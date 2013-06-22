@@ -13,6 +13,7 @@
 #include <iostream>
 #include <string>
 #include "RobotClientData.hpp"
+#include "CommunicationShared.hpp"
 
 using namespace std;
 
@@ -27,7 +28,25 @@ class RobotClient{
 
 	RobotClientData *rcd;
 
-	void write_handler(const boost::system::error_code &ec, std::size_t bytes_transferred);
+	list<void *> sendQueue;
+	list<size_t> sendQueueSize;
+	boost::mutex sendQueueLock;
+
+	boost::mutex sendingInProgress;
+
+
+	int enumDataType;
+	size_t nData;
+
+	uint32_t packHeader[2];
+
+	std::vector<boost::asio::mutable_buffer> headerBuffer;
+
+
+	void writeMessageHandler(void *data,
+			const boost::system::error_code& ec,
+			std::size_t bytes_transferred);
+
 	void readHeader(const boost::system::error_code &ec, std::size_t bytes_transferred);
 	void readPayload(const boost::system::error_code &ec, std::size_t bytes_transferred);
 	void connectHandler(const boost::system::error_code &ec);
@@ -39,6 +58,8 @@ public:
 	void stop(void);
 
 	void sendString(string buffer);
+
+	void sendSerializedData(google::protobuf::Message *data, enum dataType enumDataType);
 
 	void setRcd(RobotClientData* rcd)
 	{
