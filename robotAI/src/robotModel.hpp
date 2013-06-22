@@ -17,6 +17,7 @@
 #include "MapParticle.hpp"
 #include "AStarPathfinder.hpp"
 #include "Location.hpp"
+#include "RobotServer.hpp"
 
 class tySensor;
 class SensorManager;
@@ -26,25 +27,28 @@ class AStarPathfinder;
 class PathNode;
 class MapParticle;
 
-class RobotModel{
-	volatile float		positionXmm;
-	volatile float		positionYmm;
-	volatile float		orientationRad;
+class RobotModel
+{
+	volatile float positionXmm;
+	volatile float positionYmm;
+	volatile float orientationRad;
 
 	int widthMM;
 	int lengthMM;
 
-	SensorManager       *sensorManager;
+	SensorManager *sensorManager;
 
-	RoboBT              *roboBTinterface;
+	RoboBT *roboBTinterface;
 	RobotMovementEngine *rME;
-	AStarPathfinder		*pathFinder;
+	AStarPathfinder *pathFinder;
 
-	tyPolygon           *robotPolygon;
+	tyPolygon *robotPolygon;
 
-	MapParticle			*worldMap;
+	MapParticle *worldMap;
 
-	Location			target;
+	RobotServer *srv;
+
+	Location target;
 
 	void pathfinderThread(const Location& target);
 
@@ -56,15 +60,14 @@ public:
 
 	void placeRobotInMap(MapParticle *world);
 
-
-	void setPosition(float xMM,  float yMM,  float thetaRad);
+	void setPosition(float xMM, float yMM, float thetaRad);
 	void getPosition(float *xMM, float *yMM, float *thetaRad);
 
 	Location getPosition(void);
 	void setPosition(Location);
 
-	int  move(int distanceMM);
-	int  rotate(float thetaRad);
+	int move(int distanceMM);
+	int rotate(float thetaRad);
 
 	void sendRobotInfo();
 	tyPolygon * getRobotPoly();
@@ -75,11 +78,18 @@ public:
 	void updateWorld(tyPolygon * sensorArea, tyPolygon * wallPoly);
 	void updateWorld(tySensor *sensor);
 
-	int getWidthMm() const { return widthMM; }
-	int getLengthMm() const { return lengthMM; }
+	void sendMessage(google::protobuf::Message *message, enum dataType enumDataType);
+
+	int getWidthMm() const
+	{
+		return widthMM;
+	}
+	int getLengthMm() const
+	{
+		return lengthMM;
+	}
 
 	void moveAtLocation(Location target);
-
 
 	Location getTarget() const
 	{
@@ -105,7 +115,11 @@ public:
 	{
 		return positionYmm;
 	}
-};
 
+	void setSrv(RobotServer* srv)
+	{
+		this->srv = srv;
+	}
+};
 
 #endif /* ROBOTMODEL_HPP_ */

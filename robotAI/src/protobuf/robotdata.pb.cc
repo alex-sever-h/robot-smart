@@ -26,18 +26,18 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* SensorInfo_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   SensorInfo_reflection_ = NULL;
-const ::google::protobuf::Descriptor* MapParticle_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  MapParticle_reflection_ = NULL;
 const ::google::protobuf::Descriptor* FullMap_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   FullMap_reflection_ = NULL;
-const ::google::protobuf::Descriptor* PathDot_descriptor_ = NULL;
+const ::google::protobuf::Descriptor* FullMap_MapParticle_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
-  PathDot_reflection_ = NULL;
+  FullMap_MapParticle_reflection_ = NULL;
 const ::google::protobuf::Descriptor* FullPath_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   FullPath_reflection_ = NULL;
+const ::google::protobuf::Descriptor* FullPath_PathDot_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  FullPath_PathDot_reflection_ = NULL;
 
 }  // namespace
 
@@ -68,12 +68,13 @@ void protobuf_AssignDesc_robotdata_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(RobotInfo));
   SensorInfo_descriptor_ = file->message_type(1);
-  static const int SensorInfo_offsets_[5] = {
+  static const int SensorInfo_offsets_[6] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SensorInfo, anglespan_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SensorInfo, anglecenter_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SensorInfo, offsetxmapmm_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SensorInfo, offsetymapmm_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SensorInfo, distance_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SensorInfo, sensor_id_),
   };
   SensorInfo_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -86,24 +87,7 @@ void protobuf_AssignDesc_robotdata_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(SensorInfo));
-  MapParticle_descriptor_ = file->message_type(2);
-  static const int MapParticle_offsets_[3] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MapParticle, posx_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MapParticle, posy_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MapParticle, weight_),
-  };
-  MapParticle_reflection_ =
-    new ::google::protobuf::internal::GeneratedMessageReflection(
-      MapParticle_descriptor_,
-      MapParticle::default_instance_,
-      MapParticle_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MapParticle, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MapParticle, _unknown_fields_),
-      -1,
-      ::google::protobuf::DescriptorPool::generated_pool(),
-      ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(MapParticle));
-  FullMap_descriptor_ = file->message_type(3);
+  FullMap_descriptor_ = file->message_type(2);
   static const int FullMap_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FullMap, wallparticles_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FullMap, safeparticles_),
@@ -119,25 +103,26 @@ void protobuf_AssignDesc_robotdata_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(FullMap));
-  PathDot_descriptor_ = file->message_type(4);
-  static const int PathDot_offsets_[2] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PathDot, x_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PathDot, y_),
+  FullMap_MapParticle_descriptor_ = FullMap_descriptor_->nested_type(0);
+  static const int FullMap_MapParticle_offsets_[3] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FullMap_MapParticle, posx_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FullMap_MapParticle, posy_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FullMap_MapParticle, weight_),
   };
-  PathDot_reflection_ =
+  FullMap_MapParticle_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
-      PathDot_descriptor_,
-      PathDot::default_instance_,
-      PathDot_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PathDot, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PathDot, _unknown_fields_),
+      FullMap_MapParticle_descriptor_,
+      FullMap_MapParticle::default_instance_,
+      FullMap_MapParticle_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FullMap_MapParticle, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FullMap_MapParticle, _unknown_fields_),
       -1,
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(PathDot));
-  FullPath_descriptor_ = file->message_type(5);
+      sizeof(FullMap_MapParticle));
+  FullPath_descriptor_ = file->message_type(3);
   static const int FullPath_offsets_[1] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FullPath, path_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FullPath, firstdot_),
   };
   FullPath_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -150,6 +135,24 @@ void protobuf_AssignDesc_robotdata_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(FullPath));
+  FullPath_PathDot_descriptor_ = FullPath_descriptor_->nested_type(0);
+  static const int FullPath_PathDot_offsets_[4] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FullPath_PathDot, x_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FullPath_PathDot, y_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FullPath_PathDot, nextdot_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FullPath_PathDot, chosendot_),
+  };
+  FullPath_PathDot_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      FullPath_PathDot_descriptor_,
+      FullPath_PathDot::default_instance_,
+      FullPath_PathDot_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FullPath_PathDot, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FullPath_PathDot, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(FullPath_PathDot));
 }
 
 namespace {
@@ -167,13 +170,13 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     SensorInfo_descriptor_, &SensorInfo::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    MapParticle_descriptor_, &MapParticle::default_instance());
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     FullMap_descriptor_, &FullMap::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    PathDot_descriptor_, &PathDot::default_instance());
+    FullMap_MapParticle_descriptor_, &FullMap_MapParticle::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     FullPath_descriptor_, &FullPath::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    FullPath_PathDot_descriptor_, &FullPath_PathDot::default_instance());
 }
 
 }  // namespace
@@ -183,14 +186,14 @@ void protobuf_ShutdownFile_robotdata_2eproto() {
   delete RobotInfo_reflection_;
   delete SensorInfo::default_instance_;
   delete SensorInfo_reflection_;
-  delete MapParticle::default_instance_;
-  delete MapParticle_reflection_;
   delete FullMap::default_instance_;
   delete FullMap_reflection_;
-  delete PathDot::default_instance_;
-  delete PathDot_reflection_;
+  delete FullMap_MapParticle::default_instance_;
+  delete FullMap_MapParticle_reflection_;
   delete FullPath::default_instance_;
   delete FullPath_reflection_;
+  delete FullPath_PathDot::default_instance_;
+  delete FullPath_PathDot_reflection_;
 }
 
 void protobuf_AddDesc_robotdata_2eproto() {
@@ -202,30 +205,34 @@ void protobuf_AddDesc_robotdata_2eproto() {
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\017robotdata.proto\022\trobotdata\"U\n\tRobotInf"
     "o\022\016\n\006length\030\001 \002(\005\022\r\n\005width\030\002 \002(\005\022\014\n\004posx"
-    "\030\003 \002(\002\022\014\n\004posy\030\004 \002(\002\022\r\n\005theta\030\005 \002(\002\"r\n\nS"
-    "ensorInfo\022\021\n\tangleSpan\030\001 \002(\002\022\023\n\013angleCen"
-    "ter\030\002 \002(\002\022\024\n\014offsetXmapMM\030\003 \002(\002\022\024\n\014offse"
-    "tYmapMM\030\004 \002(\002\022\020\n\010distance\030\005 \002(\005\"9\n\013MapPa"
-    "rticle\022\014\n\004posx\030\001 \002(\002\022\014\n\004posy\030\002 \002(\002\022\016\n\006we"
-    "ight\030\003 \002(\002\"g\n\007FullMap\022-\n\rwallParticles\030\001"
-    " \003(\0132\026.robotdata.MapParticle\022-\n\rsafePart"
-    "icles\030\002 \003(\0132\026.robotdata.MapParticle\"\037\n\007P"
-    "athDot\022\t\n\001x\030\001 \002(\002\022\t\n\001y\030\002 \002(\002\",\n\010FullPath"
-    "\022 \n\004path\030\004 \003(\0132\022.robotdata.PathDot", 474);
+    "\030\003 \002(\002\022\014\n\004posy\030\004 \002(\002\022\r\n\005theta\030\005 \002(\002\"\205\001\n\n"
+    "SensorInfo\022\021\n\tangleSpan\030\001 \002(\002\022\023\n\013angleCe"
+    "nter\030\002 \002(\002\022\024\n\014offsetXmapMM\030\003 \002(\002\022\024\n\014offs"
+    "etYmapMM\030\004 \002(\002\022\020\n\010distance\030\005 \002(\005\022\021\n\tsens"
+    "or_id\030\006 \002(\t\"\262\001\n\007FullMap\0225\n\rwallParticles"
+    "\030\001 \003(\0132\036.robotdata.FullMap.MapParticle\0225"
+    "\n\rsafeParticles\030\002 \003(\0132\036.robotdata.FullMa"
+    "p.MapParticle\0329\n\013MapParticle\022\014\n\004posx\030\001 \002"
+    "(\002\022\014\n\004posy\030\002 \002(\002\022\016\n\006weight\030\003 \002(\002\"\270\001\n\010Ful"
+    "lPath\022-\n\010firstDot\030\001 \002(\0132\033.robotdata.Full"
+    "Path.PathDot\032}\n\007PathDot\022\t\n\001x\030\001 \002(\002\022\t\n\001y\030"
+    "\002 \002(\002\022,\n\007nextDot\030\003 \003(\0132\033.robotdata.FullP"
+    "ath.PathDot\022.\n\tchosenDot\030\004 \001(\0132\033.robotda"
+    "ta.FullPath.PathDot", 619);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "robotdata.proto", &protobuf_RegisterTypes);
   RobotInfo::default_instance_ = new RobotInfo();
   SensorInfo::default_instance_ = new SensorInfo();
-  MapParticle::default_instance_ = new MapParticle();
   FullMap::default_instance_ = new FullMap();
-  PathDot::default_instance_ = new PathDot();
+  FullMap_MapParticle::default_instance_ = new FullMap_MapParticle();
   FullPath::default_instance_ = new FullPath();
+  FullPath_PathDot::default_instance_ = new FullPath_PathDot();
   RobotInfo::default_instance_->InitAsDefaultInstance();
   SensorInfo::default_instance_->InitAsDefaultInstance();
-  MapParticle::default_instance_->InitAsDefaultInstance();
   FullMap::default_instance_->InitAsDefaultInstance();
-  PathDot::default_instance_->InitAsDefaultInstance();
+  FullMap_MapParticle::default_instance_->InitAsDefaultInstance();
   FullPath::default_instance_->InitAsDefaultInstance();
+  FullPath_PathDot::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_robotdata_2eproto);
 }
 
@@ -607,6 +614,7 @@ const int SensorInfo::kAngleCenterFieldNumber;
 const int SensorInfo::kOffsetXmapMMFieldNumber;
 const int SensorInfo::kOffsetYmapMMFieldNumber;
 const int SensorInfo::kDistanceFieldNumber;
+const int SensorInfo::kSensorIdFieldNumber;
 #endif  // !_MSC_VER
 
 SensorInfo::SensorInfo()
@@ -630,6 +638,7 @@ void SensorInfo::SharedCtor() {
   offsetxmapmm_ = 0;
   offsetymapmm_ = 0;
   distance_ = 0;
+  sensor_id_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -638,6 +647,9 @@ SensorInfo::~SensorInfo() {
 }
 
 void SensorInfo::SharedDtor() {
+  if (sensor_id_ != &::google::protobuf::internal::kEmptyString) {
+    delete sensor_id_;
+  }
   if (this != default_instance_) {
   }
 }
@@ -670,6 +682,11 @@ void SensorInfo::Clear() {
     offsetxmapmm_ = 0;
     offsetymapmm_ = 0;
     distance_ = 0;
+    if (has_sensor_id()) {
+      if (sensor_id_ != &::google::protobuf::internal::kEmptyString) {
+        sensor_id_->clear();
+      }
+    }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -756,6 +773,23 @@ bool SensorInfo::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(50)) goto parse_sensor_id;
+        break;
+      }
+
+      // required string sensor_id = 6;
+      case 6: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_sensor_id:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_sensor_id()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->sensor_id().data(), this->sensor_id().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -803,6 +837,15 @@ void SensorInfo::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(5, this->distance(), output);
   }
 
+  // required string sensor_id = 6;
+  if (has_sensor_id()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->sensor_id().data(), this->sensor_id().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      6, this->sensor_id(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -834,6 +877,16 @@ void SensorInfo::SerializeWithCachedSizes(
   // required int32 distance = 5;
   if (has_distance()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(5, this->distance(), target);
+  }
+
+  // required string sensor_id = 6;
+  if (has_sensor_id()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->sensor_id().data(), this->sensor_id().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        6, this->sensor_id(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -872,6 +925,13 @@ int SensorInfo::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
           this->distance());
+    }
+
+    // required string sensor_id = 6;
+    if (has_sensor_id()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->sensor_id());
     }
 
   }
@@ -916,6 +976,9 @@ void SensorInfo::MergeFrom(const SensorInfo& from) {
     if (from.has_distance()) {
       set_distance(from.distance());
     }
+    if (from.has_sensor_id()) {
+      set_sensor_id(from.sensor_id());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -933,7 +996,7 @@ void SensorInfo::CopyFrom(const SensorInfo& from) {
 }
 
 bool SensorInfo::IsInitialized() const {
-  if ((_has_bits_[0] & 0x0000001f) != 0x0000001f) return false;
+  if ((_has_bits_[0] & 0x0000003f) != 0x0000003f) return false;
 
   return true;
 }
@@ -945,6 +1008,7 @@ void SensorInfo::Swap(SensorInfo* other) {
     std::swap(offsetxmapmm_, other->offsetxmapmm_);
     std::swap(offsetymapmm_, other->offsetymapmm_);
     std::swap(distance_, other->distance_);
+    std::swap(sensor_id_, other->sensor_id_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
@@ -963,26 +1027,26 @@ void SensorInfo::Swap(SensorInfo* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
-const int MapParticle::kPosxFieldNumber;
-const int MapParticle::kPosyFieldNumber;
-const int MapParticle::kWeightFieldNumber;
+const int FullMap_MapParticle::kPosxFieldNumber;
+const int FullMap_MapParticle::kPosyFieldNumber;
+const int FullMap_MapParticle::kWeightFieldNumber;
 #endif  // !_MSC_VER
 
-MapParticle::MapParticle()
+FullMap_MapParticle::FullMap_MapParticle()
   : ::google::protobuf::Message() {
   SharedCtor();
 }
 
-void MapParticle::InitAsDefaultInstance() {
+void FullMap_MapParticle::InitAsDefaultInstance() {
 }
 
-MapParticle::MapParticle(const MapParticle& from)
+FullMap_MapParticle::FullMap_MapParticle(const FullMap_MapParticle& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
 }
 
-void MapParticle::SharedCtor() {
+void FullMap_MapParticle::SharedCtor() {
   _cached_size_ = 0;
   posx_ = 0;
   posy_ = 0;
@@ -990,37 +1054,37 @@ void MapParticle::SharedCtor() {
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
-MapParticle::~MapParticle() {
+FullMap_MapParticle::~FullMap_MapParticle() {
   SharedDtor();
 }
 
-void MapParticle::SharedDtor() {
+void FullMap_MapParticle::SharedDtor() {
   if (this != default_instance_) {
   }
 }
 
-void MapParticle::SetCachedSize(int size) const {
+void FullMap_MapParticle::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* MapParticle::descriptor() {
+const ::google::protobuf::Descriptor* FullMap_MapParticle::descriptor() {
   protobuf_AssignDescriptorsOnce();
-  return MapParticle_descriptor_;
+  return FullMap_MapParticle_descriptor_;
 }
 
-const MapParticle& MapParticle::default_instance() {
+const FullMap_MapParticle& FullMap_MapParticle::default_instance() {
   if (default_instance_ == NULL) protobuf_AddDesc_robotdata_2eproto();
   return *default_instance_;
 }
 
-MapParticle* MapParticle::default_instance_ = NULL;
+FullMap_MapParticle* FullMap_MapParticle::default_instance_ = NULL;
 
-MapParticle* MapParticle::New() const {
-  return new MapParticle;
+FullMap_MapParticle* FullMap_MapParticle::New() const {
+  return new FullMap_MapParticle;
 }
 
-void MapParticle::Clear() {
+void FullMap_MapParticle::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     posx_ = 0;
     posy_ = 0;
@@ -1030,7 +1094,7 @@ void MapParticle::Clear() {
   mutable_unknown_fields()->Clear();
 }
 
-bool MapParticle::MergePartialFromCodedStream(
+bool FullMap_MapParticle::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) return false
   ::google::protobuf::uint32 tag;
@@ -1099,7 +1163,7 @@ bool MapParticle::MergePartialFromCodedStream(
 #undef DO_
 }
 
-void MapParticle::SerializeWithCachedSizes(
+void FullMap_MapParticle::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required float posx = 1;
   if (has_posx()) {
@@ -1122,7 +1186,7 @@ void MapParticle::SerializeWithCachedSizes(
   }
 }
 
-::google::protobuf::uint8* MapParticle::SerializeWithCachedSizesToArray(
+::google::protobuf::uint8* FullMap_MapParticle::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required float posx = 1;
   if (has_posx()) {
@@ -1146,7 +1210,7 @@ void MapParticle::SerializeWithCachedSizes(
   return target;
 }
 
-int MapParticle::ByteSize() const {
+int FullMap_MapParticle::ByteSize() const {
   int total_size = 0;
 
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
@@ -1177,10 +1241,10 @@ int MapParticle::ByteSize() const {
   return total_size;
 }
 
-void MapParticle::MergeFrom(const ::google::protobuf::Message& from) {
+void FullMap_MapParticle::MergeFrom(const ::google::protobuf::Message& from) {
   GOOGLE_CHECK_NE(&from, this);
-  const MapParticle* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const MapParticle*>(
+  const FullMap_MapParticle* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const FullMap_MapParticle*>(
       &from);
   if (source == NULL) {
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
@@ -1189,7 +1253,7 @@ void MapParticle::MergeFrom(const ::google::protobuf::Message& from) {
   }
 }
 
-void MapParticle::MergeFrom(const MapParticle& from) {
+void FullMap_MapParticle::MergeFrom(const FullMap_MapParticle& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (from.has_posx()) {
@@ -1205,25 +1269,25 @@ void MapParticle::MergeFrom(const MapParticle& from) {
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
-void MapParticle::CopyFrom(const ::google::protobuf::Message& from) {
+void FullMap_MapParticle::CopyFrom(const ::google::protobuf::Message& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-void MapParticle::CopyFrom(const MapParticle& from) {
+void FullMap_MapParticle::CopyFrom(const FullMap_MapParticle& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool MapParticle::IsInitialized() const {
+bool FullMap_MapParticle::IsInitialized() const {
   if ((_has_bits_[0] & 0x00000007) != 0x00000007) return false;
 
   return true;
 }
 
-void MapParticle::Swap(MapParticle* other) {
+void FullMap_MapParticle::Swap(FullMap_MapParticle* other) {
   if (other != this) {
     std::swap(posx_, other->posx_);
     std::swap(posy_, other->posy_);
@@ -1234,16 +1298,16 @@ void MapParticle::Swap(MapParticle* other) {
   }
 }
 
-::google::protobuf::Metadata MapParticle::GetMetadata() const {
+::google::protobuf::Metadata FullMap_MapParticle::GetMetadata() const {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::Metadata metadata;
-  metadata.descriptor = MapParticle_descriptor_;
-  metadata.reflection = MapParticle_reflection_;
+  metadata.descriptor = FullMap_MapParticle_descriptor_;
+  metadata.reflection = FullMap_MapParticle_reflection_;
   return metadata;
 }
 
 
-// ===================================================================
+// -------------------------------------------------------------------
 
 #ifndef _MSC_VER
 const int FullMap::kWallParticlesFieldNumber;
@@ -1312,7 +1376,7 @@ bool FullMap::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated .robotdata.MapParticle wallParticles = 1;
+      // repeated .robotdata.FullMap.MapParticle wallParticles = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
@@ -1327,7 +1391,7 @@ bool FullMap::MergePartialFromCodedStream(
         break;
       }
 
-      // repeated .robotdata.MapParticle safeParticles = 2;
+      // repeated .robotdata.FullMap.MapParticle safeParticles = 2;
       case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
@@ -1360,13 +1424,13 @@ bool FullMap::MergePartialFromCodedStream(
 
 void FullMap::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // repeated .robotdata.MapParticle wallParticles = 1;
+  // repeated .robotdata.FullMap.MapParticle wallParticles = 1;
   for (int i = 0; i < this->wallparticles_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       1, this->wallparticles(i), output);
   }
 
-  // repeated .robotdata.MapParticle safeParticles = 2;
+  // repeated .robotdata.FullMap.MapParticle safeParticles = 2;
   for (int i = 0; i < this->safeparticles_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       2, this->safeparticles(i), output);
@@ -1380,14 +1444,14 @@ void FullMap::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* FullMap::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // repeated .robotdata.MapParticle wallParticles = 1;
+  // repeated .robotdata.FullMap.MapParticle wallParticles = 1;
   for (int i = 0; i < this->wallparticles_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         1, this->wallparticles(i), target);
   }
 
-  // repeated .robotdata.MapParticle safeParticles = 2;
+  // repeated .robotdata.FullMap.MapParticle safeParticles = 2;
   for (int i = 0; i < this->safeparticles_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
@@ -1404,7 +1468,7 @@ void FullMap::SerializeWithCachedSizes(
 int FullMap::ByteSize() const {
   int total_size = 0;
 
-  // repeated .robotdata.MapParticle wallParticles = 1;
+  // repeated .robotdata.FullMap.MapParticle wallParticles = 1;
   total_size += 1 * this->wallparticles_size();
   for (int i = 0; i < this->wallparticles_size(); i++) {
     total_size +=
@@ -1412,7 +1476,7 @@ int FullMap::ByteSize() const {
         this->wallparticles(i));
   }
 
-  // repeated .robotdata.MapParticle safeParticles = 2;
+  // repeated .robotdata.FullMap.MapParticle safeParticles = 2;
   total_size += 1 * this->safeparticles_size();
   for (int i = 0; i < this->safeparticles_size(); i++) {
     total_size +=
@@ -1495,71 +1559,80 @@ void FullMap::Swap(FullMap* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
-const int PathDot::kXFieldNumber;
-const int PathDot::kYFieldNumber;
+const int FullPath_PathDot::kXFieldNumber;
+const int FullPath_PathDot::kYFieldNumber;
+const int FullPath_PathDot::kNextDotFieldNumber;
+const int FullPath_PathDot::kChosenDotFieldNumber;
 #endif  // !_MSC_VER
 
-PathDot::PathDot()
+FullPath_PathDot::FullPath_PathDot()
   : ::google::protobuf::Message() {
   SharedCtor();
 }
 
-void PathDot::InitAsDefaultInstance() {
+void FullPath_PathDot::InitAsDefaultInstance() {
+  chosendot_ = const_cast< ::robotdata::FullPath_PathDot*>(&::robotdata::FullPath_PathDot::default_instance());
 }
 
-PathDot::PathDot(const PathDot& from)
+FullPath_PathDot::FullPath_PathDot(const FullPath_PathDot& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
 }
 
-void PathDot::SharedCtor() {
+void FullPath_PathDot::SharedCtor() {
   _cached_size_ = 0;
   x_ = 0;
   y_ = 0;
+  chosendot_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
-PathDot::~PathDot() {
+FullPath_PathDot::~FullPath_PathDot() {
   SharedDtor();
 }
 
-void PathDot::SharedDtor() {
+void FullPath_PathDot::SharedDtor() {
   if (this != default_instance_) {
+    delete chosendot_;
   }
 }
 
-void PathDot::SetCachedSize(int size) const {
+void FullPath_PathDot::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* PathDot::descriptor() {
+const ::google::protobuf::Descriptor* FullPath_PathDot::descriptor() {
   protobuf_AssignDescriptorsOnce();
-  return PathDot_descriptor_;
+  return FullPath_PathDot_descriptor_;
 }
 
-const PathDot& PathDot::default_instance() {
+const FullPath_PathDot& FullPath_PathDot::default_instance() {
   if (default_instance_ == NULL) protobuf_AddDesc_robotdata_2eproto();
   return *default_instance_;
 }
 
-PathDot* PathDot::default_instance_ = NULL;
+FullPath_PathDot* FullPath_PathDot::default_instance_ = NULL;
 
-PathDot* PathDot::New() const {
-  return new PathDot;
+FullPath_PathDot* FullPath_PathDot::New() const {
+  return new FullPath_PathDot;
 }
 
-void PathDot::Clear() {
+void FullPath_PathDot::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     x_ = 0;
     y_ = 0;
+    if (has_chosendot()) {
+      if (chosendot_ != NULL) chosendot_->::robotdata::FullPath_PathDot::Clear();
+    }
   }
+  nextdot_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
 
-bool PathDot::MergePartialFromCodedStream(
+bool FullPath_PathDot::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) return false
   ::google::protobuf::uint32 tag;
@@ -1592,6 +1665,35 @@ bool PathDot::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(26)) goto parse_nextDot;
+        break;
+      }
+
+      // repeated .robotdata.FullPath.PathDot nextDot = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_nextDot:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_nextdot()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(26)) goto parse_nextDot;
+        if (input->ExpectTag(34)) goto parse_chosenDot;
+        break;
+      }
+
+      // optional .robotdata.FullPath.PathDot chosenDot = 4;
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_chosenDot:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_chosendot()));
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -1612,7 +1714,7 @@ bool PathDot::MergePartialFromCodedStream(
 #undef DO_
 }
 
-void PathDot::SerializeWithCachedSizes(
+void FullPath_PathDot::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required float x = 1;
   if (has_x()) {
@@ -1624,13 +1726,25 @@ void PathDot::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->y(), output);
   }
 
+  // repeated .robotdata.FullPath.PathDot nextDot = 3;
+  for (int i = 0; i < this->nextdot_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      3, this->nextdot(i), output);
+  }
+
+  // optional .robotdata.FullPath.PathDot chosenDot = 4;
+  if (has_chosendot()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      4, this->chosendot(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
   }
 }
 
-::google::protobuf::uint8* PathDot::SerializeWithCachedSizesToArray(
+::google::protobuf::uint8* FullPath_PathDot::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required float x = 1;
   if (has_x()) {
@@ -1642,6 +1756,20 @@ void PathDot::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->y(), target);
   }
 
+  // repeated .robotdata.FullPath.PathDot nextDot = 3;
+  for (int i = 0; i < this->nextdot_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        3, this->nextdot(i), target);
+  }
+
+  // optional .robotdata.FullPath.PathDot chosenDot = 4;
+  if (has_chosendot()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        4, this->chosendot(), target);
+  }
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -1649,7 +1777,7 @@ void PathDot::SerializeWithCachedSizes(
   return target;
 }
 
-int PathDot::ByteSize() const {
+int FullPath_PathDot::ByteSize() const {
   int total_size = 0;
 
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
@@ -1663,7 +1791,22 @@ int PathDot::ByteSize() const {
       total_size += 1 + 4;
     }
 
+    // optional .robotdata.FullPath.PathDot chosenDot = 4;
+    if (has_chosendot()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->chosendot());
+    }
+
   }
+  // repeated .robotdata.FullPath.PathDot nextDot = 3;
+  total_size += 1 * this->nextdot_size();
+  for (int i = 0; i < this->nextdot_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->nextdot(i));
+  }
+
   if (!unknown_fields().empty()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
@@ -1675,10 +1818,10 @@ int PathDot::ByteSize() const {
   return total_size;
 }
 
-void PathDot::MergeFrom(const ::google::protobuf::Message& from) {
+void FullPath_PathDot::MergeFrom(const ::google::protobuf::Message& from) {
   GOOGLE_CHECK_NE(&from, this);
-  const PathDot* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const PathDot*>(
+  const FullPath_PathDot* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const FullPath_PathDot*>(
       &from);
   if (source == NULL) {
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
@@ -1687,8 +1830,9 @@ void PathDot::MergeFrom(const ::google::protobuf::Message& from) {
   }
 }
 
-void PathDot::MergeFrom(const PathDot& from) {
+void FullPath_PathDot::MergeFrom(const FullPath_PathDot& from) {
   GOOGLE_CHECK_NE(&from, this);
+  nextdot_.MergeFrom(from.nextdot_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (from.has_x()) {
       set_x(from.x());
@@ -1696,51 +1840,62 @@ void PathDot::MergeFrom(const PathDot& from) {
     if (from.has_y()) {
       set_y(from.y());
     }
+    if (from.has_chosendot()) {
+      mutable_chosendot()->::robotdata::FullPath_PathDot::MergeFrom(from.chosendot());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
-void PathDot::CopyFrom(const ::google::protobuf::Message& from) {
+void FullPath_PathDot::CopyFrom(const ::google::protobuf::Message& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-void PathDot::CopyFrom(const PathDot& from) {
+void FullPath_PathDot::CopyFrom(const FullPath_PathDot& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool PathDot::IsInitialized() const {
+bool FullPath_PathDot::IsInitialized() const {
   if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
 
+  for (int i = 0; i < nextdot_size(); i++) {
+    if (!this->nextdot(i).IsInitialized()) return false;
+  }
+  if (has_chosendot()) {
+    if (!this->chosendot().IsInitialized()) return false;
+  }
   return true;
 }
 
-void PathDot::Swap(PathDot* other) {
+void FullPath_PathDot::Swap(FullPath_PathDot* other) {
   if (other != this) {
     std::swap(x_, other->x_);
     std::swap(y_, other->y_);
+    nextdot_.Swap(&other->nextdot_);
+    std::swap(chosendot_, other->chosendot_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
   }
 }
 
-::google::protobuf::Metadata PathDot::GetMetadata() const {
+::google::protobuf::Metadata FullPath_PathDot::GetMetadata() const {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::Metadata metadata;
-  metadata.descriptor = PathDot_descriptor_;
-  metadata.reflection = PathDot_reflection_;
+  metadata.descriptor = FullPath_PathDot_descriptor_;
+  metadata.reflection = FullPath_PathDot_reflection_;
   return metadata;
 }
 
 
-// ===================================================================
+// -------------------------------------------------------------------
 
 #ifndef _MSC_VER
-const int FullPath::kPathFieldNumber;
+const int FullPath::kFirstDotFieldNumber;
 #endif  // !_MSC_VER
 
 FullPath::FullPath()
@@ -1749,6 +1904,7 @@ FullPath::FullPath()
 }
 
 void FullPath::InitAsDefaultInstance() {
+  firstdot_ = const_cast< ::robotdata::FullPath_PathDot*>(&::robotdata::FullPath_PathDot::default_instance());
 }
 
 FullPath::FullPath(const FullPath& from)
@@ -1759,6 +1915,7 @@ FullPath::FullPath(const FullPath& from)
 
 void FullPath::SharedCtor() {
   _cached_size_ = 0;
+  firstdot_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -1768,6 +1925,7 @@ FullPath::~FullPath() {
 
 void FullPath::SharedDtor() {
   if (this != default_instance_) {
+    delete firstdot_;
   }
 }
 
@@ -1793,7 +1951,11 @@ FullPath* FullPath::New() const {
 }
 
 void FullPath::Clear() {
-  path_.Clear();
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_firstdot()) {
+      if (firstdot_ != NULL) firstdot_->::robotdata::FullPath_PathDot::Clear();
+    }
+  }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -1804,17 +1966,15 @@ bool FullPath::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated .robotdata.PathDot path = 4;
-      case 4: {
+      // required .robotdata.FullPath.PathDot firstDot = 1;
+      case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_path:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-                input, add_path()));
+               input, mutable_firstdot()));
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(34)) goto parse_path;
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -1837,10 +1997,10 @@ bool FullPath::MergePartialFromCodedStream(
 
 void FullPath::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // repeated .robotdata.PathDot path = 4;
-  for (int i = 0; i < this->path_size(); i++) {
+  // required .robotdata.FullPath.PathDot firstDot = 1;
+  if (has_firstdot()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      4, this->path(i), output);
+      1, this->firstdot(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -1851,11 +2011,11 @@ void FullPath::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* FullPath::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // repeated .robotdata.PathDot path = 4;
-  for (int i = 0; i < this->path_size(); i++) {
+  // required .robotdata.FullPath.PathDot firstDot = 1;
+  if (has_firstdot()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        4, this->path(i), target);
+        1, this->firstdot(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -1868,14 +2028,15 @@ void FullPath::SerializeWithCachedSizes(
 int FullPath::ByteSize() const {
   int total_size = 0;
 
-  // repeated .robotdata.PathDot path = 4;
-  total_size += 1 * this->path_size();
-  for (int i = 0; i < this->path_size(); i++) {
-    total_size +=
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        this->path(i));
-  }
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required .robotdata.FullPath.PathDot firstDot = 1;
+    if (has_firstdot()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->firstdot());
+    }
 
+  }
   if (!unknown_fields().empty()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
@@ -1901,7 +2062,11 @@ void FullPath::MergeFrom(const ::google::protobuf::Message& from) {
 
 void FullPath::MergeFrom(const FullPath& from) {
   GOOGLE_CHECK_NE(&from, this);
-  path_.MergeFrom(from.path_);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_firstdot()) {
+      mutable_firstdot()->::robotdata::FullPath_PathDot::MergeFrom(from.firstdot());
+    }
+  }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
@@ -1918,16 +2083,17 @@ void FullPath::CopyFrom(const FullPath& from) {
 }
 
 bool FullPath::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
 
-  for (int i = 0; i < path_size(); i++) {
-    if (!this->path(i).IsInitialized()) return false;
+  if (has_firstdot()) {
+    if (!this->firstdot().IsInitialized()) return false;
   }
   return true;
 }
 
 void FullPath::Swap(FullPath* other) {
   if (other != this) {
-    path_.Swap(&other->path_);
+    std::swap(firstdot_, other->firstdot_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

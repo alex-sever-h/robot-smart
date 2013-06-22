@@ -65,6 +65,7 @@ void SensorManager::registerMeasurement(string id, unsigned int length)
 						sensors.at(i)->offsetXmapMM,	sensors.at(i)->offsetYmapMM, sensors.at(i)->distanceMM);
 
 				physicalRobot->updateWorld(sensors.at(i));
+				physicalRobot->sendMessage(packMessage(sensors.at(i)), SENSOR_READING);
 			}
 			break;
 		}
@@ -172,6 +173,22 @@ vector<tyPolygon *> *SensorManager::getSensorSafeAreas(){
 	}
 
 	return sPolyPtrs;
+}
+
+google::protobuf::Message* SensorManager::packMessage(tySensor* sensor)
+{
+	robotdata::SensorInfo *sensorInfo = new robotdata::SensorInfo();
+
+	sensorInfo->set_sensor_id(sensor->id);
+	sensorInfo->set_anglecenter(sensor->angleCenterRadMap);
+	sensorInfo->set_anglespan(sensor->angleSpan);
+	sensorInfo->set_distance(sensor->distanceMM);
+	sensorInfo->set_offsetxmapmm(sensor->offsetXmapMM);
+	sensorInfo->set_offsetymapmm(sensor->offsetYmapMM);
+
+	//cout << "sensorinfosize: " << sensorInfo->ByteSize() << endl;
+
+	return sensorInfo;
 }
 
 vector<tyPolygon *> *SensorManager::getSensorWallAreas(){

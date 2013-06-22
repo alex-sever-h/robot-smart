@@ -31,11 +31,7 @@
 
 #define UPDATE_TIMER_ID 2
 
-#define MAP_FACTOR 5
-
-extern RobotModel physicalRobot;
-extern MapParticle   world;
-
+#define MAP_FACTOR (5)
 
 class RoboGuiApp: public wxApp
 {
@@ -102,7 +98,7 @@ void RoboGLMap::mouseDown(wxMouseEvent& event)
 
 	cout << "target at: " << newTarget.x << " x " << newTarget.y << endl;
 
-	physicalRobot.moveAtLocation(newTarget);
+	//physicalRobot.moveAtLocation(newTarget);
 }
 
 void RoboGLMap::mouseWheelMoved(wxMouseEvent& event)
@@ -132,9 +128,11 @@ void RoboGLMap::keyReleased(wxKeyEvent& event)
 
 
 RoboGLMap::RoboGLMap(wxFrame* parent, int* args) :
-													wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE),
-													m_timer(this, UPDATE_TIMER_ID)
+									wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE),
+									m_timer(this, UPDATE_TIMER_ID)
 {
+	robotClient.setRcd(&robotClientData);
+
 	m_context = new wxGLContext(this);
 
 	m_timer.Start(1000/30);
@@ -220,143 +218,153 @@ unsigned int RoboGLMap::getHeight()
 }
 
 void RoboGLMap::drawRobot(void) {
+	robotClientData.rInfoMutex.lock();
 	int points[6][2] = {
-			{+physicalRobot.getLengthMm()/2 + 20, 0 },
-			{+physicalRobot.getLengthMm()/2,      -physicalRobot.getWidthMm()/2},
-			{-physicalRobot.getLengthMm()/2,      -physicalRobot.getWidthMm()/2},
-			{-physicalRobot.getLengthMm()/2 + 20, 0},
-			{-physicalRobot.getLengthMm()/2,      +physicalRobot.getWidthMm()/2},
-			{+physicalRobot.getLengthMm()/2,      +physicalRobot.getWidthMm()/2}
+			{+robotClientData.robotInfo.length()/2 + 20, 0 },
+			{+robotClientData.robotInfo.length()/2,      -robotClientData.robotInfo.width()/2},
+			{-robotClientData.robotInfo.length()/2,      -robotClientData.robotInfo.width()/2},
+			{-robotClientData.robotInfo.length()/2 + 20, 0},
+			{-robotClientData.robotInfo.length()/2,      +robotClientData.robotInfo.width()/2},
+			{+robotClientData.robotInfo.length()/2,      +robotClientData.robotInfo.width()/2}
 	};
 
 
 	glColor4f(1, 0., 0.5, .5);
-		glBegin(GL_POLYGON);
+	glBegin(GL_POLYGON);
 	for(unsigned int i = 0; i < 6; ++i)
 	{
 		int x, y;
 
-		x = physicalRobot.getPositionXmm()
-				+ points[i][0] * cos(physicalRobot.getOrientationRad())
-				- points[i][1] * sin(physicalRobot.getOrientationRad());
-		y = physicalRobot.getPositionYmm()
-				+ points[i][0] * sin(physicalRobot.getOrientationRad())
-				+ points[i][1] * cos(physicalRobot.getOrientationRad());
+		x = robotClientData.robotInfo.posx()
+														+ points[i][0] * cos(robotClientData.robotInfo.theta())
+														- points[i][1] * sin(robotClientData.robotInfo.theta());
+		y = robotClientData.robotInfo.posy()
+														+ points[i][0] * sin(robotClientData.robotInfo.theta())
+														+ points[i][1] * cos(robotClientData.robotInfo.theta());
 
 		glVertex2f(x/MAP_FACTOR + getWidth()/2, getHeight()/2 - y/MAP_FACTOR);
 	}
 	glEnd();
+	robotClientData.rInfoMutex.unlock();
 }
+
 
 void RoboGLMap::drawSensors(void)
 {
-	vector<tyPolygon *> *sSafeAreas = physicalRobot.getSensorSafeAreas();
-	vector<tyPolygon *> *sWallAreas = physicalRobot.getSensorWallAreas();
-	vector<LocationWWeight> *poly;
-
-	for(unsigned int si = 0; si < sSafeAreas->size(); ++si)
+	robotClientData.sInfoMutex.lock();
+	for(list<robotdata::SensorInfo *>::iterator it = robotClientData.sensorsInfo.begin();
+			it != robotClientData.sensorsInfo.end(); ++it)
 	{
-		poly = sSafeAreas->at(si);
-		if(poly)
-		{
-			glColor4f(0, 1, 1, 0.5);
-			glBegin(GL_POLYGON);//since the arc is not a closed curve, this is a strip now
-			for(unsigned int i = 0; i < poly->size(); ++i)
-			{
-				glVertex2f(poly->at(i).x/MAP_FACTOR + getWidth()/2, getHeight()/2 - poly->at(i).y/MAP_FACTOR);
-			}
-			glEnd();
-		}
-	}
-	for(unsigned int si = 0; si < sWallAreas->size(); ++si)
-	{
-		poly = sWallAreas->at(si);
-		if(poly)
-		{
-			glColor4f(1, 0, 0, 1);
-			glBegin(GL_LINE);//since the arc is not a closed curve, this is a strip now
-			for(unsigned int i = 0; i < poly->size(); ++i)
-			{
-				glVertex2f(poly->at(i).x/MAP_FACTOR + getWidth()/2, getHeight()/2 - poly->at(i).y/MAP_FACTOR);
-			}
-			glEnd();
-		}
-	}
+		const int num_segments = 10;
+		float theta = (*it)->anglespan() / float(num_segments - 1);
+		float tangetial_factor = tanf(theta);
+		float radial_factor = cosf(theta);
+		float x = (*it)->distance() * cosf((*it)->anglecenter() - (*it)->anglespan()/2);
+		float y = (*it)->distance() * sinf((*it)->anglecenter() - (*it)->anglespan()/2);
 
-	delete sSafeAreas;
-	delete sWallAreas;
+		glColor4f(0, 1, 1, 0.5);
+		glBegin(GL_POLYGON);//since the arc is not a closed curve, this is a strip now
+
+		glVertex2f((*it)->offsetxmapmm()/MAP_FACTOR + getWidth()/2,
+				getHeight()/2 - (*it)->offsetymapmm()/MAP_FACTOR);
+
+		//	cout << cx << " x " << cy << endl;
+
+		for(int ii = 0; ii < num_segments; ii++)
+		{
+			glVertex2f(((*it)->offsetxmapmm() + x)/MAP_FACTOR + getWidth()/2,
+					getHeight()/2 - ((*it)->offsetymapmm() + y)/MAP_FACTOR);
+
+			float tx = -y;
+			float ty = x;
+
+			x += tx * tangetial_factor;
+			y += ty * tangetial_factor;
+
+			x *= radial_factor;
+			y *= radial_factor;
+		}
+		glEnd();
+	}
+	robotClientData.sInfoMutex.unlock();
 }
 
 void RoboGLMap::drawMap(void)
 {
-	const list<LocationWWeight>* mapParticles;
-
-	mapParticles = world.getSafeParticleList();
+	robotClientData.mInfoMutex.lock();
 	glBegin(GL_POINTS);
-	for(list<LocationWWeight>::const_iterator it = mapParticles->begin(); it != mapParticles->end(); ++it)
+	for(google::protobuf::RepeatedPtrField<robotdata::FullMap_MapParticle>::const_iterator it = robotClientData.mapInfo.safeparticles().begin();
+			it != robotClientData.mapInfo.safeparticles().end(); ++it)
 	{
-		int screenX = getWidth()/2 + it->x/MAP_FACTOR;
-		int screenY = getHeight()/2 - it->y/MAP_FACTOR;
+		int screenX = getWidth()/2 + it->posx()/MAP_FACTOR;
+		int screenY = getHeight()/2 - it->posy()/MAP_FACTOR;
 
-		glColor4f(0, 1, 0, it->weight/40.0);
+		glColor4f(0, 1, 0, it->weight()/40.0);
 		glVertex2f(screenX, screenY);
 	}
 	glEnd();
 
-	mapParticles = world.getWallParticleList();
 	glBegin(GL_POINTS);
-	for(list<LocationWWeight>::const_iterator it = mapParticles->begin(); it != mapParticles->end(); ++it)
+	for(google::protobuf::RepeatedPtrField<robotdata::FullMap_MapParticle>::const_iterator it = robotClientData.mapInfo.wallparticles().begin();
+			it != robotClientData.mapInfo.wallparticles().end(); ++it)
 	{
-		int screenX = getWidth()/2 + it->x/MAP_FACTOR;
-		int screenY = getHeight()/2 - it->y/MAP_FACTOR;
+		int screenX = getWidth()/2 + it->posx()/MAP_FACTOR;
+		int screenY = getHeight()/2 - it->posy()/MAP_FACTOR;
 
-		glColor4f(1, 0, 0, it->weight/40.0);
+		glColor4f(1, 0, 0, it->weight()/40.0);
 		glVertex2f(screenX, screenY);
 	}
 	glEnd();
+	robotClientData.mInfoMutex.unlock();
 }
 
-void RoboGLMap::drawAllChildren(PathNode * node)
+void RoboGLMap::drawAllChildren(robotdata::FullPath_PathDot * pathNode)
 {
 	glColor4f(1, 1, .0, .5);
 	glBegin(GL_LINES);
-	for(list<PathNode *>::iterator it = node->children.begin(); it != node->children.end(); ++it)
+
+	for(google::protobuf::RepeatedPtrField<robotdata::FullPath_PathDot>::const_iterator it = pathNode->nextdot().begin();
+			it != pathNode->nextdot().end(); ++it)
 	{
-		glVertex2f(getWidth()/2 + node->x/MAP_FACTOR, getHeight()/2 - node->y/MAP_FACTOR);
-		glVertex2f(getWidth()/2 + (*it)->x/MAP_FACTOR, getHeight()/2 - (*it)->y/MAP_FACTOR);
+		glVertex2f(getWidth()/2 + pathNode->x()/MAP_FACTOR, getHeight()/2 - pathNode->y()/MAP_FACTOR);
+		glVertex2f(getWidth()/2 + it->x()/MAP_FACTOR, getHeight()/2 - it->y()/MAP_FACTOR);
 		//		cout << node->x << " x " << node->y << " --> " << (*it)->x << " x " <<  (*it)->y << " $ " << (*it)->cost << " + " << (*it)->heuristic << endl ;
 	}
+
 	glEnd();
 
 	//	cout << "......................NEXT...................................................................\n";
 
-	for(list<PathNode *>::iterator it = node->children.begin(); it != node->children.end(); ++it)
+	for(int i = 0; i < pathNode->nextdot_size(); ++i)
 	{
-		drawAllChildren(*it);
+		robotdata::FullPath_PathDot * helper = (robotdata::FullPath_PathDot *)&(pathNode->nextdot(i));
+		drawAllChildren(helper);
 	}
 }
 
 void RoboGLMap::drawPath(void)
 {
-	if(physicalRobot.path)
+	robotClientData.pInfoMutex.lock();
+	if(robotClientData.pathInfo.has_firstdot())
 	{
-		drawAllChildren(physicalRobot.path);
+		drawAllChildren(robotClientData.pathInfo.mutable_firstdot());
 	}
+	robotClientData.pInfoMutex.unlock();
 
-	glColor4f(0, 1, 0, 1);
-	glBegin(GL_LINES);
-
-	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/MAP_FACTOR-5,
-			getHeight()/2 - physicalRobot.getTarget().y/MAP_FACTOR-5);
-	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/MAP_FACTOR+5,
-			getHeight()/2 - physicalRobot.getTarget().y/MAP_FACTOR+5);
-
-	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/MAP_FACTOR+5,
-			getHeight()/2 - physicalRobot.getTarget().y/MAP_FACTOR-5);
-	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/MAP_FACTOR-5,
-			getHeight()/2 - physicalRobot.getTarget().y/MAP_FACTOR+5);
-
-	glEnd();
+	//	glColor4f(0, 1, 0, 1);
+	//	glBegin(GL_LINES);
+	//
+	//	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/MAP_FACTOR-5,
+	//			getHeight()/2 - physicalRobot.getTarget().y/MAP_FACTOR-5);
+	//	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/MAP_FACTOR+5,
+	//			getHeight()/2 - physicalRobot.getTarget().y/MAP_FACTOR+5);
+	//
+	//	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/MAP_FACTOR+5,
+	//			getHeight()/2 - physicalRobot.getTarget().y/MAP_FACTOR-5);
+	//	glVertex2f(getWidth()/2 + physicalRobot.getTarget().x/MAP_FACTOR-5,
+	//			getHeight()/2 - physicalRobot.getTarget().y/MAP_FACTOR+5);
+	//
+	//	glEnd();
 }
 
 

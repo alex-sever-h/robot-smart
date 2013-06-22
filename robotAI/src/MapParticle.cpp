@@ -8,6 +8,7 @@
 #include <iostream>
 #include "MapParticle.hpp"
 #include "geometricPlane.hpp"
+#include "protobuf/robotdata.pb.h"
 
 #define NEW_PARTICLE_FACTOR 1
 #define CLEAR_SAFE_FACTOR   1
@@ -98,7 +99,7 @@ void MapParticle::fillSafeArea(tySensor* sensor)
 	gaussGenerator *gaussGeneratorTheta = new gaussGenerator(rEngine, *distributionTheta);
 
 	safeParticleGuard.lock();
-	for(int i = 0; i < (int)sensor->distanceMM*sensor->angleSpan/2; i++)
+	for(int i = 0; i < (int)sensor->distanceMM*sensor->angleSpan/20; i++)
 	{
 		float theta;
 		float length;
@@ -121,7 +122,7 @@ void MapParticle::fillSafeArea(tySensor* sensor)
 	wallParticleGuard.lock();
 	clearSafeArea(sensor->polySafe);
 
-	for(int i = 0; i < (int)sensor->distanceMM*sensor->angleSpan/10; i++)
+	for(int i = 0; i < (int)sensor->distanceMM*sensor->angleSpan/100; i++)
 	{
 		float theta;
 		float length;
@@ -163,3 +164,47 @@ void MapParticle::clearMap(void)
 	safeParticleList->clear();
 	wallParticleList->clear();
 }
+
+google::protobuf::Message* MapParticle::sendFullMap()
+{
+	robotdata::FullMap *fullMap = new robotdata::FullMap();
+
+	//add wall particles
+	for (list<LocationWWeight>::iterator it = wallParticleList->begin();
+			it != wallParticleList->end();
+			it++)
+	{
+		robotdata::FullMap_MapParticle *helper = fullMap->add_wallparticles();
+		helper->set_posx(it->x);
+		helper->set_posy(it->y);
+		helper->set_weight(it->weight);
+	}
+
+	//add safe particles
+	for (list<LocationWWeight>::iterator it = safeParticleList->begin();
+			it != safeParticleList->end();
+			it++)
+	{
+		robotdata::FullMap_MapParticle *helper = fullMap->add_safeparticles();
+		helper->set_posx(it->x);
+		helper->set_posy(it->y);
+		helper->set_weight(it->weight);
+	}
+
+	return fullMap;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

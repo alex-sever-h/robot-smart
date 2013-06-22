@@ -14,25 +14,31 @@ message SensorInfo {
 	required float offsetXmapMM = 3;
 	required float offsetYmapMM = 4;
 	required int32 distance     = 5;
+	required string sensor_id   = 6;
 }
 
-message MapParticle {
-	required float posx   = 1;
-	required float posy   = 2;
-	required float weight = 3;
-}
 
 message FullMap {
+	message MapParticle {
+		required float posx   = 1;
+		required float posy   = 2;
+		required float weight = 3;
+	}
+
 	repeated MapParticle   wallParticles = 1;
 	repeated MapParticle   safeParticles = 2;
 }
 
-message PathDot {
-	required float x = 1;
-	required float y = 2;
-}
+
 
 message FullPath {	
-	repeated PathDot       path = 4; 
+	message PathDot {
+		required float x = 1;
+		required float y = 2;
+		repeated PathDot nextDot = 3;
+		optional PathDot chosenDot = 4;
+	}
+	
+	required PathDot firstDot = 1; 
 }
 

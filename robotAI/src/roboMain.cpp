@@ -32,42 +32,62 @@ int flag;
 
 void smartTask()
 {
-	//RobotServer rs;
+	RobotServer rs;
+	cout << "-----------server initialized-----------\n";
+
+	physicalRobot.setSrv(&rs);
+
+	//
+	//	float a = 0, b = 0, c = 0;
+	//	while(1)
+	//	{
+	//		a+=1;
+	//		b+=10;
+	//		c+=100;
+	//		sleep(1);
+	//		physicalRobot.sendRobotInfo();
+	//		physicalRobot.setPosition(a, b, c);
+	//	}
+	//rs.stop();
+
 
 	physicalRobot.placeRobotInMap(&world);
 
 	robotBTinterface.connectRobot();
 	robotBTinterface.startSensorPoller();
 
+	sleep(15);
 
-	//	sleep(1);
-	//	physicalRobot.move(1000);
-	//	sleep(1);
-	//	physicalRobot.rotate(DEG_TO_RAD(360));
-	//
-	//	sleep(1);
-	//	physicalRobot.move(1050);
-	//	sleep(5);
-	//	physicalRobot.rotate(DEG_TO_RAD(180));
+	physicalRobot.moveAtLocation(Location(1000, 0, 30));
 
+
+#if 0
+	sleep(1);
+	physicalRobot.move(1000);
+#endif
+
+#if 0
+	sleep(1);
+	physicalRobot.rotate(DEG_TO_RAD(360));
+#endif
 
 	while(1)
 	{
-		//rs.addString("blabla\n");
+
 	}
 }
 
 void gui_task()
 {
-	//RobotClient rc;
-
-	int argc = 1;
-	char appname[] = "roboAI";
-	char *argv[1];
-	argv[0] = appname;
-
 	printf("startinggui\n");
-	wxEntry(argc, argv);
+
+	{
+		int argc = 1;
+		char appname[] = "roboAI";
+		char *argv[1];
+		argv[0] = appname;
+		wxEntry(argc, argv);
+	}
 }
 
 

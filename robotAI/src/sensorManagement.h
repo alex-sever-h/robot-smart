@@ -14,6 +14,8 @@
 #include "locationWWeight.hpp"
 #include "geometricPlane.hpp"
 #include "robotModel.hpp"
+#include "protobuf/robotdata.pb.h"
+
 
 #define SENSOR_MAX_DISTANCE_MM 2000
 
@@ -79,6 +81,8 @@ public:
 
 	void setSensorOffset(string sensor_id, int offsetx, int offsety);
 	void updateSensorsOffset(float px, float py, float theta);
+
+	google::protobuf::Message * packMessage(tySensor * sensor);
 
 	vector<tyPolygon *> *getSensorSafeAreas();
 	vector<tyPolygon *> *getSensorWallAreas();

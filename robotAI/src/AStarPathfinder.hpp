@@ -18,9 +18,11 @@ using namespace std;
 class RobotModel;
 class MapParticle;
 
-class PathNode {
+class PathNode
+{
 public:
-	PathNode(PathNode *p, float x, float y, float t, float c, float h){
+	PathNode(PathNode *p, float x, float y, float t, float c, float h)
+	{
 		this->x = x;
 		this->y = y;
 		this->theta = t;
@@ -43,37 +45,45 @@ public:
 	list<PathNode *> children;
 };
 
-class AStarPathfinder{
+class AStarPathfinder
+{
 
 	MapParticle *world;
-	RobotModel  *pRobot;
+	RobotModel *pRobot;
 
 private:
-	tyPolygon	*generatePathArea(LocationWWeight start, LocationWWeight end, float theta);
+	tyPolygon *generatePathArea(LocationWWeight start, LocationWWeight end,
+			float theta);
 
-	PathNode	*getMinCostLeafNode(PathNode *origin);
-	void 		expandPathNode(PathNode* origin, const LocationWWeight& target, PathNode* current);
-	bool 		arrivedAtGoal(const LocationWWeight& target, PathNode* currentNode);
-	void expandOnDirection(PathNode* origin, float rotation, const LocationWWeight& target,
+	PathNode *getMinCostLeafNode(PathNode *origin);
+	void expandPathNode(PathNode* origin, const LocationWWeight& target,
 			PathNode* current);
-	bool checkForAlreadyThere(PathNode *origin, PathNode *current, float xnew, float ynew);
+	bool arrivedAtGoal(const LocationWWeight& target, PathNode* currentNode);
+	void expandOnDirection(PathNode* origin, float rotation,
+			const LocationWWeight& target, PathNode* current);
+	bool checkForAlreadyThere(PathNode *origin, PathNode *current, float xnew,
+			float ynew);
 	bool purgePathTree(PathNode *origin, PathNode *preserved);
+
+	void addEachNodeToProtobuf(PathNode* originReal, robotdata::FullPath_PathDot *originProto);
 
 public:
 	AStarPathfinder(RobotModel *physicalRobot);
 	virtual ~AStarPathfinder();
 
-	tyPolygon	*generatePathArea(float xStart, float yStart, float xEnd, float yEnd, float theta);
+	tyPolygon *generatePathArea(float xStart, float yStart, float xEnd,
+			float yEnd, float theta);
 
 	PathNode *generateRawPath(LocationWWeight target);
-	bool     checkPathForMapUpdates(PathNode * path);
-	void     deletePath(PathNode *path);
+	bool checkPathForMapUpdates(PathNode * path);
+	void deletePath(PathNode *path);
 
 	void setWorld(MapParticle* world)
 	{
 		this->world = world;
 	}
-};
 
+	google::protobuf::Message * sendPath(PathNode *origin);
+};
 
 #endif /* ASTARPATHFINDER_HPP_ */

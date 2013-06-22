@@ -35,10 +35,10 @@ void protobuf_ShutdownFile_robotdata_2eproto();
 
 class RobotInfo;
 class SensorInfo;
-class MapParticle;
 class FullMap;
-class PathDot;
+class FullMap_MapParticle;
 class FullPath;
+class FullPath_PathDot;
 
 // ===================================================================
 
@@ -253,6 +253,18 @@ class SensorInfo : public ::google::protobuf::Message {
   inline ::google::protobuf::int32 distance() const;
   inline void set_distance(::google::protobuf::int32 value);
 
+  // required string sensor_id = 6;
+  inline bool has_sensor_id() const;
+  inline void clear_sensor_id();
+  static const int kSensorIdFieldNumber = 6;
+  inline const ::std::string& sensor_id() const;
+  inline void set_sensor_id(const ::std::string& value);
+  inline void set_sensor_id(const char* value);
+  inline void set_sensor_id(const char* value, size_t size);
+  inline ::std::string* mutable_sensor_id();
+  inline ::std::string* release_sensor_id();
+  inline void set_allocated_sensor_id(::std::string* sensor_id);
+
   // @@protoc_insertion_point(class_scope:robotdata.SensorInfo)
  private:
   inline void set_has_anglespan();
@@ -265,6 +277,8 @@ class SensorInfo : public ::google::protobuf::Message {
   inline void clear_has_offsetymapmm();
   inline void set_has_distance();
   inline void clear_has_distance();
+  inline void set_has_sensor_id();
+  inline void clear_has_sensor_id();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
@@ -272,10 +286,11 @@ class SensorInfo : public ::google::protobuf::Message {
   float anglecenter_;
   float offsetxmapmm_;
   float offsetymapmm_;
+  ::std::string* sensor_id_;
   ::google::protobuf::int32 distance_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
 
   friend void  protobuf_AddDesc_robotdata_2eproto();
   friend void protobuf_AssignDesc_robotdata_2eproto();
@@ -286,14 +301,14 @@ class SensorInfo : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class MapParticle : public ::google::protobuf::Message {
+class FullMap_MapParticle : public ::google::protobuf::Message {
  public:
-  MapParticle();
-  virtual ~MapParticle();
+  FullMap_MapParticle();
+  virtual ~FullMap_MapParticle();
 
-  MapParticle(const MapParticle& from);
+  FullMap_MapParticle(const FullMap_MapParticle& from);
 
-  inline MapParticle& operator=(const MapParticle& from) {
+  inline FullMap_MapParticle& operator=(const FullMap_MapParticle& from) {
     CopyFrom(from);
     return *this;
   }
@@ -307,17 +322,17 @@ class MapParticle : public ::google::protobuf::Message {
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const MapParticle& default_instance();
+  static const FullMap_MapParticle& default_instance();
 
-  void Swap(MapParticle* other);
+  void Swap(FullMap_MapParticle* other);
 
   // implements Message ----------------------------------------------
 
-  MapParticle* New() const;
+  FullMap_MapParticle* New() const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const MapParticle& from);
-  void MergeFrom(const MapParticle& from);
+  void CopyFrom(const FullMap_MapParticle& from);
+  void MergeFrom(const FullMap_MapParticle& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -361,7 +376,7 @@ class MapParticle : public ::google::protobuf::Message {
   inline float weight() const;
   inline void set_weight(float value);
 
-  // @@protoc_insertion_point(class_scope:robotdata.MapParticle)
+  // @@protoc_insertion_point(class_scope:robotdata.FullMap.MapParticle)
  private:
   inline void set_has_posx();
   inline void clear_has_posx();
@@ -384,7 +399,7 @@ class MapParticle : public ::google::protobuf::Message {
   friend void protobuf_ShutdownFile_robotdata_2eproto();
 
   void InitAsDefaultInstance();
-  static MapParticle* default_instance_;
+  static FullMap_MapParticle* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -440,30 +455,32 @@ class FullMap : public ::google::protobuf::Message {
 
   // nested types ----------------------------------------------------
 
+  typedef FullMap_MapParticle MapParticle;
+
   // accessors -------------------------------------------------------
 
-  // repeated .robotdata.MapParticle wallParticles = 1;
+  // repeated .robotdata.FullMap.MapParticle wallParticles = 1;
   inline int wallparticles_size() const;
   inline void clear_wallparticles();
   static const int kWallParticlesFieldNumber = 1;
-  inline const ::robotdata::MapParticle& wallparticles(int index) const;
-  inline ::robotdata::MapParticle* mutable_wallparticles(int index);
-  inline ::robotdata::MapParticle* add_wallparticles();
-  inline const ::google::protobuf::RepeatedPtrField< ::robotdata::MapParticle >&
+  inline const ::robotdata::FullMap_MapParticle& wallparticles(int index) const;
+  inline ::robotdata::FullMap_MapParticle* mutable_wallparticles(int index);
+  inline ::robotdata::FullMap_MapParticle* add_wallparticles();
+  inline const ::google::protobuf::RepeatedPtrField< ::robotdata::FullMap_MapParticle >&
       wallparticles() const;
-  inline ::google::protobuf::RepeatedPtrField< ::robotdata::MapParticle >*
+  inline ::google::protobuf::RepeatedPtrField< ::robotdata::FullMap_MapParticle >*
       mutable_wallparticles();
 
-  // repeated .robotdata.MapParticle safeParticles = 2;
+  // repeated .robotdata.FullMap.MapParticle safeParticles = 2;
   inline int safeparticles_size() const;
   inline void clear_safeparticles();
   static const int kSafeParticlesFieldNumber = 2;
-  inline const ::robotdata::MapParticle& safeparticles(int index) const;
-  inline ::robotdata::MapParticle* mutable_safeparticles(int index);
-  inline ::robotdata::MapParticle* add_safeparticles();
-  inline const ::google::protobuf::RepeatedPtrField< ::robotdata::MapParticle >&
+  inline const ::robotdata::FullMap_MapParticle& safeparticles(int index) const;
+  inline ::robotdata::FullMap_MapParticle* mutable_safeparticles(int index);
+  inline ::robotdata::FullMap_MapParticle* add_safeparticles();
+  inline const ::google::protobuf::RepeatedPtrField< ::robotdata::FullMap_MapParticle >&
       safeparticles() const;
-  inline ::google::protobuf::RepeatedPtrField< ::robotdata::MapParticle >*
+  inline ::google::protobuf::RepeatedPtrField< ::robotdata::FullMap_MapParticle >*
       mutable_safeparticles();
 
   // @@protoc_insertion_point(class_scope:robotdata.FullMap)
@@ -471,8 +488,8 @@ class FullMap : public ::google::protobuf::Message {
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
-  ::google::protobuf::RepeatedPtrField< ::robotdata::MapParticle > wallparticles_;
-  ::google::protobuf::RepeatedPtrField< ::robotdata::MapParticle > safeparticles_;
+  ::google::protobuf::RepeatedPtrField< ::robotdata::FullMap_MapParticle > wallparticles_;
+  ::google::protobuf::RepeatedPtrField< ::robotdata::FullMap_MapParticle > safeparticles_;
 
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
@@ -486,14 +503,14 @@ class FullMap : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class PathDot : public ::google::protobuf::Message {
+class FullPath_PathDot : public ::google::protobuf::Message {
  public:
-  PathDot();
-  virtual ~PathDot();
+  FullPath_PathDot();
+  virtual ~FullPath_PathDot();
 
-  PathDot(const PathDot& from);
+  FullPath_PathDot(const FullPath_PathDot& from);
 
-  inline PathDot& operator=(const PathDot& from) {
+  inline FullPath_PathDot& operator=(const FullPath_PathDot& from) {
     CopyFrom(from);
     return *this;
   }
@@ -507,17 +524,17 @@ class PathDot : public ::google::protobuf::Message {
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const PathDot& default_instance();
+  static const FullPath_PathDot& default_instance();
 
-  void Swap(PathDot* other);
+  void Swap(FullPath_PathDot* other);
 
   // implements Message ----------------------------------------------
 
-  PathDot* New() const;
+  FullPath_PathDot* New() const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const PathDot& from);
-  void MergeFrom(const PathDot& from);
+  void CopyFrom(const FullPath_PathDot& from);
+  void MergeFrom(const FullPath_PathDot& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -554,27 +571,52 @@ class PathDot : public ::google::protobuf::Message {
   inline float y() const;
   inline void set_y(float value);
 
-  // @@protoc_insertion_point(class_scope:robotdata.PathDot)
+  // repeated .robotdata.FullPath.PathDot nextDot = 3;
+  inline int nextdot_size() const;
+  inline void clear_nextdot();
+  static const int kNextDotFieldNumber = 3;
+  inline const ::robotdata::FullPath_PathDot& nextdot(int index) const;
+  inline ::robotdata::FullPath_PathDot* mutable_nextdot(int index);
+  inline ::robotdata::FullPath_PathDot* add_nextdot();
+  inline const ::google::protobuf::RepeatedPtrField< ::robotdata::FullPath_PathDot >&
+      nextdot() const;
+  inline ::google::protobuf::RepeatedPtrField< ::robotdata::FullPath_PathDot >*
+      mutable_nextdot();
+
+  // optional .robotdata.FullPath.PathDot chosenDot = 4;
+  inline bool has_chosendot() const;
+  inline void clear_chosendot();
+  static const int kChosenDotFieldNumber = 4;
+  inline const ::robotdata::FullPath_PathDot& chosendot() const;
+  inline ::robotdata::FullPath_PathDot* mutable_chosendot();
+  inline ::robotdata::FullPath_PathDot* release_chosendot();
+  inline void set_allocated_chosendot(::robotdata::FullPath_PathDot* chosendot);
+
+  // @@protoc_insertion_point(class_scope:robotdata.FullPath.PathDot)
  private:
   inline void set_has_x();
   inline void clear_has_x();
   inline void set_has_y();
   inline void clear_has_y();
+  inline void set_has_chosendot();
+  inline void clear_has_chosendot();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   float x_;
   float y_;
+  ::google::protobuf::RepeatedPtrField< ::robotdata::FullPath_PathDot > nextdot_;
+  ::robotdata::FullPath_PathDot* chosendot_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
 
   friend void  protobuf_AddDesc_robotdata_2eproto();
   friend void protobuf_AssignDesc_robotdata_2eproto();
   friend void protobuf_ShutdownFile_robotdata_2eproto();
 
   void InitAsDefaultInstance();
-  static PathDot* default_instance_;
+  static FullPath_PathDot* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -630,26 +672,27 @@ class FullPath : public ::google::protobuf::Message {
 
   // nested types ----------------------------------------------------
 
+  typedef FullPath_PathDot PathDot;
+
   // accessors -------------------------------------------------------
 
-  // repeated .robotdata.PathDot path = 4;
-  inline int path_size() const;
-  inline void clear_path();
-  static const int kPathFieldNumber = 4;
-  inline const ::robotdata::PathDot& path(int index) const;
-  inline ::robotdata::PathDot* mutable_path(int index);
-  inline ::robotdata::PathDot* add_path();
-  inline const ::google::protobuf::RepeatedPtrField< ::robotdata::PathDot >&
-      path() const;
-  inline ::google::protobuf::RepeatedPtrField< ::robotdata::PathDot >*
-      mutable_path();
+  // required .robotdata.FullPath.PathDot firstDot = 1;
+  inline bool has_firstdot() const;
+  inline void clear_firstdot();
+  static const int kFirstDotFieldNumber = 1;
+  inline const ::robotdata::FullPath_PathDot& firstdot() const;
+  inline ::robotdata::FullPath_PathDot* mutable_firstdot();
+  inline ::robotdata::FullPath_PathDot* release_firstdot();
+  inline void set_allocated_firstdot(::robotdata::FullPath_PathDot* firstdot);
 
   // @@protoc_insertion_point(class_scope:robotdata.FullPath)
  private:
+  inline void set_has_firstdot();
+  inline void clear_has_firstdot();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
-  ::google::protobuf::RepeatedPtrField< ::robotdata::PathDot > path_;
+  ::robotdata::FullPath_PathDot* firstdot_;
 
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
@@ -892,72 +935,142 @@ inline void SensorInfo::set_distance(::google::protobuf::int32 value) {
   distance_ = value;
 }
 
+// required string sensor_id = 6;
+inline bool SensorInfo::has_sensor_id() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void SensorInfo::set_has_sensor_id() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void SensorInfo::clear_has_sensor_id() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void SensorInfo::clear_sensor_id() {
+  if (sensor_id_ != &::google::protobuf::internal::kEmptyString) {
+    sensor_id_->clear();
+  }
+  clear_has_sensor_id();
+}
+inline const ::std::string& SensorInfo::sensor_id() const {
+  return *sensor_id_;
+}
+inline void SensorInfo::set_sensor_id(const ::std::string& value) {
+  set_has_sensor_id();
+  if (sensor_id_ == &::google::protobuf::internal::kEmptyString) {
+    sensor_id_ = new ::std::string;
+  }
+  sensor_id_->assign(value);
+}
+inline void SensorInfo::set_sensor_id(const char* value) {
+  set_has_sensor_id();
+  if (sensor_id_ == &::google::protobuf::internal::kEmptyString) {
+    sensor_id_ = new ::std::string;
+  }
+  sensor_id_->assign(value);
+}
+inline void SensorInfo::set_sensor_id(const char* value, size_t size) {
+  set_has_sensor_id();
+  if (sensor_id_ == &::google::protobuf::internal::kEmptyString) {
+    sensor_id_ = new ::std::string;
+  }
+  sensor_id_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* SensorInfo::mutable_sensor_id() {
+  set_has_sensor_id();
+  if (sensor_id_ == &::google::protobuf::internal::kEmptyString) {
+    sensor_id_ = new ::std::string;
+  }
+  return sensor_id_;
+}
+inline ::std::string* SensorInfo::release_sensor_id() {
+  clear_has_sensor_id();
+  if (sensor_id_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = sensor_id_;
+    sensor_id_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void SensorInfo::set_allocated_sensor_id(::std::string* sensor_id) {
+  if (sensor_id_ != &::google::protobuf::internal::kEmptyString) {
+    delete sensor_id_;
+  }
+  if (sensor_id) {
+    set_has_sensor_id();
+    sensor_id_ = sensor_id;
+  } else {
+    clear_has_sensor_id();
+    sensor_id_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
 // -------------------------------------------------------------------
 
-// MapParticle
+// FullMap_MapParticle
 
 // required float posx = 1;
-inline bool MapParticle::has_posx() const {
+inline bool FullMap_MapParticle::has_posx() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void MapParticle::set_has_posx() {
+inline void FullMap_MapParticle::set_has_posx() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void MapParticle::clear_has_posx() {
+inline void FullMap_MapParticle::clear_has_posx() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void MapParticle::clear_posx() {
+inline void FullMap_MapParticle::clear_posx() {
   posx_ = 0;
   clear_has_posx();
 }
-inline float MapParticle::posx() const {
+inline float FullMap_MapParticle::posx() const {
   return posx_;
 }
-inline void MapParticle::set_posx(float value) {
+inline void FullMap_MapParticle::set_posx(float value) {
   set_has_posx();
   posx_ = value;
 }
 
 // required float posy = 2;
-inline bool MapParticle::has_posy() const {
+inline bool FullMap_MapParticle::has_posy() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void MapParticle::set_has_posy() {
+inline void FullMap_MapParticle::set_has_posy() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void MapParticle::clear_has_posy() {
+inline void FullMap_MapParticle::clear_has_posy() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void MapParticle::clear_posy() {
+inline void FullMap_MapParticle::clear_posy() {
   posy_ = 0;
   clear_has_posy();
 }
-inline float MapParticle::posy() const {
+inline float FullMap_MapParticle::posy() const {
   return posy_;
 }
-inline void MapParticle::set_posy(float value) {
+inline void FullMap_MapParticle::set_posy(float value) {
   set_has_posy();
   posy_ = value;
 }
 
 // required float weight = 3;
-inline bool MapParticle::has_weight() const {
+inline bool FullMap_MapParticle::has_weight() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void MapParticle::set_has_weight() {
+inline void FullMap_MapParticle::set_has_weight() {
   _has_bits_[0] |= 0x00000004u;
 }
-inline void MapParticle::clear_has_weight() {
+inline void FullMap_MapParticle::clear_has_weight() {
   _has_bits_[0] &= ~0x00000004u;
 }
-inline void MapParticle::clear_weight() {
+inline void FullMap_MapParticle::clear_weight() {
   weight_ = 0;
   clear_has_weight();
 }
-inline float MapParticle::weight() const {
+inline float FullMap_MapParticle::weight() const {
   return weight_;
 }
-inline void MapParticle::set_weight(float value) {
+inline void FullMap_MapParticle::set_weight(float value) {
   set_has_weight();
   weight_ = value;
 }
@@ -966,131 +1079,207 @@ inline void MapParticle::set_weight(float value) {
 
 // FullMap
 
-// repeated .robotdata.MapParticle wallParticles = 1;
+// repeated .robotdata.FullMap.MapParticle wallParticles = 1;
 inline int FullMap::wallparticles_size() const {
   return wallparticles_.size();
 }
 inline void FullMap::clear_wallparticles() {
   wallparticles_.Clear();
 }
-inline const ::robotdata::MapParticle& FullMap::wallparticles(int index) const {
+inline const ::robotdata::FullMap_MapParticle& FullMap::wallparticles(int index) const {
   return wallparticles_.Get(index);
 }
-inline ::robotdata::MapParticle* FullMap::mutable_wallparticles(int index) {
+inline ::robotdata::FullMap_MapParticle* FullMap::mutable_wallparticles(int index) {
   return wallparticles_.Mutable(index);
 }
-inline ::robotdata::MapParticle* FullMap::add_wallparticles() {
+inline ::robotdata::FullMap_MapParticle* FullMap::add_wallparticles() {
   return wallparticles_.Add();
 }
-inline const ::google::protobuf::RepeatedPtrField< ::robotdata::MapParticle >&
+inline const ::google::protobuf::RepeatedPtrField< ::robotdata::FullMap_MapParticle >&
 FullMap::wallparticles() const {
   return wallparticles_;
 }
-inline ::google::protobuf::RepeatedPtrField< ::robotdata::MapParticle >*
+inline ::google::protobuf::RepeatedPtrField< ::robotdata::FullMap_MapParticle >*
 FullMap::mutable_wallparticles() {
   return &wallparticles_;
 }
 
-// repeated .robotdata.MapParticle safeParticles = 2;
+// repeated .robotdata.FullMap.MapParticle safeParticles = 2;
 inline int FullMap::safeparticles_size() const {
   return safeparticles_.size();
 }
 inline void FullMap::clear_safeparticles() {
   safeparticles_.Clear();
 }
-inline const ::robotdata::MapParticle& FullMap::safeparticles(int index) const {
+inline const ::robotdata::FullMap_MapParticle& FullMap::safeparticles(int index) const {
   return safeparticles_.Get(index);
 }
-inline ::robotdata::MapParticle* FullMap::mutable_safeparticles(int index) {
+inline ::robotdata::FullMap_MapParticle* FullMap::mutable_safeparticles(int index) {
   return safeparticles_.Mutable(index);
 }
-inline ::robotdata::MapParticle* FullMap::add_safeparticles() {
+inline ::robotdata::FullMap_MapParticle* FullMap::add_safeparticles() {
   return safeparticles_.Add();
 }
-inline const ::google::protobuf::RepeatedPtrField< ::robotdata::MapParticle >&
+inline const ::google::protobuf::RepeatedPtrField< ::robotdata::FullMap_MapParticle >&
 FullMap::safeparticles() const {
   return safeparticles_;
 }
-inline ::google::protobuf::RepeatedPtrField< ::robotdata::MapParticle >*
+inline ::google::protobuf::RepeatedPtrField< ::robotdata::FullMap_MapParticle >*
 FullMap::mutable_safeparticles() {
   return &safeparticles_;
 }
 
 // -------------------------------------------------------------------
 
-// PathDot
+// FullPath_PathDot
 
 // required float x = 1;
-inline bool PathDot::has_x() const {
+inline bool FullPath_PathDot::has_x() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void PathDot::set_has_x() {
+inline void FullPath_PathDot::set_has_x() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void PathDot::clear_has_x() {
+inline void FullPath_PathDot::clear_has_x() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void PathDot::clear_x() {
+inline void FullPath_PathDot::clear_x() {
   x_ = 0;
   clear_has_x();
 }
-inline float PathDot::x() const {
+inline float FullPath_PathDot::x() const {
   return x_;
 }
-inline void PathDot::set_x(float value) {
+inline void FullPath_PathDot::set_x(float value) {
   set_has_x();
   x_ = value;
 }
 
 // required float y = 2;
-inline bool PathDot::has_y() const {
+inline bool FullPath_PathDot::has_y() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void PathDot::set_has_y() {
+inline void FullPath_PathDot::set_has_y() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void PathDot::clear_has_y() {
+inline void FullPath_PathDot::clear_has_y() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void PathDot::clear_y() {
+inline void FullPath_PathDot::clear_y() {
   y_ = 0;
   clear_has_y();
 }
-inline float PathDot::y() const {
+inline float FullPath_PathDot::y() const {
   return y_;
 }
-inline void PathDot::set_y(float value) {
+inline void FullPath_PathDot::set_y(float value) {
   set_has_y();
   y_ = value;
+}
+
+// repeated .robotdata.FullPath.PathDot nextDot = 3;
+inline int FullPath_PathDot::nextdot_size() const {
+  return nextdot_.size();
+}
+inline void FullPath_PathDot::clear_nextdot() {
+  nextdot_.Clear();
+}
+inline const ::robotdata::FullPath_PathDot& FullPath_PathDot::nextdot(int index) const {
+  return nextdot_.Get(index);
+}
+inline ::robotdata::FullPath_PathDot* FullPath_PathDot::mutable_nextdot(int index) {
+  return nextdot_.Mutable(index);
+}
+inline ::robotdata::FullPath_PathDot* FullPath_PathDot::add_nextdot() {
+  return nextdot_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::robotdata::FullPath_PathDot >&
+FullPath_PathDot::nextdot() const {
+  return nextdot_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::robotdata::FullPath_PathDot >*
+FullPath_PathDot::mutable_nextdot() {
+  return &nextdot_;
+}
+
+// optional .robotdata.FullPath.PathDot chosenDot = 4;
+inline bool FullPath_PathDot::has_chosendot() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void FullPath_PathDot::set_has_chosendot() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void FullPath_PathDot::clear_has_chosendot() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void FullPath_PathDot::clear_chosendot() {
+  if (chosendot_ != NULL) chosendot_->::robotdata::FullPath_PathDot::Clear();
+  clear_has_chosendot();
+}
+inline const ::robotdata::FullPath_PathDot& FullPath_PathDot::chosendot() const {
+  return chosendot_ != NULL ? *chosendot_ : *default_instance_->chosendot_;
+}
+inline ::robotdata::FullPath_PathDot* FullPath_PathDot::mutable_chosendot() {
+  set_has_chosendot();
+  if (chosendot_ == NULL) chosendot_ = new ::robotdata::FullPath_PathDot;
+  return chosendot_;
+}
+inline ::robotdata::FullPath_PathDot* FullPath_PathDot::release_chosendot() {
+  clear_has_chosendot();
+  ::robotdata::FullPath_PathDot* temp = chosendot_;
+  chosendot_ = NULL;
+  return temp;
+}
+inline void FullPath_PathDot::set_allocated_chosendot(::robotdata::FullPath_PathDot* chosendot) {
+  delete chosendot_;
+  chosendot_ = chosendot;
+  if (chosendot) {
+    set_has_chosendot();
+  } else {
+    clear_has_chosendot();
+  }
 }
 
 // -------------------------------------------------------------------
 
 // FullPath
 
-// repeated .robotdata.PathDot path = 4;
-inline int FullPath::path_size() const {
-  return path_.size();
+// required .robotdata.FullPath.PathDot firstDot = 1;
+inline bool FullPath::has_firstdot() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void FullPath::clear_path() {
-  path_.Clear();
+inline void FullPath::set_has_firstdot() {
+  _has_bits_[0] |= 0x00000001u;
 }
-inline const ::robotdata::PathDot& FullPath::path(int index) const {
-  return path_.Get(index);
+inline void FullPath::clear_has_firstdot() {
+  _has_bits_[0] &= ~0x00000001u;
 }
-inline ::robotdata::PathDot* FullPath::mutable_path(int index) {
-  return path_.Mutable(index);
+inline void FullPath::clear_firstdot() {
+  if (firstdot_ != NULL) firstdot_->::robotdata::FullPath_PathDot::Clear();
+  clear_has_firstdot();
 }
-inline ::robotdata::PathDot* FullPath::add_path() {
-  return path_.Add();
+inline const ::robotdata::FullPath_PathDot& FullPath::firstdot() const {
+  return firstdot_ != NULL ? *firstdot_ : *default_instance_->firstdot_;
 }
-inline const ::google::protobuf::RepeatedPtrField< ::robotdata::PathDot >&
-FullPath::path() const {
-  return path_;
+inline ::robotdata::FullPath_PathDot* FullPath::mutable_firstdot() {
+  set_has_firstdot();
+  if (firstdot_ == NULL) firstdot_ = new ::robotdata::FullPath_PathDot;
+  return firstdot_;
 }
-inline ::google::protobuf::RepeatedPtrField< ::robotdata::PathDot >*
-FullPath::mutable_path() {
-  return &path_;
+inline ::robotdata::FullPath_PathDot* FullPath::release_firstdot() {
+  clear_has_firstdot();
+  ::robotdata::FullPath_PathDot* temp = firstdot_;
+  firstdot_ = NULL;
+  return temp;
+}
+inline void FullPath::set_allocated_firstdot(::robotdata::FullPath_PathDot* firstdot) {
+  delete firstdot_;
+  firstdot_ = firstdot;
+  if (firstdot) {
+    set_has_firstdot();
+  } else {
+    clear_has_firstdot();
+  }
 }
 
 

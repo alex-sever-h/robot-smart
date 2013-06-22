@@ -16,6 +16,9 @@
 #include "wx/timer.h"
 #include "sensorManagement.h"
 #include "AStarPathfinder.hpp"
+#include "protobuf/robotdata.pb.h"
+#include "RobotClient.hpp"
+#include "RobotClientData.hpp"
 
 
 class RoboControls: public wxPanel
@@ -29,7 +32,9 @@ class RoboGLMap : public wxGLCanvas
 {
 	wxGLContext*	m_context;
 	wxTimer         m_timer;
-	//SensorManager  *sensMan;
+
+	RobotClient robotClient;
+	RobotClientData robotClientData;
 
 public:
 	RoboGLMap(wxFrame* parent, int* args);
@@ -44,8 +49,6 @@ public:
 	void prepare3DViewport(int topleft_x, int topleft_y, int bottomrigth_x, int bottomrigth_y);
 	void prepare2DViewport(int topleft_x, int topleft_y, int bottomrigth_x, int bottomrigth_y);
 
-	void drawArc(float cx, float cy, float start_angle, float arc_angle, float length);
-
 	// events
 	void mouseMoved(wxMouseEvent& event);
 	void mouseDown(wxMouseEvent& event);
@@ -58,7 +61,7 @@ public:
 
 	void timerUpdate(wxTimerEvent & event);
 
-	void drawAllChildren(PathNode * node);
+	void drawAllChildren(robotdata::FullPath_PathDot * pathNode);
 	void drawSensors(void);
 	void drawMap(void);
 	void drawRobot(void);

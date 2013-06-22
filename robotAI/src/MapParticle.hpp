@@ -14,10 +14,12 @@
 
 #include <boost/thread.hpp>
 
+#include "RobotServer.hpp"
 #include "MapGeneric.hpp"
 #include "sensorManagement.h"
 #include <vector>
 #include <list>
+#include "protobuf/robotdata.pb.h"
 
 using namespace std;
 using namespace boost;
@@ -58,6 +60,8 @@ public:
 	float computeCollisionFactor(tyPolygon *area);
 
 	void clearMap(void);
+
+	google::protobuf::Message * sendFullMap();
 
 	list<LocationWWeight>* getWallParticleList() const
 	{

@@ -8,6 +8,7 @@
 
 #include "AStarPathfinder.hpp"
 #include <math.h>
+#include "protobuf/robotdata.pb.h"
 
 #define STEP_ROTATION  (DEG_TO_RAD(10))
 #define STEP_MOVEMENT  (400)
@@ -62,21 +63,21 @@ tyPolygon* AStarPathfinder::generatePathArea(float xStart, float yStart, float x
 	LocationWWeight helper;
 
 	//compute start points
-	helper.x = xStart + (-pRobot->getLengthMm()/2) * cos(theta) - (+pRobot->getWidthMm()/2) * sin(theta);
-	helper.y = yStart + (-pRobot->getLengthMm()/2) * sin(theta) + (+pRobot->getWidthMm()/2) * cos(theta);
+	helper.x = xStart + (-pRobot->getLengthMm()/2) * cos(theta) - (+pRobot->getWidthMm()+20/2) * sin(theta);
+	helper.y = yStart + (-pRobot->getLengthMm()/2) * sin(theta) + (+pRobot->getWidthMm()+20/2) * cos(theta);
 	pathArea->push_back(helper);
 
-	helper.x = xStart + (-pRobot->getLengthMm()/2) * cos(theta) - (-pRobot->getWidthMm()/2) * sin(theta);
-	helper.y = yStart + (-pRobot->getLengthMm()/2) * sin(theta) + (-pRobot->getWidthMm()/2) * cos(theta);
+	helper.x = xStart + (-pRobot->getLengthMm()/2) * cos(theta) - (-pRobot->getWidthMm()+20/2) * sin(theta);
+	helper.y = yStart + (-pRobot->getLengthMm()/2) * sin(theta) + (-pRobot->getWidthMm()+20/2) * cos(theta);
 	pathArea->push_back(helper);
 
 	//compute end points
-	helper.x = xEnd   + (+pRobot->getLengthMm()/2) * cos(theta) - (-pRobot->getWidthMm()/2) * sin(theta);
-	helper.y = yEnd   + (+pRobot->getLengthMm()/2) * sin(theta) + (-pRobot->getWidthMm()/2) * cos(theta);
+	helper.x = xEnd   + (+pRobot->getLengthMm()/2) * cos(theta) - (-pRobot->getWidthMm()+20/2) * sin(theta);
+	helper.y = yEnd   + (+pRobot->getLengthMm()/2) * sin(theta) + (-pRobot->getWidthMm()+20/2) * cos(theta);
 	pathArea->push_back(helper);
 
-	helper.x = xEnd   + (+pRobot->getLengthMm()/2) * cos(theta) - (+pRobot->getWidthMm()/2) * sin(theta);
-	helper.y = yEnd   + (+pRobot->getLengthMm()/2) * sin(theta) + (+pRobot->getWidthMm()/2) * cos(theta);
+	helper.x = xEnd   + (+pRobot->getLengthMm()/2) * cos(theta) - (+pRobot->getWidthMm()+20/2) * sin(theta);
+	helper.y = yEnd   + (+pRobot->getLengthMm()/2) * sin(theta) + (+pRobot->getWidthMm()+20/2) * cos(theta);
 	pathArea->push_back(helper);
 
 	return pathArea;
@@ -101,7 +102,7 @@ bool AStarPathfinder::checkForAlreadyThere(PathNode *origin, PathNode *current, 
 			return true;
 	}
 
-//	//propagate through the tree
+	//	//propagate through the tree
 	for(list<PathNode *>::iterator it = origin->children.begin(); it != origin->children.end();++it)
 	{
 		if((*it != current) && checkForAlreadyThere((*it), current, xnew, ynew) == true )
@@ -264,6 +265,10 @@ PathNode* AStarPathfinder::generateRawPath(LocationWWeight target)
 	{
 		PathNode * currentNode = getMinCostLeafNode(origin);
 
+		//all nodes closed
+		if(currentNode == NULL)
+			break;
+
 		if(arrivedAtGoal(target, currentNode))
 		{
 			//cout << "AT GOAL !!!!!!!!!\n";
@@ -280,7 +285,7 @@ PathNode* AStarPathfinder::generateRawPath(LocationWWeight target)
 	//world->clearMap();
 
 	cout << "no path found !!!!!\n";
-#if 1
+#if 0
 	purgePathTree(origin, NULL);
 	delete origin;
 	return NULL;
@@ -314,6 +319,42 @@ bool AStarPathfinder::checkPathForMapUpdates(PathNode* path)
 			return false;
 		}
 	}
+}
+
+void AStarPathfinder::addEachNodeToProtobuf(PathNode* originReal, robotdata::FullPath_PathDot *originProto)
+{
+	if(originReal == NULL)
+		return;
+	if(originProto == NULL)
+		return;
+
+
+	//search all children for collision
+	for(list<PathNode *>::iterator it = originReal->children.begin(); it != originReal->children.end();++it)
+	{
+		robotdata::FullPath_PathDot *helper = originProto->add_nextdot();
+		helper->set_x((*it)->x);
+		helper->set_y((*it)->y);
+
+		addEachNodeToProtobuf(*it, helper);
+	}
+}
+
+google::protobuf::Message * AStarPathfinder::sendPath(PathNode * originReal)
+{
+	robotdata::FullPath * fullPath = new robotdata::FullPath;
+
+
+	robotdata::FullPath_PathDot *originProto = new robotdata::FullPath_PathDot();
+	originProto->set_x(originReal->x);
+	originProto->set_y(originReal->y);
+
+	addEachNodeToProtobuf(originReal, originProto);
+
+	fullPath->set_allocated_firstdot(originProto);
+
+	return fullPath;
+
 }
 
 void AStarPathfinder::deletePath(PathNode* path)

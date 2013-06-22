@@ -26,6 +26,8 @@ RobotModel::RobotModel(RoboBT* btInterface)
 
 	btInterface->setSensMan(sensorManager);
 
+	srv = NULL;
+
 	robotPolygon = NULL;
 	sendRobotInfo();
 
@@ -50,6 +52,8 @@ RobotModel::RobotModel(float x, float y, float theta, RoboBT* btInterface)
 	pathFinder = new AStarPathfinder(this);
 
 	btInterface->setSensMan(sensorManager);
+
+	srv = NULL;
 
 	robotPolygon = NULL;
 	sendRobotInfo();
@@ -99,13 +103,18 @@ int RobotModel::rotate(float theta)
 
 void RobotModel::sendRobotInfo()
 {
-	robotdata::RobotInfo robotInfo;
-	robotInfo.set_length(lengthMM);
-	robotInfo.set_width(widthMM);
-	robotInfo.set_posx(positionXmm);
-	robotInfo.set_posy(positionYmm);
-	robotInfo.set_theta(orientationRad);
-	robotInfo.SerializeAsString();
+	if(srv)
+	{
+		robotdata::RobotInfo robotInfo;
+
+		robotInfo.set_length(lengthMM);
+		robotInfo.set_width(widthMM);
+		robotInfo.set_posx(positionXmm);
+		robotInfo.set_posy(positionYmm);
+		robotInfo.set_theta(orientationRad);
+
+		srv->sendSerializedData(&robotInfo, ROBOT_POSITION);
+	}
 }
 
 tyPolygon * RobotModel::getRobotPoly()
@@ -189,13 +198,25 @@ void RobotModel::updateWorld(tySensor* sensor)
 
 		cout << "detect collition ``````````````````````````\n";
 	}
+
+	sendMessage(worldMap->sendFullMap(), FULL_MAP);
 }
 
 void RobotModel::pathfinderThread(const Location& target)
 {
 	this->setTarget(target);
 	path = pathFinder->generateRawPath(LocationWWeight(target.x, target.y, 0));
-	rME->followPath(path);
+	if(path)
+	{
+		sendMessage(pathFinder->sendPath(path), FULL_PATH);
+		rME->followPath(path);
+	}
+}
+
+void RobotModel::sendMessage(google::protobuf::Message* message, enum dataType enumDataType)
+{
+	srv->sendSerializedData(message, enumDataType);
+	delete message;
 }
 
 void RobotModel::moveAtLocation(Location target)
