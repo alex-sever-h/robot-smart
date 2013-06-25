@@ -57,6 +57,8 @@ public:
 	void move_by_time(int timeMs);
 	void rotate_by_time(int timeMs);
 
+	void stopMovement();
+
 public:
 	virtual int connectRobot() = 0;
 

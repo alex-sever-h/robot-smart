@@ -48,7 +48,7 @@ void smartTask()
 
 #if 0
 	sleep(1);
-	physicalRobot.rotate(DEG_TO_RAD(360));
+	physicalRobot.rotate(DEG_TO_RAD(180));
 #endif
 
 	while (1)

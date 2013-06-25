@@ -10,13 +10,15 @@
 #include "geometricPlane.hpp"
 #include "protobuf/robotdata.pb.h"
 
-#define NEW_PARTICLE_FACTOR 0.1f
+#define NEW_PARTICLE_FACTOR 0.3f
 #define CLEAR_SAFE_FACTOR   1
 #define REMOVE_FACTOR		 0.4
 
 #define MINIMUM_OBSTACLE_SIZE 20
 #define WALL_PARTICLE_GENERATION_NUMBER 20
 #define SAFE_PARTICLE_GENERATION_NUMBER 30
+
+#define MINIMIZATION_DISTANCE 10
 
 MapParticle::MapParticle()
 {
@@ -39,7 +41,7 @@ void MapParticle::updateMap(tySensor* sensor)
 {
 	if(sensor)
 	{
-		fillSafeArea(sensor);
+		//		fillSafeArea(sensor);
 		fillWallArea(sensor);
 	}
 }
@@ -126,15 +128,32 @@ void MapParticle::fillWallArea(tySensor* sensor)
 		length = sensor->distanceMM + length * MINIMUM_OBSTACLE_SIZE;
 		theta = theta * sensor->angleSpan/2;
 
-		float x = sensor->offsetXmapMM + length * cos(sensor->angleCenterRadMap + theta);
-		float y = sensor->offsetYmapMM + length * sin(sensor->angleCenterRadMap + theta);
+		LocationWWeight newParticle(0, 0, NEW_PARTICLE_FACTOR);
 
-		wallParticleList->push_back(LocationWWeight(x, y, NEW_PARTICLE_FACTOR));
+		newParticle.x = sensor->offsetXmapMM + length * cos(sensor->angleCenterRadMap + theta);
+		newParticle.y = sensor->offsetYmapMM + length * sin(sensor->angleCenterRadMap + theta);
+
+		list<LocationWWeight>::iterator it1;
+		for (it1 = wallParticleList->begin();
+				it1 != wallParticleList->end();it1++)
+		{
+
+				if (euclidDistance(*it1, newParticle) < MINIMIZATION_DISTANCE)
+				{
+					it1->x = (it1->x + newParticle.x) / 2;
+					it1->y = (it1->y + newParticle.y) / 2;
+					it1->weight = (it1->weight + newParticle.weight);
+					break;
+				}
+		}
+
+		if(it1 == wallParticleList->end())
+			wallParticleList->push_back(newParticle);
 	}
 
-	wallParticleList->sort(cmpX);
-	minimizeSortedList(wallParticleList);
-	wallParticleList->sort(cmpX);
+//	wallParticleList->sort(cmpX);
+//	minimizeSortedList(wallParticleList);
+//	wallParticleList->sort(cmpX);
 
 	wallParticleGuard.unlock();
 }
@@ -200,7 +219,6 @@ bool MapParticle::compareByY(const LocationWWeight& a, const LocationWWeight& b)
 	return a.y < b.y;
 }
 
-#define MINIMIZATION_DISTANCE 5
 
 void MapParticle::minimizeSortedList(list<LocationWWeight>* particleList)
 {

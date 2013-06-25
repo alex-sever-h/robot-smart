@@ -38,13 +38,15 @@ class RobotMovementEngine{
 
 	Location   movementInitialLocation;
 
-	thread	   *stopThread;
-	thread	   *updaterThread;
-
 	thread		*pathFollowerThread;
 
 	volatile tyRobotState      robotMovementState;
-	volatile tyRobotState      robotMovementStateNext;
+	//volatile tyRobotState      robotMovementStateNext;
+
+	//volatile bool waitACK;
+	volatile bool waitRDY;
+
+	volatile int updatePrev;
 
 	posix_time::ptime 			movementStartTimeStamp;
 	posix_time::ptime 			movementLastUpdateTime;
@@ -59,10 +61,9 @@ class RobotMovementEngine{
 	int rotateToMilisecs(float theta);
 
 	void decideRotationMovement(PathNode *origin, PathNode *target, float *rotation, float *movement);
-
 	float msToDistance(int ms);
 	float msToRotation(int ms);
-	void updatePhysicalRobot(int passedMs);
+
 	void reduceRotation(float* rotation);
 
 public:
@@ -76,12 +77,14 @@ public:
 	int rotate(float theta);
 	void stopMotion();
 
+	bool waitAcknowledge(void);
 	void acknowledgeCommand(void);
 	void finalizeCommand(void);
 
 	void movementEndThread(int msRemaining);
 	void positionUpdater();
 
+	void updatePhysicalRobot(int passedMs);
 	void updatePhysicalRobot(float distance, float thetaDeviance);
 	void updatePhysicalRobot(Location oldLocation, float distance, float thetaDeviance);
 

@@ -57,14 +57,14 @@ void RoboInterface::move_by_time(int timeMs)
 	char intBuffer[10];
 	sprintf(intBuffer+1, "%04d", abs(timeMs));
 
-	if(timeMs > 0)
+	if(timeMs >= 0)
 		intBuffer[0] = '+';
 	else if(timeMs < 0)
 		intBuffer[0] = '-';
 
 	cmd_start = "M_FT" + string(intBuffer) + "\r";
 
-	cout << cmd_start << endl;
+	//cout << cmd_start << endl;
 
 	if (connected)
 		writeData(cmd_start);
@@ -77,14 +77,14 @@ void RoboInterface::rotate_by_time(int timeMs)
 	char intBuffer[10];
 	sprintf(intBuffer+1, "%04d", abs(timeMs));
 
-	if(timeMs > 0)
+	if(timeMs >= 0)
 		intBuffer[0] = '+';
 	else if(timeMs < 0)
 		intBuffer[0] = '-';
 
 	cmd_start = "M_RT" + string(intBuffer) + "\r";
 
-	cout << cmd_start << endl;
+	//cout << cmd_start << endl;
 
 	if (connected)
 		writeData(cmd_start);
@@ -92,7 +92,15 @@ void RoboInterface::rotate_by_time(int timeMs)
 
 void RoboInterface::startSensorPoller()
 {
-	 sensorPollerThread = new thread(&RoboInterface::pollUpdateSensors, this);
+	sensorPollerThread = new thread(&RoboInterface::pollUpdateSensors, this);
+}
+
+void RoboInterface::stopMovement()
+{
+	string cmd_start = "M_INTERRUPT\r";
+
+	if (connected)
+		writeData(cmd_start);
 }
 
 void RoboInterface::pollUpdateSensors()
@@ -113,23 +121,26 @@ void RoboInterface::pollUpdateSensors()
 			split(cmd, fields[i], is_any_of(" :"), token_compress_on);
 			if (cmd.size() == 2)
 			{
-				unsigned int len;
-				istringstream(cmd[1]) >> len;
+				unsigned int value;
+				istringstream(cmd[1]) >> value;
 				//				cout << cmd[0] << "-->" << cmd[1] << " === " << len << endl;
 				if (sensMan)
-					sensMan->registerMeasurement(cmd[0], len);
+					sensMan->registerMeasurement(cmd[0], value);
+
+				if (cmd[0] == "TIM")
+					rme->updatePhysicalRobot(value);
 			}
 			else
 			{
 				if(fields[i] == "ACK")
 				{
-					cout << "ACKNOWLEDGEDACKNOWLEDGEDACKNOWLEDGEDACKNOWLEDGEDACKNOWLEDGED\n";
+					cout << "ACKNOWLEDGEDACKNOWLKNOWLEDGEDACKNOWLEDGED\n";
 					if(rme)
 						rme->acknowledgeCommand();
 				}
 				if(fields[i] == "RDY")
 				{
-					cout << "READYREADYREADYREADYREADYREADYREADYREADYREADYREADYREADYREADY\n";
+					cout << "READYREADYREADYRYREADYEADYREADYREADYREADY\n";
 					if(rme)
 						rme->finalizeCommand();
 				}

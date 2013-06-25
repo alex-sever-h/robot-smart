@@ -122,7 +122,7 @@ void RoboBT::writeData(string &command)
 		n_write += write(sock, buffer + n_write, strlen(buffer));
 	}
 
-	//	cout << "****" << command << "****" << endl;
+		cout << "****" << command << "****" << endl;
 }
 
 bool RoboBT::readData()
