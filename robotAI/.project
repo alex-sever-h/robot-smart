@@ -28,7 +28,7 @@
 		<link>
 			<name>robotSHARED</name>
 			<type>2</type>
-			<location>/home/alseh/workspace/robot-smart/robotSHARED</location>
+			<location>/home/alseh/robot-smart/robotSHARED</location>
 		</link>
 	</linkedResources>
 </projectDescription>
